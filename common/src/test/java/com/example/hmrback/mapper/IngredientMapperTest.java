@@ -31,7 +31,7 @@ class IngredientMapperTest extends BaseTU {
     @BeforeAll
     static void setUp() {
         // UserEntity
-        entity = EntityTestUtils.buildIngredientEntity(NUMBER_1);
+        entity = EntityTestUtils.buildIngredientEntity(NUMBER_1, false);
         // User
         model = ModelTestUtils.buildIngredient(NUMBER_1, false);
     }

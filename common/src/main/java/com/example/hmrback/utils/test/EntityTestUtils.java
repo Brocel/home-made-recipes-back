@@ -33,9 +33,9 @@ public class EntityTestUtils {
      * @param ordinal the position number to differentiate users
      * @return UserEntity instance
      */
-    public static UserEntity buildUserEntity(Long ordinal) {
+    public static UserEntity buildUserEntity(Long ordinal, boolean isCreation) {
         UserEntity userEntity = new UserEntity();
-        userEntity.setId(ordinal);
+        userEntity.setId(isCreation ? null :ordinal);
         userEntity.setFirstName(FIRST_NAME.formatted(ordinal));
         userEntity.setLastName(LAST_NAME.formatted(ordinal));
         userEntity.setUsername(USERNAME.formatted(ordinal));
@@ -54,7 +54,7 @@ public class EntityTestUtils {
      */
     public static List<UserEntity> buildUserEntityList(int count) {
         return LongStream.rangeClosed(1, count)
-            .mapToObj(EntityTestUtils::buildUserEntity)
+            .mapToObj(num -> buildUserEntity(num, false))
             .toList();
     }
 
@@ -69,9 +69,9 @@ public class EntityTestUtils {
      * @param ordinal the position number to differentiate products
      * @return ProductEntity instance
      */
-    public static ProductEntity buildProductEntity(Long ordinal) {
+    public static ProductEntity buildProductEntity(Long ordinal, boolean isCreation) {
         ProductEntity productEntity = new ProductEntity();
-        productEntity.setId(ordinal);
+        productEntity.setId(isCreation ? null : ordinal);
         productEntity.setName(PRODUCT_NAME.formatted(ordinal));
         productEntity.setIngredientType(IngredientType.getByIndex(ordinal.intValue() - 1));
         return productEntity;
@@ -85,12 +85,12 @@ public class EntityTestUtils {
      * @param count the number of ProductEntity instances to create
      * @return List of ProductEntity instances
      */
-    public static List<ProductEntity> buildProductEntityList(int count) {
+    public static List<ProductEntity> buildProductEntityList(int count, boolean isCreation) {
         if (count > IngredientType.values().length) {
             count = IngredientType.values().length;
         }
         return LongStream.rangeClosed(1, count)
-            .mapToObj(EntityTestUtils::buildProductEntity)
+            .mapToObj(num -> EntityTestUtils.buildProductEntity(num, isCreation))
             .toList();
     }
 
@@ -104,9 +104,9 @@ public class EntityTestUtils {
      * @param ordinal the position number to differentiate steps
      * @return StepEntity instance
      */
-    public static StepEntity buildStepEntity(Long ordinal) {
+    public static StepEntity buildStepEntity(Long ordinal, boolean isCreation) {
         StepEntity stepEntity = new StepEntity();
-        stepEntity.setId(ordinal);
+        stepEntity.setId(isCreation ? null : ordinal);
         stepEntity.setDescription(STEP_DESCRIPTION.formatted(ordinal));
         stepEntity.setOrder(ordinal.intValue());
         return stepEntity;
@@ -118,9 +118,9 @@ public class EntityTestUtils {
      * @param count the number of StepEntity instances to create
      * @return List of StepEntity instances
      */
-    public static List<StepEntity> buildStepEntityList(int count) {
+    public static List<StepEntity> buildStepEntityList(int count, boolean isCreation) {
         return LongStream.rangeClosed(1, count)
-            .mapToObj(EntityTestUtils::buildStepEntity)
+            .mapToObj(num -> EntityTestUtils.buildStepEntity(num, isCreation))
             .toList();
     }
 
@@ -134,12 +134,12 @@ public class EntityTestUtils {
      * @param ordinal the position number to differentiate ingredients
      * @return IngredientEntity instance
      */
-    public static IngredientEntity buildIngredientEntity(Long ordinal) {
+    public static IngredientEntity buildIngredientEntity(Long ordinal, boolean isCreation) {
         IngredientEntity ingredientEntity = new IngredientEntity();
-        ingredientEntity.setId(ordinal);
+        ingredientEntity.setId(isCreation ? null : ordinal);
         ingredientEntity.setQuantity(ordinal.doubleValue() * 10);
         ingredientEntity.setUnit(Unit.getByIndex(ordinal.intValue() - 1));
-        ingredientEntity.setProduct(buildProductEntity(ordinal));
+        ingredientEntity.setProduct(buildProductEntity(ordinal, isCreation));
         return ingredientEntity;
     }
 
@@ -149,12 +149,12 @@ public class EntityTestUtils {
      * @param count the number of IngredientEntity instances to create
      * @return List of IngredientEntity instances
      */
-    public static List<IngredientEntity> buildIngredientEntityList(int count) {
+    public static List<IngredientEntity> buildIngredientEntityList(int count, boolean isCreation) {
         if (count > Unit.values().length) {
             count = Unit.values().length;
         }
         return LongStream.rangeClosed(1, count)
-            .mapToObj(EntityTestUtils::buildIngredientEntity)
+            .mapToObj(num -> EntityTestUtils.buildIngredientEntity(num, isCreation))
             .toList();
     }
 
@@ -172,9 +172,9 @@ public class EntityTestUtils {
      * @param ordinal the position number to differentiate recipes
      * @return RecipeEntity instance
      */
-    public static RecipeEntity buildRecipeEntity(Long ordinal) {
+    public static RecipeEntity buildRecipeEntity(Long ordinal, boolean isCreation) {
         RecipeEntity recipeEntity = new RecipeEntity();
-        recipeEntity.setId(ordinal);
+        recipeEntity.setId(isCreation ? null :ordinal);
         recipeEntity.setTitle(RECIPE_TITLE.formatted(ordinal));
         recipeEntity.setDescription(RECIPE_DESCRIPTION.formatted(ordinal));
         recipeEntity.setRecipeType(RecipeType.getByIndex(ordinal.intValue() - 1));
@@ -207,12 +207,12 @@ public class EntityTestUtils {
      * @param count the number of RecipeEntity instances to create
      * @return List of RecipeEntity instances
      */
-    public static List<RecipeEntity> buildRecipeEntityList(int count) {
+    public static List<RecipeEntity> buildRecipeEntityList(int count, boolean isCreation) {
         if (count > RecipeType.values().length) {
             count = RecipeType.values().length;
         }
         return LongStream.rangeClosed(1, count)
-            .mapToObj(EntityTestUtils::buildRecipeEntity)
+            .mapToObj(num -> EntityTestUtils.buildRecipeEntity(num, isCreation))
             .toList();
     }
 
@@ -230,5 +230,14 @@ public class EntityTestUtils {
         entity.setId(1L);
         entity.setName(RoleEnum.ROLE_USER);
         return entity;
+    }
+
+    public static List<RoleEntity> buildRoleEntityList() {
+        RoleEntity adminRole = new RoleEntity();
+        adminRole.setName(RoleEnum.ROLE_ADMIN);
+        RoleEntity userRole = new RoleEntity();
+        userRole.setName(RoleEnum.ROLE_USER);
+
+        return List.of(adminRole, userRole);
     }
 }

@@ -59,8 +59,8 @@ class RecipeServiceTest extends BaseTU {
     @BeforeAll
     static void setUp() {
         recipe = ModelTestUtils.buildRecipe(NUMBER_1, true);
-        recipeEntity = EntityTestUtils.buildRecipeEntity(NUMBER_1);
-        recipeEntityList = EntityTestUtils.buildRecipeEntityList(3);
+        recipeEntity = EntityTestUtils.buildRecipeEntity(NUMBER_1, false);
+        recipeEntityList = EntityTestUtils.buildRecipeEntityList(3, false);
         recipeFilter = CommonTestUtils.buildRecipeFilter(RecipeFilterEnum.TITLE, true);
     }
 

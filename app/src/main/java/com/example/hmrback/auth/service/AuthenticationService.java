@@ -6,6 +6,7 @@ import com.example.hmrback.model.request.RegisterRequest;
 import com.example.hmrback.model.response.AuthResponse;
 import com.example.hmrback.persistence.entity.RoleEntity;
 import com.example.hmrback.persistence.entity.UserEntity;
+import com.example.hmrback.persistence.enums.RoleEnum;
 import com.example.hmrback.persistence.repository.RoleRepository;
 import com.example.hmrback.persistence.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class AuthenticationService {
             throw new IllegalArgumentException("Email already in use");
         }
 
-        RoleEntity userRole = roleRepository.findByName("ROLE_USER")
+        RoleEntity userRole = roleRepository.findByName(RoleEnum.ROLE_USER)
             .orElseThrow(() -> new IllegalStateException("ROLE_USER not found; ensure data.sql contains roles"));
 
         UserEntity user = this.userMapper.toEntity(request.user());

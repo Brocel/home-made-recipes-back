@@ -29,7 +29,7 @@ class ProductMapperTest extends BaseTU {
     @BeforeAll
     static void setUp() {
         // UserEntity
-        entity = EntityTestUtils.buildProductEntity(NUMBER_1);
+        entity = EntityTestUtils.buildProductEntity(NUMBER_1, false);
         // User
         model = ModelTestUtils.buildProduct(NUMBER_1);
     }

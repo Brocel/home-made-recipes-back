@@ -20,10 +20,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -53,7 +54,6 @@ class RecipeControllerTest {
     private String adminToken;
     private String userToken;
     private String otherToken;
-    private RecipeEntity recipeEntity;
 
     private static String updateRecipeRequest;
     private static String createRecipeRequest;
@@ -64,6 +64,10 @@ class RecipeControllerTest {
     private ProductRepository productRepository;
     @Autowired
     private IngredientRepository ingredientRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+
+    // TODO: add logs in order to debug
 
     @BeforeAll
     static void initAll() throws JsonProcessingException {
@@ -73,42 +77,60 @@ class RecipeControllerTest {
 
     @BeforeEach
     void setup() {
-        // Create test user and admin in DB (or mock them)
-        UserEntity user = EntityTestUtils.buildUserEntity(1L);
-        user.setPassword(passwordEncoder.encode("password"));
-        user.setRoles(Set.of(new RoleEntity(1L, RoleEnum.ROLE_USER)));
-        userRepository.save(user);
+        // Create Roles
+        roleRepository.saveAllAndFlush(EntityTestUtils.buildRoleEntityList());
 
-        UserEntity admin = EntityTestUtils.buildUserEntity(2L);
+        RoleEntity adminR = roleRepository.findByName(RoleEnum.ROLE_ADMIN).orElse(null);
+        RoleEntity userR = roleRepository.findByName(RoleEnum.ROLE_USER).orElse(null);
+
+        // Create test users in DB (or mock them)
+        UserEntity admin = EntityTestUtils.buildUserEntity(2L, true);
         admin.setUsername("admin");
         admin.setPassword(passwordEncoder.encode("adminpass"));
-        admin.setRoles(Set.of(new RoleEntity(1L, RoleEnum.ROLE_ADMIN)));
+        admin.setRoles(Set.of(adminR, userR));
         userRepository.save(admin);
 
+        UserEntity user = EntityTestUtils.buildUserEntity(1L, true);
+        user.setPassword(passwordEncoder.encode("password"));
+        user.setRoles(Set.of(userR));
+        UserEntity savedUser = userRepository.save(user);
+
         // Create a different user without author role
-        UserEntity otherUser = EntityTestUtils.buildUserEntity(3L);
+        UserEntity otherUser = EntityTestUtils.buildUserEntity(3L, true);
         otherUser.setUsername("otherUser");
         otherUser.setPassword(passwordEncoder.encode("password"));
-        otherUser.setRoles(Set.of(new RoleEntity(1L, RoleEnum.ROLE_USER)));
+        otherUser.setRoles(Set.of(userR));
         userRepository.save(otherUser);
 
+        // Create a recipe authored by "user1"
+        RecipeEntity recipeEntity = EntityTestUtils.buildRecipeEntity(1L, true);
+        recipeEntity.setAuthor(savedUser);
+        RecipeEntity savedRecipe = recipeRepository.saveAndFlush(recipeEntity);
+
         // Fill Up the H2 DB
-        List<StepEntity> stepList = EntityTestUtils.buildStepEntityList(5);
-        List<ProductEntity> productEntityList = EntityTestUtils.buildProductEntityList(4);
-        List<IngredientEntity> ingredientEntityList = EntityTestUtils.buildIngredientEntityList(4);
+        List<StepEntity> stepList = EntityTestUtils.buildStepEntityList(5, true).stream()
+            .peek(step -> step.setRecipe(savedRecipe))
+            .toList();
         stepRepository.saveAll(stepList);
-        productRepository.saveAll(productEntityList);
+
+        List<ProductEntity> productEntityList = EntityTestUtils.buildProductEntityList(4, true);
+        List<ProductEntity> savedProducts = productRepository.saveAllAndFlush(productEntityList);
+
+        List<IngredientEntity> ingredientEntityList = IntStream.range(0, savedProducts.size())
+            .mapToObj(num -> {
+                IngredientEntity ing = EntityTestUtils.buildIngredientEntity((long) (num + 1), true);
+                ing.setRecipe(savedRecipe);
+                ing.setProduct(savedProducts.get(num));
+                return ing;
+            })
+            .toList();
+
         ingredientRepository.saveAll(ingredientEntityList);
 
         // Generate JWT tokens for them
         adminToken = jwtService.generateToken(admin);
-        userToken = jwtService.generateToken(user);
+        userToken = jwtService.generateToken(savedUser);
         otherToken = jwtService.generateToken(otherUser);
-
-        // Create a recipe authored by "user1"
-        recipeEntity = EntityTestUtils.buildRecipeEntity(3L);
-        recipeEntity.setAuthor(user);
-        recipeRepository.save(recipeEntity);
 
         // Create another recipe (for search Integration Tests)
         RecipeEntity otherRecipeEntity = EntityTestUtils.buildRecipeEntityIT();
@@ -116,13 +138,11 @@ class RecipeControllerTest {
         recipeRepository.save(otherRecipeEntity);
     }
 
-    // TODO: complete a bit more the tests
-
     @Test
     @Order(1)
     @WithMockUser(username = "admin", roles = { "ADMIN" })
     void updateRecipe_AsAdmin_ShouldSucceed() throws Exception {
-        mockMvc.perform(put("/hmr/api/recipes/" + recipeEntity.getId())
+        mockMvc.perform(put("/hmr/api/recipes/" + 1L)
                 .header("Authorization", "Bearer " + adminToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updateRecipeRequest))
@@ -133,7 +153,7 @@ class RecipeControllerTest {
     @Order(2)
     @WithMockUser(username = "username1")
     void updateRecipe_AsAuthor_ShouldSucceed() throws Exception {
-        mockMvc.perform(put("/hmr/api/recipes/" + recipeEntity.getId())
+        mockMvc.perform(put("/hmr/api/recipes/" + 1L)
                 .header("Authorization", "Bearer " + userToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updateRecipeRequest))
@@ -144,7 +164,7 @@ class RecipeControllerTest {
     @Order(3)
     @WithMockUser(username = "otherUser")
     void updateRecipe_AsOtherUser_ShouldFail() throws Exception {
-        mockMvc.perform(put("/hmr/api/recipes/" + recipeEntity.getId())
+        mockMvc.perform(put("/hmr/api/recipes/" + 1L)
                 .header("Authorization", "Bearer " + otherToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updateRecipeRequest))
@@ -155,7 +175,7 @@ class RecipeControllerTest {
     @Order(4)
     @WithMockUser(username = "username1")
     void deleteRecipe_AsAuthor_ShouldSucceed() throws Exception {
-        mockMvc.perform(delete("/hmr/api/recipes/" + recipeEntity.getId())
+        mockMvc.perform(delete("/hmr/api/recipes/" + 1L)
                 .header("Authorization", "Bearer " + userToken))
             .andExpect(status().isNoContent());
     }
@@ -164,7 +184,7 @@ class RecipeControllerTest {
     @Order(5)
     @WithMockUser(username = "otherUser")
     void deleteRecipe_AsOtherUser_ShouldFail() throws Exception {
-        mockMvc.perform(delete("/hmr/api/recipes/" + recipeEntity.getId())
+        mockMvc.perform(delete("/hmr/api/recipes/" + 1L)
                 .header("Authorization", "Bearer " + otherToken))
             .andExpect(status().isForbidden());
     }
@@ -179,6 +199,16 @@ class RecipeControllerTest {
                 .content(createRecipeRequest))
             .andExpect(status().isOk());
     }
+
+    private final Map<RecipeFilterEnum, Integer> expectedContentSizeResults = Map.of(
+        RecipeFilterEnum.TITLE, 2,
+        RecipeFilterEnum.DESCRIPTION, 2,
+        RecipeFilterEnum.MAXIMUM_PREPARATION_TIME, 1,
+        RecipeFilterEnum.RECIPE_TYPE, 1,
+        RecipeFilterEnum.AUTHOR_USERNAME, 1,
+        RecipeFilterEnum.INGREDIENT_NAME, 1,
+        RecipeFilterEnum.INGREDIENT_TYPE, 1
+    );
 
     @ParameterizedTest
     @EnumSource(RecipeFilterEnum.class)
@@ -197,7 +227,7 @@ class RecipeControllerTest {
             .andExpect(header().exists("X-Total-Count"))
             .andExpect(jsonPath("$.content").exists())
             .andExpect(jsonPath("$.content").isArray())
-            .andExpect(jsonPath("$.content.length()").value(1));
+            .andExpect(jsonPath("$.content.length()").value(expectedContentSizeResults.get(filterEnum)));
     }
 
     @ParameterizedTest
@@ -205,10 +235,11 @@ class RecipeControllerTest {
     @Order(8)
     @WithMockUser(username = "username1")
     void searchRecipes_withNoMatchingFilter(RecipeFilterEnum filterEnum) throws Exception {
+        String recipeFilters = IntegrationTestUtils.toJson(CommonTestUtils.buildRecipeFilter(filterEnum, false));
         mockMvc.perform(post("/hmr/api/recipes/search")
                 .header("Authorization", "Bearer " + userToken)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(nonExistingRecipeFilters)
+                .content(recipeFilters)
                 .param("page", "0")
                 .param("size", "10")
                 .param("sort", "title,asc"))

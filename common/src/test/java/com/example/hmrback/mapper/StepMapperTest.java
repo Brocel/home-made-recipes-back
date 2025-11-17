@@ -28,7 +28,7 @@ class StepMapperTest extends BaseTU {
     @BeforeAll
     static void setUp() {
         // UserEntity
-        entity = EntityTestUtils.buildStepEntity(NUMBER_1);
+        entity = EntityTestUtils.buildStepEntity(NUMBER_1, false);
         // User
         model = ModelTestUtils.buildStep(NUMBER_1, false);
     }

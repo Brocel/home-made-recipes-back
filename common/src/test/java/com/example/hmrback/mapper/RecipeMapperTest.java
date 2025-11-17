@@ -42,10 +42,10 @@ class RecipeMapperTest extends BaseTU {
         // Initialize test data for Recipe and RecipeEntity
         model = ModelTestUtils.buildRecipe(NUMBER_1, false);
 
-        entity = EntityTestUtils.buildRecipeEntity(NUMBER_1);
-        entity.setIngredientList(EntityTestUtils.buildIngredientEntityList(5));
-        entity.setStepList(EntityTestUtils.buildStepEntityList(5));
-        entity.setAuthor(EntityTestUtils.buildUserEntity(NUMBER_1));
+        entity = EntityTestUtils.buildRecipeEntity(NUMBER_1, false);
+        entity.setIngredientList(EntityTestUtils.buildIngredientEntityList(5, false));
+        entity.setStepList(EntityTestUtils.buildStepEntityList(5, false));
+        entity.setAuthor(EntityTestUtils.buildUserEntity(NUMBER_1, false));
     }
 
     @Test

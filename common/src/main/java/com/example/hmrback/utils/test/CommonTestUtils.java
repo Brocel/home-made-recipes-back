@@ -19,7 +19,7 @@ public class CommonTestUtils {
     public static RecipeFilter buildRecipeFilter(RecipeFilterEnum filterEnum, boolean matchingFilters) {
         String title = matchingFilters ? "Recipe" : FAKE;
         String description = matchingFilters ? "Description" : FAKE;
-        Integer maxPrepTime = matchingFilters ? 30 : 1;
+        int maxPrepTime = matchingFilters ? 30 : 1;
         List<RecipeType> recipeTypes = matchingFilters ? List.of(RecipeType.APPETIZER) : List.of(RecipeType.SIDE_DISH);
         String userName = matchingFilters ? "otherUser" : FAKE;
         List<String> ingredientNames = matchingFilters ? List.of(PRODUCT_NAME.formatted("1")) : List.of(FAKE);
