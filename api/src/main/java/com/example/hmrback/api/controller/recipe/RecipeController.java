@@ -1,4 +1,4 @@
-package com.example.hmrback.api.controller;
+package com.example.hmrback.api.controller.recipe;
 
 import com.example.hmrback.model.Recipe;
 import com.example.hmrback.model.request.RecipeFilter;

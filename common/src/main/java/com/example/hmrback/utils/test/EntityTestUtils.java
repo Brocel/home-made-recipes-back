@@ -35,7 +35,7 @@ public class EntityTestUtils {
      */
     public static UserEntity buildUserEntity(Long ordinal, boolean isCreation) {
         UserEntity userEntity = new UserEntity();
-        userEntity.setId(isCreation ? null :ordinal);
+        userEntity.setId(isCreation ? null : ordinal);
         userEntity.setFirstName(FIRST_NAME.formatted(ordinal));
         userEntity.setLastName(LAST_NAME.formatted(ordinal));
         userEntity.setUsername(USERNAME.formatted(ordinal));
@@ -174,7 +174,7 @@ public class EntityTestUtils {
      */
     public static RecipeEntity buildRecipeEntity(Long ordinal, boolean isCreation) {
         RecipeEntity recipeEntity = new RecipeEntity();
-        recipeEntity.setId(isCreation ? null :ordinal);
+        recipeEntity.setId(isCreation ? null : ordinal);
         recipeEntity.setTitle(RECIPE_TITLE.formatted(ordinal));
         recipeEntity.setDescription(RECIPE_DESCRIPTION.formatted(ordinal));
         recipeEntity.setRecipeType(RecipeType.getByIndex(ordinal.intValue() - 1));
@@ -232,12 +232,18 @@ public class EntityTestUtils {
         return entity;
     }
 
-    public static List<RoleEntity> buildRoleEntityList() {
-        RoleEntity adminRole = new RoleEntity();
-        adminRole.setName(RoleEnum.ROLE_ADMIN);
-        RoleEntity userRole = new RoleEntity();
-        userRole.setName(RoleEnum.ROLE_USER);
-
-        return List.of(adminRole, userRole);
+    /**
+     * Builds a RoleEntity instance for testing purposes.
+     * <ul>
+     *     <li>Name: ROLE_ADMIN if isAdmin is true, otherwise ROLE_USER</li>
+     * </ul>
+     *
+     * @param isAdmin flag to determine role type
+     * @return RoleEntity instance
+     */
+    public static RoleEntity buildRoleEntity(boolean isAdmin) {
+        RoleEntity entity = new RoleEntity();
+        entity.setName(isAdmin ? RoleEnum.ROLE_ADMIN : RoleEnum.ROLE_USER);
+        return entity;
     }
 }

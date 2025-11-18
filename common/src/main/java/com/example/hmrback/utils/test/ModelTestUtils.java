@@ -152,6 +152,18 @@ public class ModelTestUtils {
             buildStepList(5, isCreation));
     }
 
+    public static Recipe buildRecipeForCreation(Long ordinal) {
+        return new Recipe(null,
+            RECIPE_TITLE.formatted(ordinal),
+            RECIPE_DESCRIPTION.formatted(ordinal),
+            ordinal.intValue() * 40,
+            RecipeType.APPETIZER,
+            DateUtils.formatLocalDate(LocalDate.now().minusDays(10 * ordinal)),
+            buildUser(ordinal),
+            buildIngredientList(4, true),
+            buildStepList(5, true));
+    }
+
     public static Role buildRole() {
         return new Role(1L, RoleEnum.ROLE_USER.toString());
     }

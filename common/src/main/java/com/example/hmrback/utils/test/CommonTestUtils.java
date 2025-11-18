@@ -22,7 +22,7 @@ public class CommonTestUtils {
         int maxPrepTime = matchingFilters ? 30 : 1;
         List<RecipeType> recipeTypes = matchingFilters ? List.of(RecipeType.APPETIZER) : List.of(RecipeType.SIDE_DISH);
         String userName = matchingFilters ? "otherUser" : FAKE;
-        List<String> ingredientNames = matchingFilters ? List.of(PRODUCT_NAME.formatted("1")) : List.of(FAKE);
+        List<String> ingredientNames = matchingFilters ? List.of("Apple", "Carrot") : List.of(FAKE);
         List<IngredientType> ingredientTypes = matchingFilters ? List.of(IngredientType.VEGETABLE) : List.of(IngredientType.OTHER);
 
         return new RecipeFilter(RecipeFilterEnum.TITLE.equals(filterEnum) ? title : null,
