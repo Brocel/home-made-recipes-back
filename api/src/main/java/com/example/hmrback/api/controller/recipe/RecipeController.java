@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import static com.example.hmrback.constant.ControllerConstants.BASE_PATH;
@@ -28,10 +30,13 @@ public class RecipeController {
 
     @PostMapping
     public ResponseEntity<Recipe> createRecipe(
+        @AuthenticationPrincipal
+        UserDetails userDetails,
         @Valid
         @RequestBody
         Recipe recipe) {
-        return ResponseEntity.ok(this.recipeService.createRecipe(recipe));
+        String username = userDetails.getUsername();
+        return ResponseEntity.ok(this.recipeService.createRecipe(recipe, username));
     }
 
     @PostMapping("/search")

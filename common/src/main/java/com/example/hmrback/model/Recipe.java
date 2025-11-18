@@ -38,8 +38,7 @@ public record Recipe(
     @ValidDate
     String publicationDate,
 
-    @NotNull(message = "Author" + IS_REQUIRED)
-    @Valid User author,
+    User author,
 
     @JsonProperty("ingredient_list")
     @NotEmpty(message = "Ingredient list" + CANNOT_BE_EMPTY)

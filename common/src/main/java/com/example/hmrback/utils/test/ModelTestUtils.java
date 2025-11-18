@@ -159,7 +159,7 @@ public class ModelTestUtils {
             ordinal.intValue() * 40,
             RecipeType.APPETIZER,
             DateUtils.formatLocalDate(LocalDate.now().minusDays(10 * ordinal)),
-            buildUser(ordinal),
+            null,
             buildIngredientList(4, true),
             buildStepList(5, true));
     }

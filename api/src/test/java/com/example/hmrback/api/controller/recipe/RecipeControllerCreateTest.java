@@ -22,7 +22,7 @@ class RecipeControllerCreateTest extends RecipeBaseIntegrationTest {
     @WithMockUser(username = "username1")
     @Transactional
     void createRecipe() throws Exception {
-        String createRecipeRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildRecipeForCreation(savedUser.getId()));
+        String createRecipeRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildRecipeForCreation(1L));
 
         mockMvc.perform(post("/hmr/api/recipes")
                 .header("Authorization", "Bearer " + userToken)

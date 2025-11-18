@@ -5,7 +5,9 @@ import com.example.hmrback.mapper.RecipeMapperImpl;
 import com.example.hmrback.model.Recipe;
 import com.example.hmrback.model.request.RecipeFilter;
 import com.example.hmrback.persistence.entity.RecipeEntity;
+import com.example.hmrback.persistence.entity.UserEntity;
 import com.example.hmrback.persistence.repository.RecipeRepository;
+import com.example.hmrback.persistence.repository.UserRepository;
 import com.example.hmrback.utils.test.CommonTestUtils;
 import com.example.hmrback.utils.test.EntityTestUtils;
 import com.example.hmrback.utils.test.ModelTestUtils;
@@ -32,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,6 +49,8 @@ class RecipeServiceTest extends BaseTU {
     // Repo
     @MockitoBean
     private RecipeRepository repository;
+    @MockitoBean
+    private UserRepository userRepository ;
 
     // Mapper
     @MockitoBean
@@ -55,6 +60,7 @@ class RecipeServiceTest extends BaseTU {
     private static RecipeEntity recipeEntity;
     private static List<RecipeEntity> recipeEntityList;
     private static RecipeFilter recipeFilter;
+    private static UserEntity user;
 
     @BeforeAll
     static void setUp() {
@@ -62,23 +68,28 @@ class RecipeServiceTest extends BaseTU {
         recipeEntity = EntityTestUtils.buildRecipeEntity(NUMBER_1, false);
         recipeEntityList = EntityTestUtils.buildRecipeEntityList(3, false);
         recipeFilter = CommonTestUtils.buildRecipeFilter(RecipeFilterEnum.TITLE, true);
+        user = EntityTestUtils.buildUserEntity(NUMBER_1, false);
     }
 
     @Test
     @Order(1)
     void shouldCreateRecipe() {
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.ofNullable(user));
         when(repository.save(any())).thenReturn(recipeEntity);
         when(mapper.toEntity(any())).thenReturn(recipeEntity);
         when(mapper.toModel(any())).thenReturn(recipe);
 
-        Recipe result = service.createRecipe(recipe);
+        Recipe result = service.createRecipe(recipe, "username1");
 
         assertNotNull(result);
 
+        verify(userRepository, times(1)).findByUsername(anyString());
         verify(repository, times(1)).save(any(RecipeEntity.class));
         verify(mapper, times(1)).toEntity(any(Recipe.class));
         verify(mapper, times(1)).toModel(any(RecipeEntity.class));
     }
+
+    // TODO: test createRecipe when user not found
 
     @Test
     @Order(2)
@@ -140,7 +151,7 @@ class RecipeServiceTest extends BaseTU {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     void deleteRecipe_whenRecipeNotFound_thenThrowsException() {
         when(repository.findById(anyLong())).thenReturn(Optional.empty());
 
