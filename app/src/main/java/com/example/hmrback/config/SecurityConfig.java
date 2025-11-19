@@ -1,7 +1,6 @@
 package com.example.hmrback.config;
 
 import com.example.hmrback.auth.util.JwtAuthenticationFilter;
-import com.example.hmrback.exception.handler.CustomAccessDeniedHandler;
 import com.example.hmrback.exception.handler.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
