@@ -12,11 +12,9 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
-			<version>${spring.boot.version}</version>
 		</dependency>
 
 		<dependency>
@@ -34,14 +32,11 @@
 		<dependency>
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-jpa</artifactId>
-			<version>5.0.0</version>
 			<classifier>jakarta</classifier>
 		</dependency>
-
 		<dependency>
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
-			<version>5.0.0</version>
 			<classifier>jakarta</classifier>
 			<scope>provided</scope>
 		</dependency>
@@ -52,7 +47,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.12.1</version>
 				<executions>
 					<execution>
 						<phase>generate-sources</phase>

@@ -9,6 +9,7 @@
 		<version>3.5.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
 	<groupId>com.example</groupId>
 	<artifactId>hmrback</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
@@ -27,8 +28,14 @@
 	<properties>
 		<java.version>21</java.version>
 		<spring.boot.version>3.5.6</spring.boot.version>
-		<maven.compiler.release>${java.version}</maven.compiler.release>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<jjwt.version>0.12.5</jjwt.version>
+		<mapstruct.version>1.6.0</mapstruct.version>
+		<lombok.version>1.18.32</lombok.version>
+		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+		<org.projectlombok.version>1.18.32</org.projectlombok.version>
+		<querydsl.version>5.0.0</querydsl.version>
+		<h2.version>2.1.214</h2.version>
 	</properties>
 
 	<dependencyManagement>
@@ -41,44 +48,64 @@
 				<scope>import</scope>
 			</dependency>
 
+			<!-- Common dependencies -->
 			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter</artifactId>
-				<version>${spring.boot.version}</version>
+				<groupId>io.jsonwebtoken</groupId>
+				<artifactId>jjwt-api</artifactId>
+				<version>${jjwt.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.jsonwebtoken</groupId>
+				<artifactId>jjwt-impl</artifactId>
+				<version>${jjwt.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.jsonwebtoken</groupId>
+				<artifactId>jjwt-jackson</artifactId>
+				<version>${jjwt.version}</version>
 			</dependency>
 
 			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
+				<groupId>org.mapstruct</groupId>
+				<artifactId>mapstruct</artifactId>
+				<version>${mapstruct.version}</version>
 			</dependency>
-
-			<!-- Tests -->
 			<dependency>
-				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter</artifactId>
-				<version>5.10.2</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>5.12.0</version>
-				<scope>test</scope>
+				<groupId>org.mapstruct</groupId>
+				<artifactId>mapstruct-processor</artifactId>
+				<version>${mapstruct.version}</version>
+				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-junit-jupiter</artifactId>
-				<version>5.12.0</version>
-				<scope>test</scope>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${lombok.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok-mapstruct-binding</artifactId>
+				<version>${lombok-mapstruct-binding.version}</version>
 			</dependency>
 
 			<dependency>
-				<groupId>org.assertj</groupId>
-				<artifactId>assertj-core</artifactId>
-				<version>3.26.0</version>
-				<scope>test</scope>
+				<groupId>com.querydsl</groupId>
+				<artifactId>querydsl-jpa</artifactId>
+				<version>${querydsl.version}</version>
+				<classifier>jakarta</classifier>
+			</dependency>
+			<dependency>
+				<groupId>com.querydsl</groupId>
+				<artifactId>querydsl-apt</artifactId>
+				<version>${querydsl.version}</version>
+				<classifier>jakarta</classifier>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.h2database</groupId>
+				<artifactId>h2</artifactId>
+				<version>${h2.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -104,19 +131,6 @@
 					<version>3.2.5</version>
 					<configuration>
 						<useModulePath>false</useModulePath>
-					</configuration>
-				</plugin>
-
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<configuration>
-						<excludes>
-							<exclude>
-								<groupId>org.projectlombok</groupId>
-								<artifactId>lombok</artifactId>
-							</exclude>
-						</excludes>
 					</configuration>
 				</plugin>
 			</plugins>
