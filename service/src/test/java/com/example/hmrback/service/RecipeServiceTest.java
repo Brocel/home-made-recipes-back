@@ -176,7 +176,7 @@ class RecipeServiceTest extends BaseTU {
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> service.deleteRecipe(NUMBER_1));
 
         assertNotNull(ex);
-        assertEquals("Recipe with id %s not found".formatted(NUMBER_1), ex.getMessage());
+        assertEquals("La recette avec l'id %s est introuvable.".formatted(NUMBER_1), ex.getMessage());
 
         verify(repository, times(1)).findById(NUMBER_1);
         verify(repository, times(0)).delete(any(RecipeEntity.class));

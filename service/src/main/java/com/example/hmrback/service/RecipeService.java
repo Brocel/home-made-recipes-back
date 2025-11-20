@@ -11,6 +11,7 @@ import com.example.hmrback.predicate.factory.RecipePredicateFactory;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import static com.example.hmrback.exception.util.ExceptionMessageConstants.RECIPE_NOT_FOUND_EXCEPTION_MESSAGE;
 
 @Service
+@RequiredArgsConstructor
 public class RecipeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RecipeService.class);
@@ -34,13 +36,6 @@ public class RecipeService {
     // Mapper
     private final RecipeMapperImpl recipeMapper;
     private final UserRepository userRepository;
-
-    @Autowired
-    public RecipeService(RecipeRepository recipeRepository, RecipeMapperImpl recipeMapper, UserRepository userRepository) {
-        this.recipeRepository = recipeRepository;
-        this.recipeMapper = recipeMapper;
-        this.userRepository = userRepository;
-    }
 
     public Recipe createRecipe(Recipe recipe, String username) {
         UserEntity author = userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException(
