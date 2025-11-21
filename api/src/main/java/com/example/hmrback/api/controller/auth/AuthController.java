@@ -1,4 +1,4 @@
-package com.example.hmrback.api.controller;
+package com.example.hmrback.api.controller.auth;
 
 import com.example.hmrback.model.request.AuthRequest;
 import com.example.hmrback.model.request.RegisterRequest;

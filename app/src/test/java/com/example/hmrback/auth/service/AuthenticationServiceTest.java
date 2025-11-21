@@ -16,6 +16,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -177,6 +178,18 @@ class AuthenticationServiceTest {
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(authenticationManager, times(0)).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(jwtService, times(0)).generateToken(any(UserEntity.class));
+    }
+
+    @Test
+    @Order(6)
+    void authenticate_badCredentials() {
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+            .thenThrow(new BadCredentialsException("Invalid password"));
+
+        assertThrows(BadCredentialsException.class,
+            () -> service.authenticate(authRequest));
     }
 
 }
