@@ -143,6 +143,7 @@ class RecipeServiceTest extends BaseTU {
     @Test
     @Order(5)
     void shouldUpdateRecipe() {
+        when(repository.findById(anyLong())).thenReturn(Optional.ofNullable(recipeEntity));
         when(repository.saveAndFlush(any())).thenReturn(recipeEntity);
         when(mapper.toEntity(any())).thenReturn(recipeEntity);
         when(mapper.toModel(any())).thenReturn(recipe);
@@ -151,6 +152,7 @@ class RecipeServiceTest extends BaseTU {
 
         assertNotNull(result);
 
+        verify(repository, times(1)).findById(1L);
         verify(repository, times(1)).saveAndFlush(any(RecipeEntity.class));
         verify(mapper, times(1)).toEntity(any(Recipe.class));
         verify(mapper, times(1)).toModel(any(RecipeEntity.class));

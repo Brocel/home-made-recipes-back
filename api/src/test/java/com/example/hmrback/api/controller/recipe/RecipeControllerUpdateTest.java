@@ -1,6 +1,7 @@
 package com.example.hmrback.api.controller.recipe;
 
 import com.example.hmrback.api.controller.RecipeBaseIntegrationTest;
+import com.example.hmrback.persistence.entity.RecipeEntity;
 import com.example.hmrback.utils.test.IntegrationTestUtils;
 import com.example.hmrback.utils.test.ModelTestUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,6 +13,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,6 +38,10 @@ class RecipeControllerUpdateTest extends RecipeBaseIntegrationTest {
     @WithMockUser(username = "admin", roles = { "ADMIN" })
     @Transactional
     void updateRecipe_AsAdmin_ShouldSucceed() throws Exception {
+
+        when(recipeRepository.findById(anyLong())).thenReturn(Optional.ofNullable(savedRecipe));
+        when(recipeRepository.saveAndFlush(any(RecipeEntity.class))).thenReturn(savedRecipe);
+
         mockMvc.perform(put("/hmr/api/recipes/" + 1L)
                 .header("Authorization", "Bearer " + adminToken)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -44,6 +54,10 @@ class RecipeControllerUpdateTest extends RecipeBaseIntegrationTest {
     @WithMockUser(username = "username1")
     @Transactional
     void updateRecipe_AsAuthor_ShouldSucceed() throws Exception {
+
+        when(recipeRepository.findById(anyLong())).thenReturn(Optional.ofNullable(savedRecipe));
+        when(recipeRepository.saveAndFlush(any(RecipeEntity.class))).thenReturn(savedRecipe);
+
         mockMvc.perform(put("/hmr/api/recipes/" + 1L)
                 .header("Authorization", "Bearer " + userToken)
                 .contentType(MediaType.APPLICATION_JSON)

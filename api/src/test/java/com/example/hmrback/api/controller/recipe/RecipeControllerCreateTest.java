@@ -1,6 +1,7 @@
 package com.example.hmrback.api.controller.recipe;
 
 import com.example.hmrback.api.controller.RecipeBaseIntegrationTest;
+import com.example.hmrback.persistence.entity.RecipeEntity;
 import com.example.hmrback.utils.test.IntegrationTestUtils;
 import com.example.hmrback.utils.test.ModelTestUtils;
 import org.junit.jupiter.api.Order;
@@ -10,6 +11,10 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -23,6 +28,9 @@ class RecipeControllerCreateTest extends RecipeBaseIntegrationTest {
     @Transactional
     void createRecipe() throws Exception {
         String createRecipeRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildRecipeForCreation(1L));
+
+        when(userRepository.findByUsername(any())).thenReturn(Optional.ofNullable(savedUser));
+        when(recipeRepository.save(any(RecipeEntity.class))).thenReturn(savedRecipe);
 
         mockMvc.perform(post("/hmr/api/recipes")
                 .header("Authorization", "Bearer " + userToken)
