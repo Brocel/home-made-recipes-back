@@ -26,7 +26,7 @@ public class ModelTestUtils {
      *     <li>Id: ordinal</li>
      *     <li>First Name: "fName" + ordinal</li>
      *     <li>Last Name: "lName" + ordinal</li>
-     *     <li>Email: "email" + ordinal + "@test.com"</li>
+     *     <li>Email: "username" + ordinal + "@test.com"</li>
      *     <li>Birth Date: Current date minus (10 * ordinal) years</li>
      *     <li>Inscription Date: Current date minus ordinal months</li>
      * </ul>
@@ -35,7 +35,7 @@ public class ModelTestUtils {
      * @return the User object
      */
     public static User buildUser(Long ordinal) {
-        return new User(ordinal,
+        return new User(ordinal.toString(),
             FIRST_NAME.formatted(ordinal),
             LAST_NAME.formatted(ordinal),
             USERNAME.formatted(ordinal),

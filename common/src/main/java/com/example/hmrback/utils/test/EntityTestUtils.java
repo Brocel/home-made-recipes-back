@@ -25,7 +25,7 @@ public class EntityTestUtils {
      *     <li>Id: ordinal</li>
      *     <li>First Name: "fName" + ordinal</li>
      *     <li>Last Name: "lName" + ordinal</li>
-     *     <li>Email: "email" + ordinal + "@test.com"</li>
+     *     <li>Email: "username" + ordinal + "@test.com"</li>
      *     <li>Birth Date: Current date minus (10 * ordinal) years</li>
      *     <li>Inscription Date: Current date minus ordinal months</li>
      * </ul>
@@ -35,7 +35,7 @@ public class EntityTestUtils {
      */
     public static UserEntity buildUserEntity(Long ordinal, boolean isCreation) {
         UserEntity userEntity = new UserEntity();
-        userEntity.setId(isCreation ? null : ordinal);
+        userEntity.setId(isCreation ? null : ordinal.toString());
         userEntity.setFirstName(FIRST_NAME.formatted(ordinal));
         userEntity.setLastName(LAST_NAME.formatted(ordinal));
         userEntity.setUsername(USERNAME.formatted(ordinal));
@@ -184,7 +184,6 @@ public class EntityTestUtils {
     }
 
     /**
-     * // TODO: integrate steps and ingredients
      * Builds a RecipeEntity instance for integration testing purposes.
      *
      * @return RecipeEntity instance

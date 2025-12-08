@@ -10,7 +10,7 @@ import java.util.Set;
 import static com.example.hmrback.constant.ValidationConstants.IS_REQUIRED;
 
 public record User(
-    Long id,
+    String id,
 
     @JsonProperty("first_name")
     @NotBlank(message = "First name" + IS_REQUIRED)

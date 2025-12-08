@@ -43,7 +43,7 @@ class UserMapperTest extends BaseTU {
         User result = mapper.toModel(entity);
 
         assertNotNull(result);
-        assertEquals(NUMBER_1, result.id());
+        assertEquals(NUMBER_1.toString(), result.id());
         assertEquals(FIRST_NAME.formatted(NUMBER_1), result.firstName());
         assertEquals(LAST_NAME.formatted(NUMBER_1), result.lastName());
         assertEquals(USERNAME.formatted(NUMBER_1), result.username());
@@ -56,7 +56,7 @@ class UserMapperTest extends BaseTU {
         UserEntity result = mapper.toEntity(model);
 
         assertNotNull(result);
-        assertEquals(NUMBER_1, result.getId());
+        assertEquals(NUMBER_1.toString(), result.getId());
         assertEquals(FIRST_NAME.formatted(NUMBER_1), result.getFirstName());
         assertEquals(LAST_NAME.formatted(NUMBER_1), result.getLastName());
         assertEquals(USERNAME.formatted(NUMBER_1), result.getUsername());

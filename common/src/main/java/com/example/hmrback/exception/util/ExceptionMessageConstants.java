@@ -8,8 +8,9 @@ public class ExceptionMessageConstants {
     public static final String EXCEPTION_BASE_MESSAGE = "HMRGenericException {}";
 
     public static final String ACCESS_DENIED_EXCEPTION_MESSAGE = "Vous n'avez pas la permission de réaliser cette action.";
-    public static final String USER_ALREADY_EXISTS_MESSAGE = "L'utilisateur avec l'email %s existe déjà.";
-    public static final String USER_NOT_FOUND_EMAIL_MESSAGE = "L'utilisateur avec l'email %s est introuvable.";
+    public static final String USER_EMAIL_ALREADY_EXISTS_MESSAGE = "L'utilisateur avec l'username %s existe déjà.";
+    public static final String USERNAME_ALREADY_EXISTS_MESSAGE = "L'utilisateur %s existe déjà.";
+    public static final String USER_NOT_FOUND_EMAIL_MESSAGE = "L'utilisateur avec l'username %s est introuvable.";
     public static final String ROLE_NOT_FOUND_MESSAGE = "Le rôle '%s' est introuvable.";
 
     // Recipe

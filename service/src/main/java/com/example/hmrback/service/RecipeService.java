@@ -68,7 +68,14 @@ public class RecipeService {
 
         LOG.info("Update de la recette {}", recipeId);
 
-        return recipeMapper.toModel(recipeRepository.saveAndFlush(recipeMapper.toEntity(recipe)));
+        // Check if recipe exists
+        RecipeEntity existingRecipe = recipeRepository.findById(recipeId).orElseThrow(() -> new EntityNotFoundException(
+            RECIPE_NOT_FOUND_EXCEPTION_MESSAGE.formatted(recipeId)));
+
+        RecipeEntity recipeEntity = recipeMapper.toEntity(recipe);
+        recipeEntity.setAuthor(existingRecipe.getAuthor()); // Prevent changing the author during update
+
+        return recipeMapper.toModel(recipeRepository.saveAndFlush(recipeEntity));
     }
 
     @Transactional

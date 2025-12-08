@@ -6,8 +6,8 @@ import static com.example.hmrback.constant.ValidationConstants.IS_REQUIRED;
 
 public record AuthRequest(
 
-    @NotBlank(message = "Email" + IS_REQUIRED)
-    String email,
+    @NotBlank(message = "Username" + IS_REQUIRED)
+    String username,
 
     @NotBlank(message = "Password" + IS_REQUIRED)
     String password) {
