@@ -1,5 +1,6 @@
 package com.example.hmrback.config;
 
+import com.example.hmrback.auth.service.CustomUserDetailsService;
 import com.example.hmrback.persistence.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +12,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -22,8 +22,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(UserRepository repo) {
-        return email -> repo.findByEmail(email)
-            .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+        return new CustomUserDetailsService(repo);
     }
 
     @Bean
@@ -36,9 +35,9 @@ public class SecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth.requestMatchers("/auth/**")
-            .permitAll()
-            .anyRequest()
-            .authenticated());
+                .permitAll()
+                .anyRequest()
+                .authenticated());
 
         return http.build();
     }

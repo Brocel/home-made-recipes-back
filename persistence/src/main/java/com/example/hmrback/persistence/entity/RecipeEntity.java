@@ -41,10 +41,10 @@ public class RecipeEntity {
     private LocalDate publicationDate;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<IngredientEntity> ingredientList = new ArrayList<>();;
+    private List<IngredientEntity> ingredientList = new ArrayList<>();
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StepEntity> stepList = new ArrayList<>();;
+    private List<StepEntity> stepList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", nullable = false)

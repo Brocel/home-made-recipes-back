@@ -1,9 +1,9 @@
 package com.example.hmrback.api.controller.auth;
 
+import com.example.hmrback.auth.service.AuthenticationService;
 import com.example.hmrback.model.request.AuthRequest;
 import com.example.hmrback.model.request.RegisterRequest;
 import com.example.hmrback.model.response.AuthResponse;
-import com.example.hmrback.auth.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

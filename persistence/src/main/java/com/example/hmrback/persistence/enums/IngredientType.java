@@ -10,9 +10,19 @@ public enum IngredientType {
     FRUIT("Fruit"),
     MEAT("Viande"),
     FISH("Poisson"),
+    SEA_FRUIT("Fruit de mer"),
     DAIRY("Produit laitier"),
+    CHEESE("Fromage"),
     GRAIN("Céréale"),
     SPICE("Épice"),
+    CONDIMENT("Condiment"),
+    NUT("Noix"),
+    HERBS("Herbe aromatique"),
+    FAT("Matière grasse"),
+    SUGAR("Sucre"),
+    BEVERAGE("Boisson"),
+    ALCOHOL("Alcool"),
+    STARCHES("Féculent"),
     OTHER("Autre");
 
     private final String typeName;
