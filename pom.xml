@@ -36,6 +36,7 @@
 		<org.projectlombok.version>1.18.32</org.projectlombok.version>
 		<querydsl.version>5.0.0</querydsl.version>
 		<h2.version>2.1.214</h2.version>
+		<postgresql.version>42.6.0</postgresql.version>
 	</properties>
 
 	<dependencyManagement>
@@ -107,6 +108,11 @@
 				<artifactId>h2</artifactId>
 				<version>${h2.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>${postgresql.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -131,6 +137,9 @@
 					<version>3.2.5</version>
 					<configuration>
 						<useModulePath>false</useModulePath>
+						<systemPropertyVariables>
+							<spring.profiles.active>test</spring.profiles.active>
+						</systemPropertyVariables>
 					</configuration>
 				</plugin>
 			</plugins>

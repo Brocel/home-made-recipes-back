@@ -4,22 +4,16 @@ import com.example.hmrback.api.controller.RecipeBaseIntegrationTest;
 import com.example.hmrback.utils.test.CommonTestUtils;
 import com.example.hmrback.utils.test.IntegrationTestUtils;
 import com.example.hmrback.utils.test.RecipeFilterEnum;
-import com.querydsl.core.types.Predicate;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -30,8 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class RecipeControllerReadTest extends RecipeBaseIntegrationTest {
 
     private final Map<RecipeFilterEnum, Integer> expectedContentSizeResults = Map.of(
-        RecipeFilterEnum.TITLE, 1,
-        RecipeFilterEnum.DESCRIPTION, 1,
+        RecipeFilterEnum.TITLE, 2,
+        RecipeFilterEnum.DESCRIPTION, 2,
         RecipeFilterEnum.MAXIMUM_PREPARATION_TIME, 1,
         RecipeFilterEnum.RECIPE_TYPE, 1,
         RecipeFilterEnum.AUTHOR_USERNAME, 1,
@@ -45,8 +39,6 @@ class RecipeControllerReadTest extends RecipeBaseIntegrationTest {
     @WithMockUser(username = "username1")
     @Transactional
     void searchRecipes(RecipeFilterEnum filterEnum) throws Exception {
-
-        when(recipeRepository.findAll(any(Predicate.class), any(Pageable.class))).thenReturn(new PageImpl<>(Collections.singletonList(savedRecipe)));
 
         String recipeFilters = IntegrationTestUtils.toJson(CommonTestUtils.buildRecipeFilter(filterEnum, true));
         mockMvc.perform(post("/hmr/api/recipes/search")
@@ -69,8 +61,6 @@ class RecipeControllerReadTest extends RecipeBaseIntegrationTest {
     @WithMockUser(username = "username1")
     @Transactional
     void searchRecipes_withNoMatchingFilter(RecipeFilterEnum filterEnum) throws Exception {
-
-        when(recipeRepository.findAll(any(Predicate.class), any(Pageable.class))).thenReturn(new PageImpl<>(Collections.emptyList()));
 
         String recipeFilters = IntegrationTestUtils.toJson(CommonTestUtils.buildRecipeFilter(filterEnum, false));
         mockMvc.perform(post("/hmr/api/recipes/search")

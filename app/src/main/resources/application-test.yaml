@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:hmrdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE # In-memory H2 database for integration tests
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
+
+  flyway:
+    enabled: false
+
+app:
+  jwt:
+    secret: aSuperLongSecretKeyThatIsAtLeastThirtyTwoCharsLong! # test_secret_key
+    expiration-minutes: 30
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: DEBUG
