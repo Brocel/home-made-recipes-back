@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static com.example.hmrback.exception.util.ExceptionMessageConstants.RECIPE_NOT_FOUND_EXCEPTION_MESSAGE;
+import static com.example.hmrback.exception.util.ExceptionMessageConstants.USER_NOT_FOUND_MESSAGE;
 
 @Service
 @RequiredArgsConstructor
@@ -31,14 +32,14 @@ public class RecipeService {
 
     // Repo
     private final RecipeRepository recipeRepository;
+    private final UserRepository userRepository;
 
     // Mapper
     private final RecipeMapper recipeMapper;
-    private final UserRepository userRepository;
 
     public Recipe createRecipe(Recipe recipe, String username) {
         UserEntity author = userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException(
-            "L'auteur %s est introuvable".formatted(username)));
+            USER_NOT_FOUND_MESSAGE.formatted(username)));
 
         LOG.info("Création d'une recette par l'utilisateur {}", username);
 

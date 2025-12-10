@@ -1,3 +1,7 @@
+
+-- Enable extension for gen_random_uuid (if you use gen_random_uuid())
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- ROLE table
 CREATE TABLE IF NOT EXISTS ROLE
 (

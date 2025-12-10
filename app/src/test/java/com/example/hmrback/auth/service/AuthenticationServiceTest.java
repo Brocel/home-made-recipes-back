@@ -27,7 +27,6 @@ import java.util.Optional;
 
 import static com.example.hmrback.exception.util.ExceptionMessageConstants.ROLE_NOT_FOUND_MESSAGE;
 import static com.example.hmrback.exception.util.ExceptionMessageConstants.USER_EMAIL_ALREADY_EXISTS_MESSAGE;
-import static com.example.hmrback.exception.util.ExceptionMessageConstants.USER_NOT_FOUND_EMAIL_MESSAGE;
 import static com.example.hmrback.utils.test.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

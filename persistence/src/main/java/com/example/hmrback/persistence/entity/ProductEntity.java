@@ -27,5 +27,8 @@ public class ProductEntity {
     @Column(name = "NAME", nullable = false)
     private String name;
 
+    @Column(name = "NORMALIZED_NAME")
+    private String normalizedName;
+
     // Maybe put some more info later (calories, etc.)
 }

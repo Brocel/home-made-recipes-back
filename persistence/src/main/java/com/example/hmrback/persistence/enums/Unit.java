@@ -6,7 +6,6 @@ import java.util.List;
 
 @Getter
 public enum Unit {
-    // TODO: improve with unit type (weight, volume, count, etc.)
     GRAM("g", "Gramme"),
     KILOGRAM("kg", "Kilogramme"),
     LITER("L", "Litre"),

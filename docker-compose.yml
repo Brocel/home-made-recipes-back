@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:15
+    image: postgres:15.0-alpine
     container_name: hmr_postgres
     environment:
       POSTGRES_USER: ${DB_USERNAME}
@@ -10,7 +10,6 @@ services:
       - "${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./initdb:/docker-entrypoint-initdb.d/
 
 volumes:
   postgres_data:

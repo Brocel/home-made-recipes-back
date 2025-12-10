@@ -11,16 +11,9 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecipePredicateBuilder {
+public class RecipePredicateBuilder extends AbstractPredicateBuilder {
 
     private static final QRecipeEntity recipe = QRecipeEntity.recipeEntity;
-    private final List<BooleanExpression> expressions = new ArrayList<>();
-
-    public Predicate build() {
-        return expressions.stream()
-            .reduce(BooleanExpression::and)
-            .orElse(null);
-    }
 
     public RecipePredicateBuilder titleContains(String title) {
         if (!StringUtils.isNullOrEmpty(title)) {
