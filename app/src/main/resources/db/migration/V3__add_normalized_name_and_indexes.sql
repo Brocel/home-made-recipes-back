@@ -1,4 +1,4 @@
--- V2__add_normalized_name_and_indexes.sql
+-- V3__add_normalized_name_and_indexes.sql
 
 -- 1. Add normalized name column to product table
 ALTER TABLE product ADD COLUMN IF NOT EXISTS NORMALIZED_NAME VARCHAR(100);
