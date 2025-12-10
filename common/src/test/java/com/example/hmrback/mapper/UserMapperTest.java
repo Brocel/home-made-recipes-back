@@ -2,8 +2,10 @@ package com.example.hmrback.mapper;
 
 import com.example.hmrback.BaseTU;
 import com.example.hmrback.mapper.utils.DateMapperImpl;
+import com.example.hmrback.mapper.utils.UuidMapperImpl;
 import com.example.hmrback.model.User;
 import com.example.hmrback.persistence.entity.UserEntity;
+import com.example.hmrback.utils.test.CommonTestUtils;
 import com.example.hmrback.utils.test.EntityTestUtils;
 import com.example.hmrback.utils.test.ModelTestUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.UUID;
+
 import static com.example.hmrback.utils.test.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,7 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest(classes = {
     UserMapperImpl.class,
     DateMapperImpl.class,
-    RoleMapperImpl.class
+    RoleMapperImpl.class,
+    UuidMapperImpl.class
 })
 class UserMapperTest extends BaseTU {
 
@@ -43,7 +48,7 @@ class UserMapperTest extends BaseTU {
         User result = mapper.toModel(entity);
 
         assertNotNull(result);
-        assertEquals(NUMBER_1.toString(), result.id());
+        assertEquals(CommonTestUtils.uuidFromLong(NUMBER_1).toString(), result.id());
         assertEquals(FIRST_NAME.formatted(NUMBER_1), result.firstName());
         assertEquals(LAST_NAME.formatted(NUMBER_1), result.lastName());
         assertEquals(USERNAME.formatted(NUMBER_1), result.username());
@@ -56,7 +61,7 @@ class UserMapperTest extends BaseTU {
         UserEntity result = mapper.toEntity(model);
 
         assertNotNull(result);
-        assertEquals(NUMBER_1.toString(), result.getId());
+        assertEquals(CommonTestUtils.uuidFromLong(NUMBER_1), result.getId());
         assertEquals(FIRST_NAME.formatted(NUMBER_1), result.getFirstName());
         assertEquals(LAST_NAME.formatted(NUMBER_1), result.getLastName());
         assertEquals(USERNAME.formatted(NUMBER_1), result.getUsername());

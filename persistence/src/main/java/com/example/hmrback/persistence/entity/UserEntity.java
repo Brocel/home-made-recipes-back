@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "APP_USER")
@@ -21,8 +22,8 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ID")
-    private String id;
+    @Column(name = "ID", columnDefinition = "uuid")
+    private UUID id;
 
     @Column(name = "FIRST_NAME", length = 100, nullable = false)
     private String firstName;

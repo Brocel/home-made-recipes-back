@@ -1,7 +1,7 @@
 package com.example.hmrback.service;
 
 import com.example.hmrback.BaseTU;
-import com.example.hmrback.mapper.RecipeMapperImpl;
+import com.example.hmrback.mapper.RecipeMapper;
 import com.example.hmrback.model.Recipe;
 import com.example.hmrback.model.request.RecipeFilter;
 import com.example.hmrback.persistence.entity.RecipeEntity;
@@ -56,7 +56,7 @@ class RecipeServiceTest extends BaseTU {
 
     // Mapper
     @MockitoBean
-    private RecipeMapperImpl mapper;
+    private RecipeMapper mapper;
 
     private static Recipe recipe;
     private static RecipeEntity recipeEntity;

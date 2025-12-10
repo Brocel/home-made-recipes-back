@@ -1,12 +1,13 @@
 package com.example.hmrback.mapper;
 
 import com.example.hmrback.BaseTU;
-import com.example.hmrback.utils.test.EntityTestUtils;
-import com.example.hmrback.utils.test.ModelTestUtils;
 import com.example.hmrback.mapper.utils.DateMapperImpl;
+import com.example.hmrback.mapper.utils.UuidMapperImpl;
 import com.example.hmrback.model.Recipe;
 import com.example.hmrback.persistence.entity.RecipeEntity;
 import com.example.hmrback.persistence.enums.RecipeType;
+import com.example.hmrback.utils.test.EntityTestUtils;
+import com.example.hmrback.utils.test.ModelTestUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
     ProductMapperImpl.class,
     StepMapperImpl.class,
     DateMapperImpl.class,
-    RoleMapperImpl.class
+    RoleMapperImpl.class,
+    UuidMapperImpl.class
 })
 class RecipeMapperTest extends BaseTU {
 

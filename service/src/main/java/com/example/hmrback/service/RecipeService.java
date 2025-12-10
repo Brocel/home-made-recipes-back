@@ -1,6 +1,6 @@
 package com.example.hmrback.service;
 
-import com.example.hmrback.mapper.RecipeMapperImpl;
+import com.example.hmrback.mapper.RecipeMapper;
 import com.example.hmrback.model.Recipe;
 import com.example.hmrback.model.request.RecipeFilter;
 import com.example.hmrback.persistence.entity.RecipeEntity;
@@ -33,7 +33,7 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
 
     // Mapper
-    private final RecipeMapperImpl recipeMapper;
+    private final RecipeMapper recipeMapper;
     private final UserRepository userRepository;
 
     public Recipe createRecipe(Recipe recipe, String username) {

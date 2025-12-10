@@ -13,12 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static com.example.hmrback.utils.test.TestConstants.NUMBER_1;
-import static com.example.hmrback.utils.test.TestConstants.STEP_DESCRIPTION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(classes = { RoleMapperImpl.class })
-class RoleEnumMapperTest extends BaseTU {
+class RoleMapperTest extends BaseTU {
 
     @Autowired
     private RoleMapper mapper;

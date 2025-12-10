@@ -35,7 +35,7 @@ public class ModelTestUtils {
      * @return the User object
      */
     public static User buildUser(Long ordinal) {
-        return new User(ordinal.toString(),
+        return new User(CommonTestUtils.uuidFromLong(ordinal).toString(),
             FIRST_NAME.formatted(ordinal),
             LAST_NAME.formatted(ordinal),
             USERNAME.formatted(ordinal),

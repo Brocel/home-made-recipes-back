@@ -7,6 +7,7 @@ import com.example.hmrback.persistence.enums.IngredientType;
 import com.example.hmrback.persistence.enums.RecipeType;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.example.hmrback.utils.test.TestConstants.*;
 
@@ -39,5 +40,10 @@ public class CommonTestUtils {
 
     public static AuthRequest buildAuthRequest() {
         return new AuthRequest(EMAIL.formatted(NUMBER_1), PASSWORD);
+    }
+
+    public static UUID uuidFromLong(long value) {
+        long mostSigBits = 0x123456789ABCDEFL;   // arbitrary but constant
+        return new UUID(mostSigBits, value);
     }
 }
