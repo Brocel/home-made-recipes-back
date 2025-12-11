@@ -33,7 +33,7 @@ public class ProductService {
         userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(username)));
         LOG.info("Création d'un produit par l'utilisateur {}", username);
 
-        String normalizedName = NormalizeUtils.normalize(product.name());
+        String normalizedName = NormalizeUtils.normalizeText(product.name());
         boolean productAlreadyExists = productRepository.existsByNormalizedName(normalizedName);
         LOG.info("Le produit '{}' ({}) existe déjà :: {}", product.name(), normalizedName, productAlreadyExists);
 

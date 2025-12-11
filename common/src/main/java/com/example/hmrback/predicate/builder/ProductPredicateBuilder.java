@@ -10,14 +10,14 @@ public class ProductPredicateBuilder extends AbstractPredicateBuilder {
 
     public ProductPredicateBuilder normalizedNameContains(String name) {
         if (!StringUtils.isNullOrEmpty(name)) {
-            expressions.add(product.normalizedName.containsIgnoreCase(NormalizeUtils.normalize(name)));
+            expressions.add(product.normalizedName.containsIgnoreCase(NormalizeUtils.normalizeText(name)));
         }
         return this;
     }
 
     public ProductPredicateBuilder normalizedNameEqualsIgnoreCase(String name) {
         if (!StringUtils.isNullOrEmpty(name)) {
-            expressions.add(product.normalizedName.equalsIgnoreCase(NormalizeUtils.normalize(name)));
+            expressions.add(product.normalizedName.equalsIgnoreCase(NormalizeUtils.normalizeText(name)));
         }
         return this;
     }
