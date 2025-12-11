@@ -2,7 +2,7 @@ package com.example.hmrback.service;
 
 import com.example.hmrback.mapper.RecipeMapper;
 import com.example.hmrback.model.Recipe;
-import com.example.hmrback.model.request.RecipeFilter;
+import com.example.hmrback.model.filter.RecipeFilter;
 import com.example.hmrback.persistence.entity.RecipeEntity;
 import com.example.hmrback.persistence.entity.UserEntity;
 import com.example.hmrback.persistence.repository.RecipeRepository;
@@ -37,6 +37,14 @@ public class RecipeService {
     // Mapper
     private final RecipeMapper recipeMapper;
 
+    /**
+     * Create a new recipe.
+     *
+     * @param recipe   The recipe to create.
+     * @param username The username of the user creating the recipe.
+     * @return The created recipe.
+     * @throws EntityNotFoundException if the user is not found.
+     */
     public Recipe createRecipe(Recipe recipe, String username) {
         UserEntity author = userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException(
             USER_NOT_FOUND_MESSAGE.formatted(username)));
@@ -49,6 +57,13 @@ public class RecipeService {
         return recipeMapper.toModel(recipeRepository.save(recipeEntity));
     }
 
+    /**
+     * Search for recipes based on the provided filters.
+     *
+     * @param filter   The filters to apply to the search.
+     * @param pageable The pagination information.
+     * @return A page of recipes matching the filters.
+     */
     public Page<Recipe> searchRecipes(RecipeFilter filter, Pageable pageable) {
 
         LOG.info("Recherche de recettes avec filtres {}", filter);
@@ -59,6 +74,14 @@ public class RecipeService {
         return Page.empty();
     }
 
+    /**
+     * Update an existing recipe.
+     *
+     * @param recipeId The ID of the recipe to update.
+     * @param recipe   The updated recipe data.
+     * @return The updated recipe.
+     * @throws EntityNotFoundException if the recipe is not found.
+     */
     @Transactional
     public Recipe updateRecipe(
         @NotNull
@@ -78,6 +101,12 @@ public class RecipeService {
         return recipeMapper.toModel(recipeRepository.saveAndFlush(recipeEntity));
     }
 
+    /**
+     * Delete a recipe by its ID.
+     *
+     * @param id The ID of the recipe to delete.
+     * @throws EntityNotFoundException if the recipe is not found.
+     */
     @Transactional
     public void deleteRecipe(
         @NotNull

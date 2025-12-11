@@ -1,7 +1,7 @@
 package com.example.hmrback.api.controller.recipe;
 
 import com.example.hmrback.model.Recipe;
-import com.example.hmrback.model.request.RecipeFilter;
+import com.example.hmrback.model.filter.RecipeFilter;
 import com.example.hmrback.service.RecipeService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

@@ -1,7 +1,7 @@
 package com.example.hmrback.utils.test;
 
 import com.example.hmrback.model.request.AuthRequest;
-import com.example.hmrback.model.request.RecipeFilter;
+import com.example.hmrback.model.filter.RecipeFilter;
 import com.example.hmrback.model.request.RegisterRequest;
 import com.example.hmrback.persistence.enums.IngredientType;
 import com.example.hmrback.persistence.enums.RecipeType;

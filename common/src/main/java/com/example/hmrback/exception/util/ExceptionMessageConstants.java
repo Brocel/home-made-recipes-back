@@ -18,4 +18,7 @@ public class ExceptionMessageConstants {
     // Recipe
     public static final String RECIPE_NOT_FOUND_EXCEPTION_MESSAGE = "La recette avec l'id %s est introuvable.";
 
+    // Product
+    public static final String PRODUCT_NOT_FOUND_EXCEPTION_MESSAGE = "Le produit avec l'id %s est introuvable.";
+
 }

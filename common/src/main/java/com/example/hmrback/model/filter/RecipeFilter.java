@@ -1,4 +1,4 @@
-package com.example.hmrback.model.request;
+package com.example.hmrback.model.filter;
 
 import com.example.hmrback.persistence.enums.IngredientType;
 import com.example.hmrback.persistence.enums.RecipeType;

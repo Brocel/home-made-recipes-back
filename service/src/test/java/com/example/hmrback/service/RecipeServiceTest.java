@@ -3,7 +3,7 @@ package com.example.hmrback.service;
 import com.example.hmrback.BaseTU;
 import com.example.hmrback.mapper.RecipeMapper;
 import com.example.hmrback.model.Recipe;
-import com.example.hmrback.model.request.RecipeFilter;
+import com.example.hmrback.model.filter.RecipeFilter;
 import com.example.hmrback.persistence.entity.RecipeEntity;
 import com.example.hmrback.persistence.entity.UserEntity;
 import com.example.hmrback.persistence.repository.RecipeRepository;
