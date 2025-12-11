@@ -1,4 +1,4 @@
-package com.example.hmrback.api.controller.recipe;
+package com.example.hmrback.api.controller.product;
 
 import com.example.hmrback.api.controller.RecipeBaseIntegrationTest;
 import org.junit.jupiter.api.Order;
@@ -12,38 +12,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @Transactional
-class RecipeControllerDeleteTest extends RecipeBaseIntegrationTest {
+class ProductControllerDeleteTest extends RecipeBaseIntegrationTest {
 
     @Test
-    @Order(0)
+    @Order(1)
     @WithMockUser(username = "admin", roles = { "ADMIN" })
     @Transactional
     void deleteRecipe_AsAdmin_ShouldSucceed() throws Exception {
 
-        mockMvc.perform(delete("/hmr/api/recipes/" + 1L)
+        mockMvc.perform(delete("/hmr/api/products/" + 1L)
                 .header("Authorization", "Bearer " + adminToken))
             .andExpect(status().isNoContent());
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     @WithMockUser(username = "username1")
     @Transactional
-    void deleteRecipe_AsAuthor_ShouldSucceed() throws Exception {
-
-        mockMvc.perform(delete("/hmr/api/recipes/" + 1L)
+    void deleteRecipe_AsUser_ShouldFail() throws Exception {
+        mockMvc.perform(delete("/hmr/api/products/" + 1L)
                 .header("Authorization", "Bearer " + userToken))
-            .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @Order(2)
-    @WithMockUser(username = "otherUser")
-    @Transactional
-    void deleteRecipe_AsOtherUser_ShouldFail() throws Exception {
-        mockMvc.perform(delete("/hmr/api/recipes/" + 1L)
-                .header("Authorization", "Bearer " + otherToken))
             .andExpect(status().isForbidden());
     }
-
 }

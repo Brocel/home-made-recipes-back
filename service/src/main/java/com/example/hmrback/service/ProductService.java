@@ -8,6 +8,7 @@ import com.example.hmrback.persistence.repository.ProductRepository;
 import com.example.hmrback.persistence.repository.UserRepository;
 import com.example.hmrback.predicate.factory.ProductPredicateFactory;
 import com.example.hmrback.utils.NormalizeUtils;
+import com.querydsl.core.types.Predicate;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -74,11 +75,13 @@ public class ProductService {
 
         LOG.info("Recherche de produits avec filtres {}", filter);
 
-        if (filter != null) {
-            return productRepository.findAll(ProductPredicateFactory.fromFilters(filter), pageable).map(productMapper::toModel);
-        }
+        Predicate predicate = ProductPredicateFactory.fromFilters(filter);
 
-        return Page.empty();
+        if (predicate != null) {
+            return productRepository.findAll(predicate, pageable).map(productMapper::toModel);
+        } else {
+            return Page.empty();
+        }
     }
 
     /**

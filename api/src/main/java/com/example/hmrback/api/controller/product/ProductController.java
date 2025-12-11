@@ -1,4 +1,4 @@
-package com.example.hmrback.api.controller.recipe;
+package com.example.hmrback.api.controller.product;
 
 import com.example.hmrback.model.Product;
 import com.example.hmrback.model.filter.ProductFilter;
@@ -41,7 +41,7 @@ public class ProductController {
         return ResponseEntity.ok(this.productService.createProduct(product, username));
     }
 
-    @GetMapping
+    @PostMapping("/search")
     public ResponseEntity<List<Product>> searchProducts(
         @RequestBody
         @NotNull

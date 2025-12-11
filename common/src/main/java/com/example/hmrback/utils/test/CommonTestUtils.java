@@ -1,15 +1,20 @@
 package com.example.hmrback.utils.test;
 
-import com.example.hmrback.model.request.AuthRequest;
+import com.example.hmrback.model.filter.ProductFilter;
 import com.example.hmrback.model.filter.RecipeFilter;
+import com.example.hmrback.model.request.AuthRequest;
 import com.example.hmrback.model.request.RegisterRequest;
 import com.example.hmrback.persistence.enums.IngredientType;
 import com.example.hmrback.persistence.enums.RecipeType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.example.hmrback.utils.test.TestConstants.*;
+import static com.example.hmrback.utils.test.TestConstants.EMAIL;
+import static com.example.hmrback.utils.test.TestConstants.FAKE;
+import static com.example.hmrback.utils.test.TestConstants.NUMBER_1;
+import static com.example.hmrback.utils.test.TestConstants.PASSWORD;
 
 public class CommonTestUtils {
 
@@ -45,5 +50,20 @@ public class CommonTestUtils {
     public static UUID uuidFromLong(long value) {
         long mostSigBits = 0x123456789ABCDEFL;   // arbitrary but constant
         return new UUID(mostSigBits, value);
+    }
+
+    public static ProductFilter buildProductFilter(ProductFilterEnum productFilterEnum, boolean matchingFilters) {
+        String productName = matchingFilters ? "Carrot" : FAKE;
+
+        List<IngredientType> ingredientTypes = switch (productFilterEnum) {
+            case ALL_TYPE -> List.of(IngredientType.values());
+            case ONLY_OTHER -> List.of(IngredientType.OTHER);
+            case SINGLE_CATEGORY -> List.of(IngredientType.VEGETABLE);
+            case THREE_CATEGORIES -> List.of(IngredientType.VEGETABLE, IngredientType.FRUIT, IngredientType.MEAT);
+            case null, default -> null;
+        };
+
+        return new ProductFilter(ProductFilterEnum.JUST_NAME.equals(productFilterEnum) ? productName : null,
+            ProductFilterEnum.NULL.equals(productFilterEnum) ? null : ingredientTypes);
     }
 }
