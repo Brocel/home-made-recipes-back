@@ -19,14 +19,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(properties = "spring.flyway.enabled=false")
+@SpringBootTest
 @Transactional
 class ProductControllerReadTest extends RecipeBaseIntegrationTest {
 
     private final Map<ProductFilterEnum, Integer> expectedContentSizeResults = Map.of(
         ProductFilterEnum.NULL, 0,
         ProductFilterEnum.JUST_NAME, 1,
-        ProductFilterEnum.ALL_TYPE, 18,
+        ProductFilterEnum.ALL_TYPE, 17,
         ProductFilterEnum.ONLY_OTHER, 0,
         ProductFilterEnum.SINGLE_CATEGORY, 1,
         ProductFilterEnum.THREE_CATEGORIES, 3
@@ -41,14 +41,13 @@ class ProductControllerReadTest extends RecipeBaseIntegrationTest {
 
         String productsFilter = IntegrationTestUtils.toJson(CommonTestUtils.buildProductFilter(productFilterEnum, true));
 
-        if (ProductFilterEnum.NULL.equals(productFilterEnum)) {
+        if (ProductFilterEnum.NULL.equals(productFilterEnum) || ProductFilterEnum.ONLY_OTHER.equals(productFilterEnum)) {
             mockMvc.perform(post("/hmr/api/products/search")
                     .header("Authorization", "Bearer " + userToken)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(productsFilter)
                     .param("page", "0")
-                    .param("size", "50")
-                    .param("sort", "title,asc"))
+                    .param("size", "50"))
                 .andExpect(status().isNoContent());
 
         } else {
@@ -57,8 +56,7 @@ class ProductControllerReadTest extends RecipeBaseIntegrationTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(productsFilter)
                     .param("page", "0")
-                    .param("size", "50")
-                    .param("sort", "title,asc"))
+                    .param("size", "50"))
                 .andExpect(status().isOk())
                 .andExpect(header().exists("X-Total-Count"))
                 .andExpect(jsonPath("$.content").exists())

@@ -14,8 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 import static com.example.hmrback.constant.ControllerConstants.BASE_PATH;
 import static com.example.hmrback.constant.ControllerConstants.PRODUCTS;
 
@@ -42,7 +40,7 @@ public class ProductController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<Product>> searchProducts(
+    public ResponseEntity<Page<Product>> searchProducts(
         @RequestBody
         @NotNull
         ProductFilter filter, Pageable pageable) {
@@ -52,7 +50,7 @@ public class ProductController {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok().header("X-Total-Count", String.valueOf(result.getTotalElements())).body(result.getContent());
+        return ResponseEntity.ok().header("X-Total-Count", String.valueOf(result.getTotalElements())).body(result);
     }
 
     @PutMapping("/{id}")
