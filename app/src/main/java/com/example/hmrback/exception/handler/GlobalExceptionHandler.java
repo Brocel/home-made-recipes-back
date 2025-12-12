@@ -26,7 +26,6 @@ public class GlobalExceptionHandler {
         return buildResponseEntity(HttpStatus.FORBIDDEN, ACCESS_DENIED_EXCEPTION_MESSAGE, request.getRequestURI());
     }
 
-    // TODO: replace by all existing and future custom exceptions
     @ExceptionHandler(HomeMadeRecipeGenericException.class)
     public ResponseEntity<ApiError> handleHomeMadeRecipeGenericException(HomeMadeRecipeGenericException ex, HttpServletRequest request) {
 

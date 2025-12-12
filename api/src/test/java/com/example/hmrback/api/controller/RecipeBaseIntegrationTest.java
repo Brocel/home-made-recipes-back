@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Set;
 
+import static com.example.hmrback.utils.test.TestConstants.PASSWORD;
 import static com.example.hmrback.utils.test.TestConstants.SHOULD_BE_INITIALIZED_MESSAGE;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -118,7 +119,7 @@ public class RecipeBaseIntegrationTest {
         UserRepository userRepository = context.getBean(UserRepository.class);
 
         UserEntity user = EntityTestUtils.buildUserEntity(1L, true);
-        user.setPassword(passwordEncoder.encode("password"));
+        user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRoles(Set.of(roleUser));
         savedUser = userRepository.save(user);
 
@@ -130,7 +131,7 @@ public class RecipeBaseIntegrationTest {
 
         UserEntity otherUser = EntityTestUtils.buildUserEntity(3L, true);
         otherUser.setUsername("otherUser");
-        otherUser.setPassword(passwordEncoder.encode("password"));
+        otherUser.setPassword(passwordEncoder.encode(PASSWORD));
         otherUser.setRoles(Set.of(roleUser));
         savedOtherUser = userRepository.save(otherUser);
     }

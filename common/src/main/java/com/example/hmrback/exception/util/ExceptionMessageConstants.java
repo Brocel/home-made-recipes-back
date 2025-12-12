@@ -8,6 +8,7 @@ public class ExceptionMessageConstants {
     public static final String EXCEPTION_BASE_MESSAGE = "HMRGenericException {}";
 
     public static final String ACCESS_DENIED_EXCEPTION_MESSAGE = "Vous n'avez pas la permission de réaliser cette action.";
+    public static final String BAD_CREDENTIAL_EXCEPTION_MESSAGE = "Le username ou le mot de passe est incorrect.";
     public static final String ROLE_NOT_FOUND_MESSAGE = "Le rôle '%s' est introuvable.";
 
     // User

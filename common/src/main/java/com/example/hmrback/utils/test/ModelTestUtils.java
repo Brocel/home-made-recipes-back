@@ -34,8 +34,8 @@ public class ModelTestUtils {
      * @param ordinal the ordinal to differentiate users
      * @return the User object
      */
-    public static User buildUser(Long ordinal) {
-        return new User(CommonTestUtils.uuidFromLong(ordinal).toString(),
+    public static User buildUser(Long ordinal, boolean isCreation) {
+        return new User(isCreation ? null : CommonTestUtils.uuidFromLong(ordinal).toString(),
             FIRST_NAME.formatted(ordinal),
             LAST_NAME.formatted(ordinal),
             USERNAME.formatted(ordinal),
@@ -43,16 +43,6 @@ public class ModelTestUtils {
             DateUtils.formatLocalDate(LocalDate.now().minusYears(10 * ordinal)),
             DateUtils.formatLocalDate(LocalDate.now().minusMonths(ordinal)),
             new HashSet<>(Collections.singleton(buildRole())));
-    }
-
-    /**
-     * Build a list of User objects for testing
-     *
-     * @param count the number of users to create
-     * @return the list of User objects
-     */
-    public static List<User> buildUserList(int count) {
-        return LongStream.rangeClosed(1L, count).mapToObj(ModelTestUtils::buildUser).toList();
     }
 
     /**
@@ -147,7 +137,7 @@ public class ModelTestUtils {
             ordinal.intValue() * 40,
             RecipeType.getByIndex(ordinal.intValue() - 1),
             DateUtils.formatLocalDate(LocalDate.now().minusDays(10 * ordinal)),
-            buildUser(ordinal),
+            buildUser(ordinal, false),
             buildIngredientList(4, isCreation),
             buildStepList(5, isCreation));
     }

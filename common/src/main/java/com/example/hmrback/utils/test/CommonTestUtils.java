@@ -11,10 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.example.hmrback.utils.test.TestConstants.EMAIL;
-import static com.example.hmrback.utils.test.TestConstants.FAKE;
-import static com.example.hmrback.utils.test.TestConstants.NUMBER_1;
-import static com.example.hmrback.utils.test.TestConstants.PASSWORD;
+import static com.example.hmrback.utils.test.TestConstants.*;
 
 public class CommonTestUtils {
 
@@ -39,12 +36,12 @@ public class CommonTestUtils {
             RecipeFilterEnum.INGREDIENT_TYPE.equals(filterEnum) ? ingredientTypes : null);
     }
 
-    public static RegisterRequest buildRegisterRequest() {
-        return new RegisterRequest(ModelTestUtils.buildUser(NUMBER_1), PASSWORD);
+    public static RegisterRequest buildRegisterRequest(Long ordinal) {
+        return new RegisterRequest(ModelTestUtils.buildUser(ordinal, true), PASSWORD);
     }
 
-    public static AuthRequest buildAuthRequest() {
-        return new AuthRequest(EMAIL.formatted(NUMBER_1), PASSWORD);
+    public static AuthRequest buildAuthRequest(Long ordinal, boolean wrongPassword) {
+        return new AuthRequest(USERNAME.formatted(ordinal), wrongPassword ? FAKE : PASSWORD);
     }
 
     public static UUID uuidFromLong(long value) {

@@ -1,5 +1,6 @@
 package com.example.hmrback.auth.service;
 
+import com.example.hmrback.exception.AuthException;
 import com.example.hmrback.mapper.UserMapper;
 import com.example.hmrback.model.User;
 import com.example.hmrback.model.request.AuthRequest;
@@ -23,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static com.example.hmrback.exception.util.ExceptionMessageConstants.ROLE_NOT_FOUND_MESSAGE;
@@ -64,6 +66,7 @@ class AuthenticationServiceTest {
     private static RoleEntity userRole;
     private static UserEntity user;
     private static String token;
+    private static org.springframework.security.core.userdetails.User userDetails;
 
     private static RegisterRequest registerRequest;
     private static AuthRequest authRequest;
@@ -82,8 +85,11 @@ class AuthenticationServiceTest {
         token = "test-token-666";
 
         // Requests
-        registerRequest = CommonTestUtils.buildRegisterRequest();
-        authRequest = CommonTestUtils.buildAuthRequest();
+        registerRequest = CommonTestUtils.buildRegisterRequest(NUMBER_1);
+        authRequest = CommonTestUtils.buildAuthRequest(NUMBER_1, false);
+
+        // UserDetails
+        userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(), PASSWORD, new ArrayList<>());
     }
 
     @Test
@@ -118,7 +124,7 @@ class AuthenticationServiceTest {
     void register_whenUserAlreadyExists() {
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> service.register(registerRequest));
+        AuthException ex = assertThrows(AuthException.class, () -> service.register(registerRequest));
 
         assertNotNull(ex, NOT_NULL_MESSAGE.formatted("Exception"));
         assertEquals(USER_EMAIL_ALREADY_EXISTS_MESSAGE.formatted(EMAIL.formatted(NUMBER_1)), ex.getMessage(), EXCEPTION_MESSAGE_SHOULD_MATCH);
@@ -159,7 +165,7 @@ class AuthenticationServiceTest {
         Authentication mockAuth = mock(Authentication.class);
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(mockAuth);
-        when(mockAuth.getPrincipal()).thenReturn(user);
+        when(mockAuth.getPrincipal()).thenReturn(userDetails);
         when(jwtService.generateToken(any(UserEntity.class))).thenReturn(token);
 
         AuthResponse result = service.authenticate(authRequest);
@@ -178,7 +184,7 @@ class AuthenticationServiceTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
             .thenThrow(new BadCredentialsException("Invalid password"));
 
-        assertThrows(BadCredentialsException.class,
+        assertThrows(AuthException.class,
             () -> service.authenticate(authRequest));
     }
 
