@@ -29,6 +29,7 @@ public class RecipeController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<Recipe> createRecipe(
         @AuthenticationPrincipal
         UserDetails userDetails,

@@ -29,6 +29,7 @@ public class IntegrationTestUtils {
 
     /**
      * Builds a list of ProductEntity with various IngredientTypes for testing purposes.
+     * No Product in catgeory 'OTHER'
      *
      * @return List of ProductEntity objects.
      */

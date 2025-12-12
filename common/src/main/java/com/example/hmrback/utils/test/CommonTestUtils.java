@@ -63,6 +63,11 @@ public class CommonTestUtils {
             case null, default -> null;
         };
 
+        if (!matchingFilters) {
+            ingredientTypes = new ArrayList<>();
+            ingredientTypes.add(IngredientType.OTHER);
+        }
+
         return new ProductFilter(ProductFilterEnum.JUST_NAME.equals(productFilterEnum) ? productName : null,
             ProductFilterEnum.NULL.equals(productFilterEnum) ? null : ingredientTypes);
     }

@@ -29,6 +29,7 @@ public class ProductController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<Product> createProduct(
         @AuthenticationPrincipal
         UserDetails userDetails,

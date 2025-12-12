@@ -167,4 +167,10 @@ public class ModelTestUtils {
     public static Role buildRole() {
         return new Role(1L, RoleEnum.ROLE_USER.toString());
     }
+
+    public static Product buildProductForCreation(boolean existingProduct) {
+        return new Product(null,
+            existingProduct ? "Carrot" : FAKE,
+            existingProduct ? IngredientType.VEGETABLE : IngredientType.OTHER);
+    }
 }

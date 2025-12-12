@@ -65,4 +65,22 @@ class ProductControllerReadTest extends RecipeBaseIntegrationTest {
 
         }
     }
+
+    @ParameterizedTest
+    @EnumSource(ProductFilterEnum.class)
+    @Order(2)
+    @WithMockUser(username = "username1")
+    @Transactional
+    void searchProducts_withNoMatchingFilter(ProductFilterEnum productFilterEnum) throws Exception {
+
+        String productsFilter = IntegrationTestUtils.toJson(CommonTestUtils.buildProductFilter(productFilterEnum, false));
+
+        mockMvc.perform(post("/hmr/api/products/search")
+                .header("Authorization", "Bearer " + userToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(productsFilter)
+                .param("page", "0")
+                .param("size", "10"))
+            .andExpect(status().isNoContent());
+    }
 }
