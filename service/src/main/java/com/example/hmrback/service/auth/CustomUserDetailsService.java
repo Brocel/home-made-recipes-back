@@ -1,4 +1,4 @@
-package com.example.hmrback.auth.service;
+package com.example.hmrback.service.auth;
 
 import com.example.hmrback.persistence.entity.UserEntity;
 import com.example.hmrback.persistence.repository.UserRepository;

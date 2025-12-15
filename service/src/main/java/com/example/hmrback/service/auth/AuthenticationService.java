@@ -1,4 +1,4 @@
-package com.example.hmrback.auth.service;
+package com.example.hmrback.service.auth;
 
 import com.example.hmrback.exception.AuthException;
 import com.example.hmrback.mapper.UserMapper;

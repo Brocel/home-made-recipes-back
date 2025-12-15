@@ -20,6 +20,15 @@ spring:
     baseline-on-migrate: true   # useful if DB has been partially initialized
     placeholder-replacement: true
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: alpha
+    display-request-duration: true
+  packages-to-scan: com.example.hmrback.api.controller
+
 app:
   jwt:
     secret: ${JWT_SECRET}

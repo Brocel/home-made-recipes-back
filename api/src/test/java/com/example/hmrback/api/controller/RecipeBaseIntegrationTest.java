@@ -1,8 +1,8 @@
 package com.example.hmrback.api.controller;
 
-import com.example.hmrback.auth.service.JwtService;
 import com.example.hmrback.persistence.entity.*;
 import com.example.hmrback.persistence.repository.*;
+import com.example.hmrback.service.auth.JwtService;
 import com.example.hmrback.utils.test.EntityTestUtils;
 import com.example.hmrback.utils.test.IntegrationTestUtils;
 import org.junit.jupiter.api.*;

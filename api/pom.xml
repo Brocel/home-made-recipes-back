@@ -22,10 +22,10 @@
 			<artifactId>common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
 		<dependency>
-			<groupId>com.example</groupId>
-			<artifactId>app</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 		</dependency>
 
 		<dependency>

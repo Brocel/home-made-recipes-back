@@ -11,6 +11,8 @@ import com.example.hmrback.persistence.entity.UserEntity;
 import com.example.hmrback.persistence.enums.RoleEnum;
 import com.example.hmrback.persistence.repository.RoleRepository;
 import com.example.hmrback.persistence.repository.UserRepository;
+import com.example.hmrback.service.auth.AuthenticationService;
+import com.example.hmrback.service.auth.JwtService;
 import com.example.hmrback.utils.test.CommonTestUtils;
 import com.example.hmrback.utils.test.EntityTestUtils;
 import org.junit.jupiter.api.*;

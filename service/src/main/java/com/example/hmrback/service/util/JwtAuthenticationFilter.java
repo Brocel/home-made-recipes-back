@@ -1,7 +1,7 @@
-package com.example.hmrback.auth.util;
+package com.example.hmrback.service.util;
 
-import com.example.hmrback.auth.service.CustomUserDetailsService;
-import com.example.hmrback.auth.service.JwtService;
+import com.example.hmrback.service.auth.CustomUserDetailsService;
+import com.example.hmrback.service.auth.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

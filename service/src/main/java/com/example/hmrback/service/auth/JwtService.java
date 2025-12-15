@@ -1,7 +1,7 @@
-package com.example.hmrback.auth.service;
+package com.example.hmrback.service.auth;
 
-import com.example.hmrback.auth.util.JwtUtils;
 import com.example.hmrback.persistence.entity.UserEntity;
+import com.example.hmrback.service.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
