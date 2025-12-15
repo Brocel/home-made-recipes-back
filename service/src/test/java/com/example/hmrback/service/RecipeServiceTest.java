@@ -17,13 +17,14 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,20 +43,20 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = RecipeService.class)
+@ExtendWith(MockitoExtension.class)
 class RecipeServiceTest extends BaseTU {
 
-    @Autowired
+    @InjectMocks
     private RecipeService service;
 
     // Repo
-    @MockitoBean
+    @Mock
     private RecipeRepository repository;
-    @MockitoBean
+    @Mock
     private UserRepository userRepository ;
 
     // Mapper
-    @MockitoBean
+    @Mock
     private RecipeMapper mapper;
 
     private static Recipe recipe;
@@ -95,9 +96,6 @@ class RecipeServiceTest extends BaseTU {
     @Order(2)
     void createRecipe_whenUserNotFound_thenThrowException() {
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
-        when(repository.save(any())).thenReturn(recipeEntity);
-        when(mapper.toEntity(any())).thenReturn(recipeEntity);
-        when(mapper.toModel(any())).thenReturn(recipe);
 
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> service.createRecipe(recipe, "username1"));
 

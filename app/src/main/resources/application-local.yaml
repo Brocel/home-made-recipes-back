@@ -26,7 +26,6 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     operationsSorter: alpha
-    display-request-duration: true
   packages-to-scan: com.example.hmrback.api.controller
 
 app:
