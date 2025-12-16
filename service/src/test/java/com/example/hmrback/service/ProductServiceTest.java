@@ -6,7 +6,6 @@ import com.example.hmrback.model.Product;
 import com.example.hmrback.model.filter.ProductFilter;
 import com.example.hmrback.persistence.entity.ProductEntity;
 import com.example.hmrback.persistence.entity.UserEntity;
-import com.example.hmrback.persistence.enums.IngredientType;
 import com.example.hmrback.persistence.repository.ProductRepository;
 import com.example.hmrback.persistence.repository.UserRepository;
 import com.example.hmrback.utils.NormalizeUtils;
@@ -19,13 +18,14 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,20 +45,20 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = ProductService.class)
+@ExtendWith(MockitoExtension.class)
 class ProductServiceTest extends BaseTU {
 
-    @Autowired
+    @InjectMocks
     private ProductService service;
 
     // Repo
-    @MockitoBean
+    @Mock
     private ProductRepository repository;
-    @MockitoBean
+    @Mock
     private UserRepository userRepository;
 
     // Mapper
-    @MockitoBean
+    @Mock
     private ProductMapper productMapper;
 
     private static Product product;

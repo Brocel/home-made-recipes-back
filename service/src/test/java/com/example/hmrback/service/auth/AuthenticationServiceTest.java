@@ -1,5 +1,6 @@
-package com.example.hmrback.auth.service;
+package com.example.hmrback.service.auth;
 
+import com.example.hmrback.BaseTU;
 import com.example.hmrback.exception.AuthException;
 import com.example.hmrback.mapper.UserMapper;
 import com.example.hmrback.model.User;
@@ -11,19 +12,20 @@ import com.example.hmrback.persistence.entity.UserEntity;
 import com.example.hmrback.persistence.enums.RoleEnum;
 import com.example.hmrback.persistence.repository.RoleRepository;
 import com.example.hmrback.persistence.repository.UserRepository;
-import com.example.hmrback.service.auth.AuthenticationService;
-import com.example.hmrback.service.auth.JwtService;
 import com.example.hmrback.utils.test.CommonTestUtils;
 import com.example.hmrback.utils.test.EntityTestUtils;
-import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -42,27 +44,26 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = AuthenticationService.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class AuthenticationServiceTest {
+@ExtendWith(MockitoExtension.class)
+class AuthenticationServiceTest extends BaseTU {
 
-    @Autowired
+    @InjectMocks
     private AuthenticationService service;
 
-    @MockitoBean
+    @Mock
     private UserRepository userRepository;
-    @MockitoBean
+    @Mock
     private RoleRepository roleRepository;
 
-    @MockitoBean
+    @Mock
     private PasswordEncoder passwordEncoder;
-    @MockitoBean
+    @Mock
     private AuthenticationManager authenticationManager;
 
-    @MockitoBean
+    @Mock
     private UserMapper userMapper;
 
-    @MockitoBean
+    @Mock
     private JwtService jwtService;
 
     private static RoleEntity userRole;

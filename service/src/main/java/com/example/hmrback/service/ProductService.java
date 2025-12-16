@@ -47,7 +47,7 @@ public class ProductService {
      */
     public Product createProduct(
         @Valid
-        Product product, String username) {
+        Product product, String username) throws EntityNotFoundException {
         userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(username)));
         LOG.info("Création d'un produit par l'utilisateur {}", username);
 
@@ -94,7 +94,7 @@ public class ProductService {
      */
     public Product updateProduct(Long productId,
         @Valid
-        Product product) {
+        Product product) throws EntityNotFoundException {
 
         LOG.info("Update du produit {}", productId);
 
@@ -117,7 +117,7 @@ public class ProductService {
      */
     public void deleteProduct(
         @NotNull
-        Long productId) {
+        Long productId) throws EntityNotFoundException {
 
         LOG.info("Suppression du produit {}", productId);
 
