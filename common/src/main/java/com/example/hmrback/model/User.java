@@ -34,8 +34,6 @@ public record User(
     String birthDate,
 
     @JsonProperty("inscription_date")
-    @NotBlank(message = "Inscription date" + IS_REQUIRED)
-    @ValidDate
     String inscriptionDate,
 
     @JsonProperty("roles")

@@ -136,10 +136,10 @@ public class RecipeBaseIntegrationTest {
     }
 
     public static void tokenSetup(ApplicationContext context) {
-        JwtService jwtService = context.getBean(JwtService.class);
-        adminToken = jwtService.generateToken(savedAdmin);
-        userToken = jwtService.generateToken(savedUser);
-        otherToken = jwtService.generateToken(savedOtherUser);
+//        JwtService jwtService = context.getBean(JwtService.class);
+//        adminToken = jwtService.generateToken(savedAdmin);
+//        userToken = jwtService.generateToken(savedUser);
+//        otherToken = jwtService.generateToken(savedOtherUser);
     }
 
     public static void recipeSetup(ApplicationContext context) {
