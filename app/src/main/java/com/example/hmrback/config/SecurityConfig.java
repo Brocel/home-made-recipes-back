@@ -1,15 +1,11 @@
 package com.example.hmrback.config;
 
-import com.example.hmrback.service.auth.CustomUserDetailsService;
-import com.example.hmrback.service.auth.JwtService;
-import com.example.hmrback.service.util.JwtAuthenticationFilter;
 import com.example.hmrback.persistence.repository.UserRepository;
+import com.example.hmrback.service.auth.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableMethodSecurity
@@ -37,33 +32,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider(CustomUserDetailsService uds, PasswordEncoder encoder) {
-        DaoAuthenticationProvider p = new DaoAuthenticationProvider(uds);
-        p.setPasswordEncoder(encoder);
-        return p;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(DaoAuthenticationProvider provider) {
-        return new ProviderManager(provider);
-    }
-
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter(CustomUserDetailsService userDetailsService, JwtService jwtService) {
-        return new JwtAuthenticationFilter(jwtService, userDetailsService);
-    }
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
-
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/swagger-ui.html","/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/hmr/api/auth/**").permitAll()
                 .anyRequest().authenticated()
-            );
+            )
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())); // validate JWTs
 
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
 }

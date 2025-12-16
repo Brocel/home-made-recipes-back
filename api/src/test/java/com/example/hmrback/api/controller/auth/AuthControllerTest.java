@@ -2,7 +2,6 @@ package com.example.hmrback.api.controller.auth;
 
 import com.example.hmrback.api.controller.RecipeBaseIntegrationTest;
 import com.example.hmrback.exception.AuthException;
-import com.example.hmrback.model.request.AuthRequest;
 import com.example.hmrback.model.request.RegisterRequest;
 import com.example.hmrback.utils.test.CommonTestUtils;
 import com.example.hmrback.utils.test.IntegrationTestUtils;

@@ -2,7 +2,6 @@ package com.example.hmrback.utils.test;
 
 import com.example.hmrback.model.filter.ProductFilter;
 import com.example.hmrback.model.filter.RecipeFilter;
-import com.example.hmrback.model.request.AuthRequest;
 import com.example.hmrback.model.request.RegisterRequest;
 import com.example.hmrback.persistence.enums.IngredientType;
 import com.example.hmrback.persistence.enums.RecipeType;
@@ -38,10 +37,6 @@ public class CommonTestUtils {
 
     public static RegisterRequest buildRegisterRequest(Long ordinal) {
         return new RegisterRequest(ModelTestUtils.buildUser(ordinal, true), PASSWORD);
-    }
-
-    public static AuthRequest buildAuthRequest(Long ordinal, boolean wrongPassword) {
-        return new AuthRequest(USERNAME.formatted(ordinal), wrongPassword ? FAKE : PASSWORD);
     }
 
     public static UUID uuidFromLong(long value) {

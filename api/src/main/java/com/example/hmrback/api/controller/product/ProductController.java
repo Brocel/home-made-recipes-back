@@ -96,6 +96,11 @@ public class ProductController {
         description = "Requires ADMIN",
         security = @SecurityRequirement(name = "bearerAuth")
     )
+    @Parameter(
+        name = "id",
+        description = "Product id",
+        required = true,
+        example = "123")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
         content = @Content(
             mediaType = "application/json",
@@ -107,7 +112,6 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Product> updateProduct(
         @PathVariable
-        @Parameter(description = "Product id", required = true, example = "123")
         Long id,
         @Valid
         @RequestBody
@@ -120,11 +124,15 @@ public class ProductController {
         description = "Requires ADMIN",
         security = @SecurityRequirement(name = "bearerAuth")
     )
+    @Parameter(
+        name = "id",
+        description = "Product id",
+        required = true,
+        example = "123")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteProduct(
         @PathVariable
-        @Parameter(description = "Product id", required = true, example = "123")
         Long id) {
         this.productService.deleteProduct(id);
         return ResponseEntity.noContent().build();

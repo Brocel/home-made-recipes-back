@@ -4,7 +4,6 @@ import com.example.hmrback.BaseTU;
 import com.example.hmrback.exception.AuthException;
 import com.example.hmrback.mapper.UserMapper;
 import com.example.hmrback.model.User;
-import com.example.hmrback.model.request.AuthRequest;
 import com.example.hmrback.model.request.RegisterRequest;
 import com.example.hmrback.model.response.AuthResponse;
 import com.example.hmrback.persistence.entity.RoleEntity;
@@ -22,13 +21,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Optional;
 
 import static com.example.hmrback.exception.util.ExceptionMessageConstants.ROLE_NOT_FOUND_MESSAGE;
@@ -39,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,16 +57,10 @@ class AuthenticationServiceTest extends BaseTU {
     @Mock
     private UserMapper userMapper;
 
-    @Mock
-    private JwtService jwtService;
-
     private static RoleEntity userRole;
     private static UserEntity user;
-    private static String token;
-    private static org.springframework.security.core.userdetails.User userDetails;
 
     private static RegisterRequest registerRequest;
-    private static AuthRequest authRequest;
 
     private static final LocalDate now = LocalDate.now();
 
@@ -84,15 +72,9 @@ class AuthenticationServiceTest extends BaseTU {
         // User
         user = EntityTestUtils.buildUserEntity(NUMBER_1, false);
 
-        // Token
-        token = "test-token-666";
-
         // Requests
         registerRequest = CommonTestUtils.buildRegisterRequest(NUMBER_1);
-        authRequest = CommonTestUtils.buildAuthRequest(NUMBER_1, false);
 
-        // UserDetails
-        userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(), PASSWORD, new ArrayList<>());
     }
 
     @Test
@@ -104,12 +86,11 @@ class AuthenticationServiceTest extends BaseTU {
         when(userMapper.toEntity(any(User.class))).thenReturn(user);
         when(passwordEncoder.encode(anyString())).thenReturn(ENCODED_PASSWORD);
         when(userRepository.save(any(UserEntity.class))).thenReturn(user);
-        when(jwtService.generateToken(any(UserEntity.class))).thenReturn(token);
 
         AuthResponse result = service.register(registerRequest);
 
         assertNotNull(result, NOT_NULL_MESSAGE.formatted("AuthResponse"));
-        assertNotNull(result.token(), NOT_NULL_MESSAGE.formatted("token"));
+        assertNotNull(result.username(), NOT_NULL_MESSAGE.formatted("token"));
 
         assertEquals(now, user.getInscriptionDate(), SHOULD_BE_EQUALS_MESSAGE.formatted("Inscription date", now));
 
@@ -119,7 +100,6 @@ class AuthenticationServiceTest extends BaseTU {
         verify(userMapper, times(1)).toEntity(any(User.class));
         verify(passwordEncoder, times(1)).encode(PASSWORD);
         verify(userRepository, times(1)).save(any(UserEntity.class));
-        verify(jwtService, times(1)).generateToken(any(UserEntity.class));
     }
 
     @Test
@@ -130,14 +110,15 @@ class AuthenticationServiceTest extends BaseTU {
         AuthException ex = assertThrows(AuthException.class, () -> service.register(registerRequest));
 
         assertNotNull(ex, NOT_NULL_MESSAGE.formatted("Exception"));
-        assertEquals(USER_EMAIL_ALREADY_EXISTS_MESSAGE.formatted(EMAIL.formatted(NUMBER_1)), ex.getMessage(), EXCEPTION_MESSAGE_SHOULD_MATCH);
+        assertEquals(USER_EMAIL_ALREADY_EXISTS_MESSAGE.formatted(EMAIL.formatted(NUMBER_1)),
+            ex.getMessage(),
+            EXCEPTION_MESSAGE_SHOULD_MATCH);
 
         verify(userRepository, times(1)).existsByEmail(EMAIL.formatted(NUMBER_1));
         verify(roleRepository, times(0)).findByName(RoleEnum.ROLE_USER);
         verify(userMapper, times(0)).toEntity(any(User.class));
         verify(passwordEncoder, times(0)).encode(PASSWORD);
         verify(userRepository, times(0)).save(any(UserEntity.class));
-        verify(jwtService, times(0)).generateToken(any(UserEntity.class));
     }
 
     @Test
@@ -158,37 +139,6 @@ class AuthenticationServiceTest extends BaseTU {
         verify(userMapper, times(0)).toEntity(any(User.class));
         verify(passwordEncoder, times(0)).encode(PASSWORD);
         verify(userRepository, times(0)).save(any(UserEntity.class));
-        verify(jwtService, times(0)).generateToken(any(UserEntity.class));
-    }
-
-    @Test
-    @Order(4)
-    void authenticate() {
-        // Custom setup
-        Authentication mockAuth = mock(Authentication.class);
-
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(mockAuth);
-        when(mockAuth.getPrincipal()).thenReturn(userDetails);
-        when(jwtService.generateToken(any(UserEntity.class))).thenReturn(token);
-
-        AuthResponse result = service.authenticate(authRequest);
-
-        assertNotNull(result, NOT_NULL_MESSAGE.formatted("AuthResponse"));
-        assertNotNull(result.token(), NOT_NULL_MESSAGE.formatted("token"));
-
-        verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(jwtService, times(1)).generateToken(any(UserEntity.class));
-    }
-
-    @Test
-    @Order(5)
-    void authenticate_badCredentials() {
-
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-            .thenThrow(new BadCredentialsException("Invalid password"));
-
-        assertThrows(AuthException.class,
-            () -> service.authenticate(authRequest));
     }
 
 }
