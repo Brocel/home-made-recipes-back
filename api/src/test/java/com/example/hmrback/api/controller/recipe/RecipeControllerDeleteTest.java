@@ -3,14 +3,12 @@ package com.example.hmrback.api.controller.recipe;
 import com.example.hmrback.api.controller.RecipeBaseIntegrationTest;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
 @Transactional
 class RecipeControllerDeleteTest extends RecipeBaseIntegrationTest {
 

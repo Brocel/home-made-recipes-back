@@ -8,11 +8,9 @@ import com.example.hmrback.utils.test.IntegrationTestUtils;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.example.hmrback.exception.util.ExceptionMessageConstants.BAD_CREDENTIAL_EXCEPTION_MESSAGE;
 import static com.example.hmrback.exception.util.ExceptionMessageConstants.USER_EMAIL_ALREADY_EXISTS_MESSAGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -21,7 +19,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
 @Transactional
 @AutoConfigureMockMvc(addFilters = false)
 class AuthControllerTest extends RecipeBaseIntegrationTest {

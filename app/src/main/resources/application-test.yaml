@@ -18,9 +18,8 @@ spring:
     enabled: false
 
 app:
-  jwt:
-    secret: aSuperLongSecretKeyThatIsAtLeastThirtyTwoCharsLong! # test_secret_key
-    expiration-minutes: 30
+  client:
+    secret: a-fake-secret-for-test-purpose
 
 logging:
   level:

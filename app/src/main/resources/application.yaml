@@ -39,7 +39,6 @@ springdoc:
     operationsSorter: alpha
   packages-to-scan: com.example.hmrback.api.controller
 
-# JWT configuration (value substituted by env variable)
 app:
   client:
     secret: ${SWAGGER_SECRET}
