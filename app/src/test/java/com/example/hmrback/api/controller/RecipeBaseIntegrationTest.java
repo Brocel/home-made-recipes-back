@@ -12,11 +12,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
@@ -70,9 +75,6 @@ public class RecipeBaseIntegrationTest {
         // User setup
         userSetup(context);
 
-        // Token setup
-        tokenSetup(context);
-
         // Recipe setup
         recipeSetup(context);
 
@@ -84,6 +86,15 @@ public class RecipeBaseIntegrationTest {
 
         // Ingredient setup
         ingredientSetup(context);
+    }
+
+    @BeforeEach
+    void beforeEach(
+        @Autowired
+        JwtEncoder jwtEncoderInjected) {
+
+        // Token setup
+        tokenSetup(jwtEncoderInjected);
     }
 
     @Test
@@ -135,11 +146,10 @@ public class RecipeBaseIntegrationTest {
         savedOtherUser = userRepository.save(otherUser);
     }
 
-    public static void tokenSetup(ApplicationContext context) {
-//        JwtService jwtService = context.getBean(JwtService.class);
-//        adminToken = jwtService.generateToken(savedAdmin);
-//        userToken = jwtService.generateToken(savedUser);
-//        otherToken = jwtService.generateToken(savedOtherUser);
+    public void tokenSetup(JwtEncoder jwtEncoder) {
+        adminToken = generateToken(jwtEncoder, savedAdmin, "ROLE_ADMIN", "ROLE_USER");
+        userToken = generateToken(jwtEncoder, savedUser, "ROLE_USER");
+        otherToken = generateToken(jwtEncoder, savedOtherUser, "ROLE_USER");
     }
 
     public static void recipeSetup(ApplicationContext context) {
@@ -174,6 +184,18 @@ public class RecipeBaseIntegrationTest {
         List<IngredientEntity> ingredientEntityList = IntegrationTestUtils.buildIngredientEntityList(savedRecipe, savedProducts);
         ingredientRepository.saveAll(ingredientEntityList);
 
+    }
+
+    public String generateToken(JwtEncoder jwtEncoder, UserEntity user, String... roles) {
+        Instant now = Instant.now();
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+            .subject(user.getUsername())
+            .issuedAt(now)
+            .expiresAt(now.plus(1, ChronoUnit.HOURS))
+            .claim("scope", String.join(" ", roles))
+            .build();
+
+        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
 }
