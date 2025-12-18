@@ -8,9 +8,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -27,12 +27,11 @@ class RecipeControllerUpdateTest extends RecipeBaseIntegrationTest {
 
     @Test
     @Order(1)
-    @WithMockUser(username = "admin", roles = { "ADMIN" })
     @Transactional
     void updateRecipe_AsAdmin_ShouldSucceed() throws Exception {
 
         mockMvc.perform(put("/hmr/api/recipes/" + 1L)
-                .header("Authorization", "Bearer " + adminToken)
+                .with(authentication(adminAuth))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updateRecipeRequest))
             .andExpect(status().isOk());
@@ -40,12 +39,11 @@ class RecipeControllerUpdateTest extends RecipeBaseIntegrationTest {
 
     @Test
     @Order(2)
-    @WithMockUser(username = "username1")
     @Transactional
     void updateRecipe_AsAuthor_ShouldSucceed() throws Exception {
 
         mockMvc.perform(put("/hmr/api/recipes/" + 1L)
-                .header("Authorization", "Bearer " + userToken)
+                .with(authentication(userAuth))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updateRecipeRequest))
             .andExpect(status().isOk());
@@ -53,11 +51,10 @@ class RecipeControllerUpdateTest extends RecipeBaseIntegrationTest {
 
     @Test
     @Order(3)
-    @WithMockUser(username = "otherUser")
     @Transactional
     void updateRecipe_AsOtherUser_ShouldFail() throws Exception {
         mockMvc.perform(put("/hmr/api/recipes/" + 1L)
-                .header("Authorization", "Bearer " + otherToken)
+                .with(authentication(otherUserAuth))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updateRecipeRequest))
             .andExpect(status().isForbidden());

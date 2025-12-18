@@ -39,10 +39,6 @@ springdoc:
     operationsSorter: alpha
   packages-to-scan: com.example.hmrback.api.controller
 
-app:
-  client:
-    secret: ${SWAGGER_SECRET}
-
 server:
   port: 8080
 

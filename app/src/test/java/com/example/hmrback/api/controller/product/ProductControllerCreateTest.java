@@ -6,12 +6,6 @@ import com.example.hmrback.utils.test.ModelTestUtils;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.example.hmrback.utils.test.TestConstants.FAKE;
@@ -27,20 +21,11 @@ class ProductControllerCreateTest extends RecipeBaseIntegrationTest {
     @Order(1)
     @Transactional
     void createProduct_withUser() throws Exception {
-        // TODO: generalize it for all tests
-        UserDetails userDetails = User.withUsername("username1")
-            .password("ignored")
-            .authorities(new SimpleGrantedAuthority("ROLE_USER"))
-            .build();
-
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-            userDetails, userDetails.getPassword(), userDetails.getAuthorities());
-
         boolean existingProduct = false;
         String createProductRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildProductForCreation(existingProduct));
 
         mockMvc.perform(post("/hmr/api/products")
-                .with(authentication(auth))
+                .with(authentication(userAuth))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createProductRequest))
             .andExpect(status().isOk())
@@ -53,14 +38,13 @@ class ProductControllerCreateTest extends RecipeBaseIntegrationTest {
 
     @Test
     @Order(2)
-    @WithMockUser(username = "admin", roles = { "ADMIN" })
     @Transactional
     void createProduct_withAdmin() throws Exception {
         boolean existingProduct = false;
         String createProductRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildProductForCreation(existingProduct));
 
         mockMvc.perform(post("/hmr/api/products")
-                .header("Authorization", "Bearer " + adminToken)
+                .with(authentication(adminAuth))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createProductRequest))
             .andExpect(status().isOk())
@@ -73,14 +57,13 @@ class ProductControllerCreateTest extends RecipeBaseIntegrationTest {
 
     @Test
     @Order(3)
-    @WithMockUser(username = "username1")
     @Transactional
     void createProduct_withExistingProduct() throws Exception {
         boolean existingProduct = true;
         String createProductRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildProductForCreation(existingProduct));
 
         mockMvc.perform(post("/hmr/api/products")
-                .header("Authorization", "Bearer " + userToken)
+                .with(authentication(userAuth))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createProductRequest))
             .andExpect(status().isOk())

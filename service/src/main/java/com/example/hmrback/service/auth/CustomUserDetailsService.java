@@ -4,7 +4,6 @@ import com.example.hmrback.persistence.entity.UserEntity;
 import com.example.hmrback.persistence.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,7 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new User(user.getUsername(), user.getPassword(), getAuthorities(user));
     }
 
-    public Collection<? extends GrantedAuthority> getAuthorities(UserEntity user) {
+    public Collection<SimpleGrantedAuthority> getAuthorities(UserEntity user) {
         return user.getRoles().stream()
             .map(role -> new SimpleGrantedAuthority(role.getName().name()))
             .toList();

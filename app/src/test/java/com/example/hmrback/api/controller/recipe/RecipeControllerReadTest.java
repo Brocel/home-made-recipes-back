@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -34,13 +34,12 @@ class RecipeControllerReadTest extends RecipeBaseIntegrationTest {
     @ParameterizedTest
     @EnumSource(RecipeFilterEnum.class)
     @Order(1)
-    @WithMockUser(username = "username1")
     @Transactional
     void searchRecipes(RecipeFilterEnum filterEnum) throws Exception {
 
         String recipeFilters = IntegrationTestUtils.toJson(CommonTestUtils.buildRecipeFilter(filterEnum, true));
         mockMvc.perform(post("/hmr/api/recipes/search")
-                .header("Authorization", "Bearer " + userToken)
+                .with(authentication(userAuth))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(recipeFilters)
                 .param("page", "0")
@@ -56,13 +55,12 @@ class RecipeControllerReadTest extends RecipeBaseIntegrationTest {
     @ParameterizedTest
     @EnumSource(RecipeFilterEnum.class)
     @Order(2)
-    @WithMockUser(username = "username1")
     @Transactional
     void searchRecipes_withNoMatchingFilter(RecipeFilterEnum filterEnum) throws Exception {
 
         String recipeFilters = IntegrationTestUtils.toJson(CommonTestUtils.buildRecipeFilter(filterEnum, false));
         mockMvc.perform(post("/hmr/api/recipes/search")
-                .header("Authorization", "Bearer " + userToken)
+                .with(authentication(userAuth))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(recipeFilters)
                 .param("page", "0")

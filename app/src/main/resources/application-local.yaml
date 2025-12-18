@@ -26,14 +26,15 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     operationsSorter: alpha
+    oauth:
+      client-id: "swagger-ui"
+      client-secret: ""
+      use-pkce-with-authorization-code-grant: true
   packages-to-scan: com.example.hmrback.api.controller
-
-app:
-  client:
-    secret: ${SWAGGER_SECRET}
 
 logging:
   level:
     root: INFO
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.security: DEBUG

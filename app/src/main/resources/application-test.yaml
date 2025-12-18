@@ -17,10 +17,6 @@ spring:
   flyway:
     enabled: false
 
-app:
-  client:
-    secret: a-fake-secret-for-test-purpose
-
 logging:
   level:
     root: INFO

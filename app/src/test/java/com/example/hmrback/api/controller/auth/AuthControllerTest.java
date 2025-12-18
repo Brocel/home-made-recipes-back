@@ -31,8 +31,8 @@ class AuthControllerTest extends RecipeBaseIntegrationTest {
         String registerRequest = IntegrationTestUtils.toJson(CommonTestUtils.buildRegisterRequest(4L));
 
         mockMvc.perform(post("/hmr/api/auth/register").contentType(MediaType.APPLICATION_JSON).content(registerRequest))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.token").exists());
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.username").exists());
     }
 
     @Test

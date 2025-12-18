@@ -11,17 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
@@ -49,9 +49,9 @@ public class RecipeBaseIntegrationTest {
     public static UserEntity savedAdmin;
     public static UserEntity savedOtherUser;
 
-    public static String adminToken;
-    public static String userToken;
-    public static String otherToken;
+    public static Authentication adminAuth;
+    public static Authentication userAuth;
+    public static Authentication otherUserAuth;
 
     public static RecipeEntity savedRecipe;
     public static RecipeEntity savedOtherRecipe;
@@ -75,6 +75,9 @@ public class RecipeBaseIntegrationTest {
         // User setup
         userSetup(context);
 
+        // Authentication setup
+        authSetup();
+
         // Recipe setup
         recipeSetup(context);
 
@@ -88,15 +91,6 @@ public class RecipeBaseIntegrationTest {
         ingredientSetup(context);
     }
 
-    @BeforeEach
-    void beforeEach(
-        @Autowired
-        JwtEncoder jwtEncoderInjected) {
-
-        // Token setup
-        tokenSetup(jwtEncoderInjected);
-    }
-
     @Test
     @Order(0)
     void contextLoads() {
@@ -107,9 +101,9 @@ public class RecipeBaseIntegrationTest {
         assertNotNull(savedAdmin, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Admin"));
         assertNotNull(savedOtherUser, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Other User"));
 
-        assertNotNull(adminToken, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Admin token"));
-        assertNotNull(userToken, SHOULD_BE_INITIALIZED_MESSAGE.formatted("User token"));
-        assertNotNull(otherToken, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Other user token"));
+        assertNotNull(adminAuth, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Admin auth"));
+        assertNotNull(userAuth, SHOULD_BE_INITIALIZED_MESSAGE.formatted("User auth"));
+        assertNotNull(otherUserAuth, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Other user auth"));
 
         assertNotNull(savedRecipe, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Saved Recipe"));
         assertNotNull(savedOtherRecipe, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Saved other Recipe"));
@@ -146,10 +140,10 @@ public class RecipeBaseIntegrationTest {
         savedOtherUser = userRepository.save(otherUser);
     }
 
-    public void tokenSetup(JwtEncoder jwtEncoder) {
-        adminToken = generateToken(jwtEncoder, savedAdmin, "ROLE_ADMIN", "ROLE_USER");
-        userToken = generateToken(jwtEncoder, savedUser, "ROLE_USER");
-        otherToken = generateToken(jwtEncoder, savedOtherUser, "ROLE_USER");
+    public static void authSetup() {
+        adminAuth = generateAuthentication(savedAdmin, "ROLE_ADMIN");
+        userAuth = generateAuthentication(savedUser, "ROLE_USER");
+        otherUserAuth = generateAuthentication(savedOtherUser, "ROLE_USER");
     }
 
     public static void recipeSetup(ApplicationContext context) {
@@ -186,16 +180,14 @@ public class RecipeBaseIntegrationTest {
 
     }
 
-    public String generateToken(JwtEncoder jwtEncoder, UserEntity user, String... roles) {
-        Instant now = Instant.now();
-        JwtClaimsSet claims = JwtClaimsSet.builder()
-            .subject(user.getUsername())
-            .issuedAt(now)
-            .expiresAt(now.plus(1, ChronoUnit.HOURS))
-            .claim("scope", String.join(" ", roles))
+    public static Authentication generateAuthentication(UserEntity user, String role) {
+        UserDetails userDetails = User.withUsername(user.getUsername())
+            .password(PASSWORD)
+            .authorities(new SimpleGrantedAuthority(role))
             .build();
 
-        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        return new UsernamePasswordAuthenticationToken(
+            userDetails, userDetails.getPassword(), userDetails.getAuthorities());
     }
 
 }
