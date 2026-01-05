@@ -2,6 +2,21 @@ spring:
   application:
     name: home-made-recipes-back
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - openid
+              - profile
+              - email
+        provider:
+          google:
+            issuer-uri: https://accounts.google.com
+
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -46,3 +61,6 @@ logging:
   level:
     root: INFO
     org.springframework.security: INFO
+
+admin:
+  emails: ${ADMIN_EMAILS:}

@@ -1,23 +1,27 @@
 package com.example.hmrback.config;
 
-import com.example.hmrback.persistence.repository.UserRepository;
-import com.example.hmrback.service.auth.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
@@ -25,57 +29,73 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
+    public static final String LOGIN = "/login";
+    /**
+     * Origines autorisées pour le front (séparées par des virgules). * Exemple .env : FRONTEND_URLS=http://localhost:4200,https://app.mondomaine.com
+     */
+    @Value("${FRONTEND_URLS:http://localhost:4200}")
+    private String frontendUrlsRaw;
+    private static final String[] SWAGGER_WHITELIST = { "/v3/api-docs/**",
+        "/swagger-ui/**",
+        "/swagger-ui.html",
+        "/swagger-resources/**",
+        "/webjars/**" };
+    private static final String[] PUBLIC_WHITELIST = { LOGIN,
+        "/register",
+        "/css/**",
+        "/js/**",
+        "/images/**",
+        "/actuator/health",
+        "/actuator/info",
+        "/auth/google" };
 
     @Bean
-    public UserDetailsService userDetailsService(UserRepository repo) {
-        return new CustomUserDetailsService(repo);
-    }
-
-    // 1) Authorization Server security chain (higher priority)
-    @Bean
-    @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        RequestMatcher endpointsMatcher = (HttpServletRequest request) -> {
-            String path = request.getServletPath();
-            if (path == null) return false;
-            return path.startsWith("/oauth2/") ||
-                   path.startsWith("/.well-known/") ||
-                   path.equals("/oauth2/jwks") ||
-                   path.equals("/.well-known/jwks.json") ||
-                   path.equals("/login") ||
-                   path.startsWith("/login/") ||
-                   path.equals("/error");
-        };
-
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)
+        throws Exception { // Build request matcher to ignore CSRF for the initial Google auth POST
+        RequestMatcher ignoreCsrfForAuthGoogle = (HttpServletRequest request) -> "/auth/google".equals(request.getRequestURI()) &&
+                                                                                 HttpMethod.POST.matches(request.getMethod());
         http
-            .securityMatcher(endpointsMatcher)
-            .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
-            .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
-            .with(OAuth2AuthorizationServerConfigurer.authorizationServer(), Customizer.withDefaults())
-            .formLogin(Customizer.withDefaults());
-
+            .cors(Customizer.withDefaults())
+            .csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .ignoringRequestMatchers(ignoreCsrfForAuthGoogle))
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(SWAGGER_WHITELIST).permitAll()
+                .requestMatchers(PUBLIC_WHITELIST).permitAll()
+                .anyRequest()
+                .authenticated()).oauth2Login(AbstractHttpConfigurer::disable)
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID"));
         return http.build();
     }
 
-    // 2) Resource Server / application security chain (lower priority)
+    /**
+     * CorsConfigurationSource configurable via la variable FRONTEND_URLS.
+     * - allowCredentials true pour permettre l'envoi de cookies de session (si tu utilises session côté serveur)
+     * - autorise méthodes courantes et headers
+     */
     @Bean
-    @Order(2)
-    public SecurityFilterChain resourceServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> auth
-                // allow swagger and docs
-                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                // allow your auth endpoints used by clients (e.g. login endpoint)
-                .requestMatchers("/hmr/api/auth/**").permitAll()
-                // everything else requires authentication
-                .anyRequest().authenticated())
-            // Resource server: validate incoming access tokens
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+    public CorsConfigurationSource corsConfigurationSource() {
+        List<String> allowedOrigins = parseFrontendUrls(frontendUrlsRaw);
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(allowedOrigins);
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(Collections.singletonList("*"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "X-CSRF-TOKEN"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
-        return http.build();
+    private List<String> parseFrontendUrls(String raw) {
+        return Arrays.stream(raw.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList();
     }
 
 }

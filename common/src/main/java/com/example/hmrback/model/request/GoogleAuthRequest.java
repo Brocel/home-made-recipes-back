@@ -6,10 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import static com.example.hmrback.constant.ValidationConstants.IS_REQUIRED;
 
-public record RegisterRequest(
-    @Valid
-    User user,
-
-    @NotBlank(message = "Password" + IS_REQUIRED)
-    String password) {
+public record GoogleAuthRequest(
+    @NotBlank(message = "Token Id" + IS_REQUIRED)
+    String idToken) {
 }
