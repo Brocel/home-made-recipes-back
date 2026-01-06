@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.example.hmrback.utils.test.TestConstants.FAKE;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,6 +27,7 @@ class ProductControllerCreateTest extends RecipeBaseIntegrationTest {
 
         mockMvc.perform(post("/hmr/api/products")
                 .with(authentication(userAuth))
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createProductRequest))
             .andExpect(status().isOk())
@@ -45,6 +47,7 @@ class ProductControllerCreateTest extends RecipeBaseIntegrationTest {
 
         mockMvc.perform(post("/hmr/api/products")
                 .with(authentication(adminAuth))
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createProductRequest))
             .andExpect(status().isOk())
@@ -64,6 +67,7 @@ class ProductControllerCreateTest extends RecipeBaseIntegrationTest {
 
         mockMvc.perform(post("/hmr/api/products")
                 .with(authentication(userAuth))
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createProductRequest))
             .andExpect(status().isOk())

@@ -16,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -119,23 +118,19 @@ public class RecipeBaseIntegrationTest {
     }
 
     public static void userSetup(ApplicationContext context) {
-        PasswordEncoder passwordEncoder = context.getBean(PasswordEncoder.class);
         UserRepository userRepository = context.getBean(UserRepository.class);
 
         UserEntity user = EntityTestUtils.buildUserEntity(1L, true);
-        user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRoles(Set.of(roleUser));
         savedUser = userRepository.save(user);
 
         UserEntity admin = EntityTestUtils.buildUserEntity(2L, true);
         admin.setUsername("admin");
-        admin.setPassword(passwordEncoder.encode("adminpass"));
         admin.setRoles(Set.of(roleAdmin, roleUser));
         savedAdmin = userRepository.save(admin);
 
         UserEntity otherUser = EntityTestUtils.buildUserEntity(3L, true);
         otherUser.setUsername("otherUser");
-        otherUser.setPassword(passwordEncoder.encode(PASSWORD));
         otherUser.setRoles(Set.of(roleUser));
         savedOtherUser = userRepository.save(otherUser);
     }

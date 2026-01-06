@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -41,6 +42,7 @@ class ProductControllerReadTest extends RecipeBaseIntegrationTest {
         if (ProductFilterEnum.NULL.equals(productFilterEnum) || ProductFilterEnum.ONLY_OTHER.equals(productFilterEnum)) {
             mockMvc.perform(post("/hmr/api/products/search")
                     .with(authentication(userAuth))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(productsFilter)
                     .param("page", "0")
@@ -50,6 +52,7 @@ class ProductControllerReadTest extends RecipeBaseIntegrationTest {
         } else {
             mockMvc.perform(post("/hmr/api/products/search")
                     .with(authentication(userAuth))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(productsFilter)
                     .param("page", "0")
@@ -73,6 +76,7 @@ class ProductControllerReadTest extends RecipeBaseIntegrationTest {
 
         mockMvc.perform(post("/hmr/api/products/search")
                 .with(authentication(userAuth))
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(productsFilter)
                 .param("page", "0")

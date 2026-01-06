@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,7 +19,8 @@ class RecipeControllerDeleteTest extends RecipeBaseIntegrationTest {
     void deleteRecipe_AsAdmin_ShouldSucceed() throws Exception {
 
         mockMvc.perform(delete("/hmr/api/recipes/" + 1L)
-                .with(authentication(adminAuth)))
+                .with(authentication(adminAuth))
+                .with(csrf()))
             .andExpect(status().isNoContent());
     }
 
@@ -28,7 +30,8 @@ class RecipeControllerDeleteTest extends RecipeBaseIntegrationTest {
     void deleteRecipe_AsAuthor_ShouldSucceed() throws Exception {
 
         mockMvc.perform(delete("/hmr/api/recipes/" + 1L)
-                .with(authentication(userAuth)))
+                .with(authentication(userAuth))
+                .with(csrf()))
             .andExpect(status().isNoContent());
     }
 
@@ -37,7 +40,8 @@ class RecipeControllerDeleteTest extends RecipeBaseIntegrationTest {
     @Transactional
     void deleteRecipe_AsOtherUser_ShouldFail() throws Exception {
         mockMvc.perform(delete("/hmr/api/recipes/" + 1L)
-                .with(authentication(otherUserAuth)))
+                .with(authentication(otherUserAuth))
+                .with(csrf()))
             .andExpect(status().isForbidden());
     }
 

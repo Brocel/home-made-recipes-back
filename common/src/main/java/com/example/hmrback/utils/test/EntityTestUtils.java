@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.LongStream;
 
 import static com.example.hmrback.utils.test.TestConstants.*;
@@ -40,6 +39,7 @@ public class EntityTestUtils {
         userEntity.setFirstName(FIRST_NAME.formatted(ordinal));
         userEntity.setLastName(LAST_NAME.formatted(ordinal));
         userEntity.setUsername(USERNAME.formatted(ordinal));
+        userEntity.setDisplayName(FIRST_NAME.formatted(ordinal) + " " + LAST_NAME.formatted(ordinal));
         userEntity.setEmail(EMAIL.formatted(ordinal));
         userEntity.setBirthDate(LocalDate.now().minusYears(10 * ordinal));
         userEntity.setInscriptionDate(LocalDate.now().minusMonths(ordinal));
