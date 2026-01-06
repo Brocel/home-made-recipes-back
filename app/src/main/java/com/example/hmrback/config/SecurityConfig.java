@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -50,6 +52,11 @@ public class SecurityConfig {
         "/auth/google" };
 
     @Bean
+    public JwtDecoder googleJwtDecoder() {
+        return NimbusJwtDecoder.withJwkSetUri("https://www.googleapis.com/oauth2/v3/certs").build();
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
         throws Exception { // Build request matcher to ignore CSRF for the initial Google auth POST
         RequestMatcher ignoreCsrfForAuthGoogle = (HttpServletRequest request) -> "/auth/google".equals(request.getRequestURI()) &&
@@ -66,6 +73,8 @@ public class SecurityConfig {
                 .requestMatchers(PUBLIC_WHITELIST).permitAll()
                 .anyRequest()
                 .authenticated()).oauth2Login(AbstractHttpConfigurer::disable)
+            .oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt.decoder(googleJwtDecoder())))
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
