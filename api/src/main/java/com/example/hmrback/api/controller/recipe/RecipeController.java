@@ -5,9 +5,7 @@ import com.example.hmrback.model.filter.RecipeFilter;
 import com.example.hmrback.service.RecipeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -20,8 +18,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import static com.example.hmrback.constant.ControllerConstants.BASE_PATH;
@@ -124,6 +120,17 @@ public class RecipeController {
         }
 
         return ResponseEntity.ok().header("X-Total-Count", String.valueOf(result.getTotalElements())).body(result);
+    }
+
+    @Operation(
+            summary = "Get daily recipe",
+            description = "Fetches teh daily recipe"
+    )
+    @GetMapping("/daily")
+    public ResponseEntity<Recipe> fetchDailyRecipe() {
+        Recipe result = this.recipeService.fetchDailyRecipe();
+
+        return ResponseEntity.ok(result);
     }
 
     @Operation(

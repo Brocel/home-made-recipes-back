@@ -3,12 +3,9 @@ package com.example.hmrback.predicate.builder;
 import com.example.hmrback.persistence.entity.QRecipeEntity;
 import com.example.hmrback.persistence.enums.IngredientType;
 import com.example.hmrback.persistence.enums.RecipeType;
-import com.querydsl.core.types.Predicate;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.util.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RecipePredicateBuilder extends AbstractPredicateBuilder {

@@ -21,13 +21,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.example.hmrback.utils.test.TestConstants.NOT_NULL_MESSAGE;
 import static com.example.hmrback.utils.test.TestConstants.NUMBER_1;
@@ -53,7 +49,7 @@ class RecipeServiceTest extends BaseTU {
     @Mock
     private RecipeRepository repository;
     @Mock
-    private UserRepository userRepository ;
+    private UserRepository userRepository;
 
     // Mapper
     @Mock
@@ -67,11 +63,16 @@ class RecipeServiceTest extends BaseTU {
 
     @BeforeAll
     static void setUp() {
-        recipe = ModelTestUtils.buildRecipe(NUMBER_1, true);
-        recipeEntity = EntityTestUtils.buildRecipeEntity(NUMBER_1, false);
-        recipeEntityList = EntityTestUtils.buildRecipeEntityList(3, false);
-        recipeFilter = CommonTestUtils.buildRecipeFilter(RecipeFilterEnum.TITLE, true);
-        user = EntityTestUtils.buildUserEntity(NUMBER_1, false);
+        recipe = ModelTestUtils.buildRecipe(NUMBER_1,
+                                            true);
+        recipeEntity = EntityTestUtils.buildRecipeEntity(NUMBER_1,
+                                                         false);
+        recipeEntityList = EntityTestUtils.buildRecipeEntityList(3,
+                                                                 false);
+        recipeFilter = CommonTestUtils.buildRecipeFilter(RecipeFilterEnum.TITLE,
+                                                         true);
+        user = EntityTestUtils.buildUserEntity(NUMBER_1,
+                                               false);
     }
 
     @Test
@@ -82,14 +83,20 @@ class RecipeServiceTest extends BaseTU {
         when(mapper.toEntity(any())).thenReturn(recipeEntity);
         when(mapper.toModel(any())).thenReturn(recipe);
 
-        Recipe result = service.createRecipe(recipe, "username1");
+        Recipe result = service.createRecipe(recipe,
+                                             "username1");
 
-        assertNotNull(result, NOT_NULL_MESSAGE.formatted("Recipe"));
+        assertNotNull(result,
+                      NOT_NULL_MESSAGE.formatted("Recipe"));
 
-        verify(userRepository, times(1)).findByUsername(anyString());
-        verify(repository, times(1)).save(any(RecipeEntity.class));
-        verify(mapper, times(1)).toEntity(any(Recipe.class));
-        verify(mapper, times(1)).toModel(any(RecipeEntity.class));
+        verify(userRepository,
+               times(1)).findByUsername(anyString());
+        verify(repository,
+               times(1)).save(any(RecipeEntity.class));
+        verify(mapper,
+               times(1)).toEntity(any(Recipe.class));
+        verify(mapper,
+               times(1)).toModel(any(RecipeEntity.class));
     }
 
     @Test
@@ -97,45 +104,70 @@ class RecipeServiceTest extends BaseTU {
     void createRecipe_whenUserNotFound_thenThrowException() {
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
-        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> service.createRecipe(recipe, "username1"));
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+                                                  () -> service.createRecipe(recipe,
+                                                                             "username1"));
 
-        assertNotNull(ex, NOT_NULL_MESSAGE.formatted("EntityNotFoundException"));
+        assertNotNull(ex,
+                      NOT_NULL_MESSAGE.formatted("EntityNotFoundException"));
 
-        verify(userRepository, times(1)).findByUsername(anyString());
-        verify(repository, times(0)).save(any(RecipeEntity.class));
-        verify(mapper, times(0)).toEntity(any(Recipe.class));
-        verify(mapper, times(0)).toModel(any(RecipeEntity.class));
+        verify(userRepository,
+               times(1)).findByUsername(anyString());
+        verify(repository,
+               times(0)).save(any(RecipeEntity.class));
+        verify(mapper,
+               times(0)).toEntity(any(Recipe.class));
+        verify(mapper,
+               times(0)).toModel(any(RecipeEntity.class));
     }
 
     @Test
     @Order(3)
     void shouldSearchRecipe() {
-        when(repository.findAll(any(Predicate.class), any(Pageable.class))).thenReturn(new PageImpl<>(recipeEntityList));
+        when(repository.findAll(any(Predicate.class),
+                                any(Pageable.class))).thenReturn(new PageImpl<>(recipeEntityList));
         when(mapper.toModel(any())).thenReturn(recipe);
 
-        Page<Recipe> result = service.searchRecipes(recipeFilter, PageRequest.of(0, 10));
+        Page<Recipe> result = service.searchRecipes(recipeFilter,
+                                                    PageRequest.of(0,
+                                                                   10));
 
-        assertNotNull(result, NOT_NULL_MESSAGE.formatted("Page<Recipe>"));
-        assertNotNull(result.getContent(), NOT_NULL_MESSAGE.formatted("Page<Recipe>.content"));
-        assertEquals(3, result.getTotalElements(),  SHOULD_BE_EQUALS_MESSAGE.formatted("Total elements", "3"));
+        assertNotNull(result,
+                      NOT_NULL_MESSAGE.formatted("Page<Recipe>"));
+        assertNotNull(result.getContent(),
+                      NOT_NULL_MESSAGE.formatted("Page<Recipe>.content"));
+        assertEquals(3,
+                     result.getTotalElements(),
+                     SHOULD_BE_EQUALS_MESSAGE.formatted("Total elements",
+                                                        "3"));
 
-        verify(repository, times(1)).findAll(any(Predicate.class), any(Pageable.class));
-        verify(mapper, times(3)).toModel(any(RecipeEntity.class));
+        verify(repository,
+               times(1)).findAll(any(Predicate.class),
+                                 any(Pageable.class));
+        verify(mapper,
+               times(3)).toModel(any(RecipeEntity.class));
     }
 
     @Test
     @Order(4)
     void shouldSearchRecipe_whenFiltersIsNull_thenReturnEmptyList() {
-        when(repository.findAll(any(Predicate.class), any(Pageable.class))).thenReturn(Page.empty());
+        when(repository.findAll(any(Predicate.class),
+                                any(Pageable.class))).thenReturn(Page.empty());
 
-        Page<Recipe> result = service.searchRecipes(recipeFilter, PageRequest.of(0, 10));
+        Page<Recipe> result = service.searchRecipes(recipeFilter,
+                                                    PageRequest.of(0,
+                                                                   10));
 
         assertNotNull(result);
         assertNotNull(result.getContent());
-        assertEquals(0, result.getTotalElements());
+        assertEquals(0,
+                     result.getTotalElements());
 
-        verify(repository, times(1)).findAll(any(Predicate.class), any(Pageable.class));
-        verify(mapper, times(0)).toModel(recipeEntity);
+        verify(repository,
+               times(1)).findAll(any(Predicate.class),
+                                 any(Pageable.class));
+        verify(mapper,
+               times(0)).toModel(recipeEntity);
     }
 
     @Test
@@ -146,26 +178,34 @@ class RecipeServiceTest extends BaseTU {
         when(mapper.toEntity(any())).thenReturn(recipeEntity);
         when(mapper.toModel(any())).thenReturn(recipe);
 
-        Recipe result = service.updateRecipe(NUMBER_1, recipe);
+        Recipe result = service.updateRecipe(NUMBER_1,
+                                             recipe);
 
         assertNotNull(result);
 
-        verify(repository, times(1)).findById(1L);
-        verify(repository, times(1)).saveAndFlush(any(RecipeEntity.class));
-        verify(mapper, times(1)).toEntity(any(Recipe.class));
-        verify(mapper, times(1)).toModel(any(RecipeEntity.class));
+        verify(repository,
+               times(1)).findById(1L);
+        verify(repository,
+               times(1)).saveAndFlush(any(RecipeEntity.class));
+        verify(mapper,
+               times(1)).toEntity(any(Recipe.class));
+        verify(mapper,
+               times(1)).toModel(any(RecipeEntity.class));
     }
 
     @Test
     @Order(5)
     void shouldDeleteRecipe() {
         when(repository.findById(anyLong())).thenReturn(Optional.ofNullable(recipeEntity));
-        doNothing().when(repository).delete(any(RecipeEntity.class));
+        doNothing().when(repository)
+                .delete(any(RecipeEntity.class));
 
         service.deleteRecipe(NUMBER_1);
 
-        verify(repository, times(1)).findById(NUMBER_1);
-        verify(repository, times(1)).delete(any(RecipeEntity.class));
+        verify(repository,
+               times(1)).findById(NUMBER_1);
+        verify(repository,
+               times(1)).delete(any(RecipeEntity.class));
     }
 
     @Test
@@ -173,13 +213,55 @@ class RecipeServiceTest extends BaseTU {
     void deleteRecipe_whenRecipeNotFound_thenThrowsException() {
         when(repository.findById(anyLong())).thenReturn(Optional.empty());
 
-        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> service.deleteRecipe(NUMBER_1));
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+                                                  () -> service.deleteRecipe(NUMBER_1));
 
         assertNotNull(ex);
-        assertEquals("La recette avec l'id %s est introuvable.".formatted(NUMBER_1), ex.getMessage());
+        assertEquals("La recette avec l'id %s est introuvable.".formatted(NUMBER_1),
+                     ex.getMessage());
 
-        verify(repository, times(1)).findById(NUMBER_1);
-        verify(repository, times(0)).delete(any(RecipeEntity.class));
+        verify(repository,
+               times(1)).findById(NUMBER_1);
+        verify(repository,
+               times(0)).delete(any(RecipeEntity.class));
+    }
+
+    @Test
+    @Order(7)
+    void shouldFetchDailyRecipe() {
+        when(repository.findAll(any(Predicate.class),
+                                any(Sort.class))).thenReturn(recipeEntityList);
+        when(mapper.toModel(any())).thenReturn(recipe);
+
+        Recipe result = service.fetchDailyRecipe();
+
+        assertNotNull(result);
+
+        verify(repository,
+               times(1)).findAll(any(Predicate.class),
+                                 any(Sort.class));
+        verify(mapper,
+               times(1)).toModel(any(RecipeEntity.class));
+    }
+
+    @Test
+    @Order(8)
+    void shouldFetchDailyRecipe_whenRecipeListEmpty_thenThrowsException() {
+        when(repository.findAll(any(Predicate.class),
+                                any(Sort.class))).thenReturn(new ArrayList<>());
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                                                () -> service.fetchDailyRecipe());
+
+        assertNotNull(ex);
+        assertEquals("No recipes for today's type",
+                     ex.getMessage());
+
+        verify(repository,
+               times(1)).findAll(any(Predicate.class),
+                                 any(Sort.class));
+        verify(mapper,
+               times(0)).toModel(any(RecipeEntity.class));
     }
 
 }
