@@ -1,23 +1,22 @@
 package com.example.hmrback.config;
 
 import org.flywaydb.core.Flyway;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
 
 @Configuration
-@Profile("prod")
-public class FlywayConfig {
+@Profile("local")
+public class FlywayLocalConfig {
 
     @Bean
     public Flyway flywayConfiguration(DataSource dataSource, Environment env) {
 
         Flyway flyway = Flyway.configure()
-            .dataSource(dataSource)
-            .load();
+                .dataSource(dataSource)
+                .locations("classpath:db/local")
+                .load();
 
         boolean enabled = Boolean.parseBoolean(env.getProperty("spring.flyway.enabled", "true"));
 

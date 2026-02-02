@@ -22,7 +22,7 @@ VALUES ('FRUIT', 'Pomme'),
        ('FRUIT', 'Citron'),
        ('FRUIT', 'Mangue'),
        ('FRUIT', 'Raisin'),
-       ('FRUIT', 'Avocat');
+       ('FRUIT', 'Avocat');;
 
 -- Meat
 INSERT INTO PRODUCT (TYPE, NAME)

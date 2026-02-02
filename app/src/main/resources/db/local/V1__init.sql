@@ -1,7 +1,4 @@
-
--- Enable extension for gen_random_uuid (if you use gen_random_uuid())
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
+-- Initial database schema and seed data for recipe management application
 -- ROLE table
 CREATE TABLE IF NOT EXISTS ROLE
 (
@@ -12,7 +9,7 @@ CREATE TABLE IF NOT EXISTS ROLE
 -- USER table
 CREATE TABLE IF NOT EXISTS APP_USER
 (
-    ID               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    ID               UUID DEFAULT RANDOM_UUID() PRIMARY KEY,
     FIRST_NAME       VARCHAR(100) NOT NULL,
     LAST_NAME        VARCHAR(100) NOT NULL,
     USERNAME         VARCHAR(100) NOT NULL UNIQUE,
@@ -25,7 +22,7 @@ CREATE TABLE IF NOT EXISTS APP_USER
 -- USER_ROLE junction table
 CREATE TABLE IF NOT EXISTS USER_ROLE
 (
-    user_id UUID NOT NULL,
+    user_id UUID   NOT NULL,
     role_id BIGINT NOT NULL,
     CONSTRAINT fk_user_roles_user FOREIGN KEY (user_id) REFERENCES APP_USER (id),
     CONSTRAINT fk_user_roles_role FOREIGN KEY (role_id) REFERENCES ROLE (id)
@@ -48,7 +45,7 @@ CREATE TABLE IF NOT EXISTS RECIPE
     preparation_time INT,
     type             VARCHAR(50)   NOT NULL,
     publication_date DATE,
-    user_id          UUID        NOT NULL,
+    user_id          UUID          NOT NULL,
     CONSTRAINT fk_recipe_user FOREIGN KEY (user_id) REFERENCES app_user (id)
 );
 
@@ -76,24 +73,27 @@ CREATE TABLE IF NOT EXISTS STEP
 
 -- INSERTS --
 -- Roles
-INSERT INTO ROLE (NAME)
-VALUES ('ROLE_ADMIN')
-ON CONFLICT (NAME) DO NOTHING;
-INSERT INTO ROLE (NAME)
-VALUES ('ROLE_USER')
-ON CONFLICT (NAME) DO NOTHING;
+MERGE INTO ROLE (NAME)
+    KEY (NAME)
+    VALUES ('ROLE_ADMIN');
+
+MERGE INTO ROLE (NAME)
+    KEY (NAME)
+    VALUES ('ROLE_USER');
+
 
 -- Users
 INSERT INTO APP_USER (FIRST_NAME, LAST_NAME, USERNAME, EMAIL, PASSWORD, BIRTH_DATE, INSCRIPTION_DATE)
-VALUES ('Admin', 'Admin', 'admin', 'admin.admin@admin.com', '$2a$10$PsozxvSB.1TNs9jrGCiqr.keAUw0NjwHw2YNwOlCthgvUt8.4WyQ6', '1988-02-03',
+VALUES ('Admin', 'Admin', 'admin', 'admin.admin@admin.com',
+        '$2a$10$PsozxvSB.1TNs9jrGCiqr.keAUw0NjwHw2YNwOlCthgvUt8.4WyQ6', '1988-02-03',
         CURRENT_DATE);
 
 -- Assign admin role to admin user (assuming USER_ROLE junction table)
-INSERT INTO USER_ROLE (user_id, role_id)
-SELECT u.id,
-       r.id
-FROM app_user u,
-     role r
-WHERE u.username = 'admin'
-  AND r.name = 'ROLE_ADMIN'
-ON CONFLICT DO NOTHING;
+MERGE INTO USER_ROLE (USER_ID, ROLE_ID)
+    KEY (USER_ID, ROLE_ID)
+    SELECT u.ID, r.ID
+    FROM APP_USER u,
+         ROLE r
+    WHERE u.USERNAME = 'admin'
+      AND r.NAME = 'ROLE_ADMIN';
+
