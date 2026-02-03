@@ -100,7 +100,7 @@ public class RecipeService {
         Predicate todayPredicate = RecipePredicateFactory.fromFilters(todayFilter);
 
         // Sort
-        Sort sort = Sort.by(Sort.Order.asc("dateCreation"),
+        Sort sort = Sort.by(Sort.Order.asc("publicationDate"),
                             Sort.Order.asc("id"));
 
         // Recipe List
