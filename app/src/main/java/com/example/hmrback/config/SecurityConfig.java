@@ -31,64 +31,56 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    public static final String LOGIN = "/login";
+    public static final String BASE_API = "/hmr/api";
+    public static final String LOGIN = BASE_API + "/login";
     /**
      * Origines autorisées pour le front (séparées par des virgules). * Exemple .env : FRONTEND_URLS=http://localhost:4200,https://app.mondomaine.com
      */
     @Value("${FRONTEND_URLS:http://localhost:4200}")
     private String frontendUrlsRaw;
     private static final String[] SWAGGER_WHITELIST = {"/v3/api-docs/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/swagger-resources/**",
-            "/webjars/**"};
+                                                       "/swagger-ui/**",
+                                                       "/swagger-ui.html",
+                                                       "/swagger-resources/**",
+                                                       "/webjars/**"};
     private static final String[] PUBLIC_WHITELIST = {LOGIN,
-            "/register",
-            "/css/**",
-            "/js/**",
-            "/images/**",
-            "/actuator/health",
-            "/actuator/info",
-            "/auth/google"};
-    private static final String[] PUBLIC_RECIPE_WHITELIST = {
-            "/hmr/api/recipes/daily"};
+                                                      BASE_API + "/register",
+                                                      "/css/**",
+                                                      "/js/**",
+                                                      "/images/**",
+                                                      "/actuator/health",
+                                                      "/actuator/info",
+                                                      BASE_API + "/auth/google"};
+    private static final String[] PUBLIC_RECIPE_WHITELIST = {BASE_API + "/recipes/daily"};
 
     @Bean
     public JwtDecoder googleJwtDecoder() {
         return NimbusJwtDecoder.withJwkSetUri("https://www.googleapis.com/oauth2/v3/certs")
-                .build();
+                               .build();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
-            throws
-            Exception { // Build request matcher to ignore CSRF for the initial Google auth POST
-        RequestMatcher ignoreCsrfForAuthGoogle = (HttpServletRequest request) -> "/auth/google".equals(request.getRequestURI()) &&
-                HttpMethod.POST.matches(request.getMethod());
-        http
-                .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers(ignoreCsrfForAuthGoogle))
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(SWAGGER_WHITELIST)
-                        .permitAll()
-                        .requestMatchers(PUBLIC_WHITELIST)
-                        .permitAll()
-                        .requestMatchers(PUBLIC_RECIPE_WHITELIST)
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated())
-                .oauth2Login(AbstractHttpConfigurer::disable)
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.decoder(googleJwtDecoder())))
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID"));
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // Build request matcher to ignore CSRF for the initial Google auth POST
+        RequestMatcher ignoreCsrfForAuthGoogle = (HttpServletRequest request) -> "/hmr/api/auth/google".equals(request.getRequestURI()) && HttpMethod.POST.matches(request.getMethod());
+        http.cors(Customizer.withDefaults())
+            .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                              .ignoringRequestMatchers(ignoreCsrfForAuthGoogle))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+            .authorizeHttpRequests(auth -> auth.requestMatchers(SWAGGER_WHITELIST)
+                                               .permitAll()
+                                               .requestMatchers(PUBLIC_WHITELIST)
+                                               .permitAll()
+                                               .requestMatchers(PUBLIC_RECIPE_WHITELIST)
+                                               .permitAll()
+                                               .anyRequest()
+                                               .authenticated())
+            .oauth2Login(AbstractHttpConfigurer::disable)
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(googleJwtDecoder())))
+            .logout(logout -> logout.logoutUrl("/logout")
+                                    .logoutSuccessUrl("/login?logout")
+                                    .invalidateHttpSession(true)
+                                    .deleteCookies("JSESSIONID"));
         return http.build();
     }
 
@@ -122,9 +114,9 @@ public class SecurityConfig {
 
     private List<String> parseFrontendUrls(String raw) {
         return Arrays.stream(raw.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .toList();
+                     .map(String::trim)
+                     .filter(s -> !s.isEmpty())
+                     .toList();
     }
 
 }

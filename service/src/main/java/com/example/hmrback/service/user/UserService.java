@@ -34,6 +34,11 @@ public class UserService {
     @Value("${admin.emails}")
     String adminEmailsRaw;
 
+    public Optional<UserEntity> findByEmail(String email) {
+        return this.userRepository.findByEmail(email);
+    }
+
+    // TODO: refacto pour coller à la nouvelle logique
     @Transactional
     public UserEntity findOrCreateAndLinkUser(String provider, String providerId, String email, String name) {
         Optional<OAuth2AccountEntity> existingOauth = oauth2AccountRepository.findByProviderAndProviderId(provider, providerId);
