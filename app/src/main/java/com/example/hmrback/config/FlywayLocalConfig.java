@@ -15,7 +15,7 @@ public class FlywayLocalConfig {
 
         Flyway flyway = Flyway.configure()
                 .dataSource(dataSource)
-                .locations("classpath:db/local")
+                .locations("classpath:db/migration", "classpath:db/local")
                 .load();
 
         boolean enabled = Boolean.parseBoolean(env.getProperty("spring.flyway.enabled", "true"));
