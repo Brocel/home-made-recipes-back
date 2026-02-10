@@ -2,7 +2,7 @@ package com.example.hmrback.utils.test;
 
 import com.example.hmrback.model.filter.ProductFilter;
 import com.example.hmrback.model.filter.RecipeFilter;
-import com.example.hmrback.model.request.GoogleAuthRequest;
+import com.example.hmrback.model.request.LoginRequest;
 import com.example.hmrback.persistence.enums.IngredientType;
 import com.example.hmrback.persistence.enums.RecipeType;
 
@@ -35,8 +35,8 @@ public class CommonTestUtils {
             RecipeFilterEnum.INGREDIENT_TYPE.equals(filterEnum) ? ingredientTypes : null);
     }
 
-    public static GoogleAuthRequest buildRegisterRequest() {
-        return new GoogleAuthRequest("idToken");
+    public static LoginRequest buildRegisterRequest() {
+        return new LoginRequest("idToken");
     }
 
     public static UUID uuidFromLong(long value) {

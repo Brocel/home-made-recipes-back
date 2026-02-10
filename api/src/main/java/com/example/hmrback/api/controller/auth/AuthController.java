@@ -1,9 +1,9 @@
 package com.example.hmrback.api.controller.auth;
 
-import com.example.hmrback.model.request.GoogleAuthRequest;
-import com.example.hmrback.model.request.RegistrationRequest;
+import com.example.hmrback.model.request.LoginRequest;
+import com.example.hmrback.model.request.RegisterRequest;
 import com.example.hmrback.model.response.AuthResponse;
-import com.example.hmrback.service.auth.GoogleAuthService;
+import com.example.hmrback.service.auth.AuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,20 +21,20 @@ import static com.example.hmrback.constant.ControllerConstants.BASE_PATH;
 @RequestMapping(BASE_PATH)
 public class AuthController {
 
-    private final GoogleAuthService googleAuthService;
+    private final AuthenticationService authenticationService;
 
     @Autowired
-    public AuthController(GoogleAuthService googleAuthService) {
-        this.googleAuthService = googleAuthService;
+    public AuthController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
     @PostMapping("/auth/google")
     public ResponseEntity<AuthResponse> authenticateWithGoogle(
             @RequestBody
             @Valid
-            GoogleAuthRequest request) throws GeneralSecurityException, IOException {
+            LoginRequest request) throws GeneralSecurityException, IOException {
 
-        AuthResponse response = this.googleAuthService.authenticateViaGoogle(request);
+        AuthResponse response = this.authenticationService.authenticateViaGoogle(request);
 
         return ResponseEntity.ok(response);
     }
@@ -43,9 +43,9 @@ public class AuthController {
     public ResponseEntity<AuthResponse> register(
             @RequestBody
             @Valid
-            RegistrationRequest request) {
+            RegisterRequest request) {
 
-        AuthResponse response = this.googleAuthService.register(request);
+        AuthResponse response = this.authenticationService.register(request);
 
         return ResponseEntity.ok(response);
     }

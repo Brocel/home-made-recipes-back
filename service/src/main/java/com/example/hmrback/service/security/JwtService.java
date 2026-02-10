@@ -1,4 +1,4 @@
-package com.example.hmrback.service.auth;
+package com.example.hmrback.service.security;
 
 import com.example.hmrback.persistence.entity.UserEntity;
 import io.jsonwebtoken.Claims;
@@ -25,7 +25,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generate(UserEntity user) {
+    public String generateToken(UserEntity user) {
         Instant now = Instant.now();
         Instant exp = now.plus(Duration.ofHours(6));
 

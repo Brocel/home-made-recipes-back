@@ -31,9 +31,6 @@ public class UserEntity {
     @Column(name = "LAST_NAME", length = 100, nullable = false)
     private String lastName;
 
-    @Column(name = "DISPLAY_NAME", length = 100, nullable = false, unique = true)
-    private String displayName;
-
     @Column(name = "USERNAME", length = 100, nullable = false, unique = true)
     private String username;
 

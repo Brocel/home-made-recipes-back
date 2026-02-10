@@ -1,9 +1,7 @@
 package com.example.hmrback.api.security;
 
-import com.example.hmrback.model.User;
 import com.example.hmrback.persistence.entity.UserEntity;
-import com.example.hmrback.persistence.enums.RoleEnum;
-import com.example.hmrback.service.auth.JwtService;
+import com.example.hmrback.service.security.JwtService;
 import com.example.hmrback.service.user.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -20,7 +18,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
