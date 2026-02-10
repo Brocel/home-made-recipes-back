@@ -6,19 +6,7 @@ spring:
     password:
 
   security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: fake-google-id-for-tests
-            client-secret: fake-google-secret-for-tests
-            scope:
-              - openid
-              - profile
-              - email
-        provider:
-          google:
-            issuer-uri: https://accounts.google.com
+    oauth2: #TODO
 
   jpa:
     hibernate:

@@ -3,19 +3,7 @@ spring:
     name: home-made-recipes-back
 
   security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET}
-            scope:
-              - openid
-              - profile
-              - email
-        provider:
-          google:
-            issuer-uri: https://accounts.google.com
+    oauth2: # TODO: complete later
 
   jackson:
     serialization:
@@ -53,8 +41,8 @@ springdoc:
     path: /swagger-ui.html
     operationsSorter: alpha
     oauth:
-      client-id: ${GOOGLE_CLIENT_ID}
-      client-secret: ${GOOGLE_CLIENT_SECRET}
+      client-id: #TODO
+      client-secret: #TODO
       scopes: openid, profile, email
       use-pkce-with-authorization-code-grant: true
     oauth2-redirect-url: ${SWAGGER_OAUTH2_REDIRECT_URL:http://localhost:8080/swagger-ui/oauth2-redirect.html}
@@ -70,3 +58,6 @@ logging:
 
 admin:
   emails: ${ADMIN_EMAILS:}
+
+jwt:
+  secret-key: ${JWT_SECRET}

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class AdminProperties {
-
+// TODO: mettre ça dans un util ?
     private final Set<String> adminEmails;
 
     public AdminProperties(

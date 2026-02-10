@@ -1,5 +1,7 @@
 package com.example.hmrback.service.user;
 
+import com.example.hmrback.mapper.UserMapper;
+import com.example.hmrback.model.User;
 import com.example.hmrback.persistence.entity.OAuth2AccountEntity;
 import com.example.hmrback.persistence.entity.RoleEntity;
 import com.example.hmrback.persistence.entity.UserEntity;
@@ -31,11 +33,18 @@ public class UserService {
 
     private final UserCreationService userCreationService;
 
+    private final UserMapper userMapper;
+
     @Value("${admin.emails}")
     String adminEmailsRaw;
 
     public Optional<UserEntity> findByEmail(String email) {
         return this.userRepository.findByEmail(email);
+    }
+
+    public UserEntity createUser(User user) {
+        LOG.info("Saving new user :: {}", user.email());
+        return this.userRepository.save(this.userMapper.toEntity(user));
     }
 
     // TODO: refacto pour coller à la nouvelle logique

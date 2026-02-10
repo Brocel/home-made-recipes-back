@@ -10,8 +10,6 @@ import com.example.hmrback.model.response.AuthResponse;
 import com.example.hmrback.persistence.entity.UserEntity;
 import com.example.hmrback.persistence.enums.RoleEnum;
 import com.example.hmrback.service.user.UserService;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -32,10 +30,8 @@ public class GoogleAuthService {
 
     private static final Logger LOG = LoggerFactory.getLogger(GoogleAuthService.class);
 
-    private final JwtDecoder googleJwtDecoder;
-    private final GoogleIdTokenVerifier googleIdTokenVerifier;
-
     private final UserService userService;
+    private final JwtService jwtService;
 
     private final UserMapper userMapper;
 
@@ -51,22 +47,16 @@ public class GoogleAuthService {
             throws GeneralSecurityException, IOException {
 
         String idTokenString = request.idToken();
-        GoogleIdToken idToken;
 
         if (StringUtils.isNotBlank(idTokenString)) {
-            idToken = googleIdTokenVerifier.verify(idTokenString);
         } else {
             // TODO: throw custom exception
             throw new GeneralSecurityException("Google Id Token shouldn't be null");
         }
 
-        GoogleIdToken.Payload payload = idToken.getPayload();
-        String email = payload.getEmail();
-        String firstName = (String) payload.get("given_name");
-        String lastName = (String) payload.get("family_name");
-        String username = (String) payload.get("name");
+        // TODO: remplace google logic by simple password auth
 
-        Optional<UserEntity> optionalUserEntity = this.userService.findByEmail(email);
+        Optional<UserEntity> optionalUserEntity = this.userService.findByEmail("email");
 
         if (optionalUserEntity.isPresent()) {
             UserEntity userEntity = optionalUserEntity.get();
@@ -82,10 +72,10 @@ public class GoogleAuthService {
                 null,
                 null,
                 true,
-                new UserBasicInfo(email,
-                                  firstName,
-                                  lastName,
-                                  username)
+                new UserBasicInfo("email",
+                                  "firstName",
+                                  "lastName",
+                                  "username")
         );
     }
 
