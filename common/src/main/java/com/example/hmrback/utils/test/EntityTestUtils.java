@@ -39,7 +39,6 @@ public class EntityTestUtils {
         userEntity.setFirstName(FIRST_NAME.formatted(ordinal));
         userEntity.setLastName(LAST_NAME.formatted(ordinal));
         userEntity.setUsername(USERNAME.formatted(ordinal));
-        userEntity.setDisplayName(FIRST_NAME.formatted(ordinal) + " " + LAST_NAME.formatted(ordinal));
         userEntity.setEmail(EMAIL.formatted(ordinal));
         userEntity.setBirthDate(LocalDate.now().minusYears(10 * ordinal));
         userEntity.setInscriptionDate(LocalDate.now().minusMonths(ordinal));

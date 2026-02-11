@@ -1,27 +1,33 @@
 package com.example.hmrback.config;
 
-import com.example.hmrback.api.security.JwtFilter;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-import java.util.Collections;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 
 @Configuration
@@ -31,11 +37,12 @@ import java.util.List;
 public class SecurityConfig {
 
     public static final String BASE_API = "/hmr/api";
+    public static final String AUTH_API = "/auth";
 
     @Value("${FRONTEND_URLS:http://localhost:4200}")
     private String frontendUrlsRaw;
-
-    private final JwtFilter jwtFilter;
+    @Value("${jwt.secret-key}")
+    private String secret;
 
     private static final String[] SWAGGER_WHITELIST = {
             "/v3/api-docs/**",
@@ -46,10 +53,10 @@ public class SecurityConfig {
     };
 
     private static final String[] PUBLIC_WHITELIST = {
-            BASE_API + "/auth/google",
-            // login Google
-            BASE_API + "/register",
-            // registration Google
+            BASE_API + AUTH_API + "/login",
+            BASE_API + AUTH_API + "/register",
+            BASE_API + AUTH_API + "/check-username",
+            BASE_API + "/recipes/daily",
             "/css/**",
             "/js/**",
             "/images/**",
@@ -57,81 +64,63 @@ public class SecurityConfig {
             "/actuator/info"
     };
 
-    private static final String[] PUBLIC_RECIPE_WHITELIST = {
-            BASE_API + "/recipes/daily"
-    };
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        // CSRF must be disabled for Google login POST
-        RequestMatcher ignoreCsrfForAuthGoogle =
-                request -> ("/hmr/api/auth/google".equals(request.getRequestURI())
-                        && HttpMethod.POST.matches(request.getMethod()));
-
-        http
-                .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers(ignoreCsrfForAuthGoogle)
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(SWAGGER_WHITELIST)
-                        .permitAll()
-                        .requestMatchers(PUBLIC_WHITELIST)
-                        .permitAll()
-                        .requestMatchers(PUBLIC_RECIPE_WHITELIST)
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated()
-                )
-                .oauth2Login(AbstractHttpConfigurer::disable) // you don't use Spring OAuth2 login
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                );
-
-        // Add your JWT filter BEFORE UsernamePasswordAuthenticationFilter
-        http.addFilterBefore(jwtFilter,
-                             UsernamePasswordAuthenticationFilter.class);
-
+        http.csrf(AbstractHttpConfigurer::disable)
+            .cors(Customizer.withDefaults())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth.requestMatchers(PUBLIC_WHITELIST)
+                                               .permitAll()
+                                               .requestMatchers(SWAGGER_WHITELIST)
+                                               .permitAll()
+                                               .anyRequest()
+                                               .authenticated())
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())
+                                                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())));
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        List<String> allowedOrigins = parseFrontendUrls(frontendUrlsRaw);
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(allowedOrigins);
-        configuration.setAllowedMethods(Arrays.asList("GET",
-                                                      "POST",
-                                                      "PUT",
-                                                      "DELETE",
-                                                      "OPTIONS",
-                                                      "PATCH"));
-        configuration.setAllowedHeaders(Collections.singletonList("*"));
-        configuration.setExposedHeaders(Arrays.asList("Authorization",
-                                                      "Content-Type",
-                                                      "X-CSRF-TOKEN"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(frontendUrlsRaw.split(",")));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**",
-                                         configuration);
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 
-    private List<String> parseFrontendUrls(String raw) {
-        return Arrays.stream(raw.split(","))
-                     .map(String::trim)
-                     .filter(s -> !s.isEmpty())
-                     .toList();
+
+    @Bean
+    public JwtDecoder jwtDecoder() {
+        SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        return NimbusJwtDecoder.withSecretKey(key)
+                               .build();
     }
+
+    @Bean
+    public Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter() {
+        return jwt -> {
+            String email = jwt.getSubject();
+            List<String> roles = jwt.getClaimAsStringList("roles");
+            Collection<SimpleGrantedAuthority> authorities = roles == null ?
+                                                             List.of() :
+                                                             roles.stream()
+                                                                  .map(SimpleGrantedAuthority::new)
+                                                                  .toList();
+            return new UsernamePasswordAuthenticationToken(email,
+                                                           null,
+                                                           authorities);
+        };
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
 }
 

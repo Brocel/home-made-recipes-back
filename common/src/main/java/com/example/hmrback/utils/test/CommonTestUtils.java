@@ -1,5 +1,6 @@
 package com.example.hmrback.utils.test;
 
+import com.example.hmrback.model.User;
 import com.example.hmrback.model.filter.ProductFilter;
 import com.example.hmrback.model.filter.RecipeFilter;
 import com.example.hmrback.model.request.LoginRequest;
@@ -35,8 +36,8 @@ public class CommonTestUtils {
             RecipeFilterEnum.INGREDIENT_TYPE.equals(filterEnum) ? ingredientTypes : null);
     }
 
-    public static LoginRequest buildRegisterRequest() {
-        return new LoginRequest("idToken");
+    public static LoginRequest buildRegisterRequest(User user) {
+        return new LoginRequest("idToken", user.email());
     }
 
     public static UUID uuidFromLong(long value) {

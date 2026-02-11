@@ -40,15 +40,27 @@ public class AuthenticationService {
     @Value("${admin.emails}")
     String adminEmailsRaw;
 
+    /**
+     * TODO: régler ça à la volée lors de la saisie dans le front
+     *
+     * @param username
+     * @return
+     */
+    public boolean existsByUsername(String username) {
+        return this.userRepository.existsByUsername(username);
+    }
+
+    /**
+     * TODO
+     * @param req
+     * @return
+     */
     public AuthResponse register(RegisterRequest req) {
 
         if (this.userRepository.existsByEmail(req.email()))
-            throw new RuntimeException("Email already used");
+            throw new RuntimeException("Email already used"); // TODO: create custom exception
 
-        // TODO: mettre la logique de check username dans une autre méthode pour régler ça à la volée lors de la saisie dans le front
-        if (userRepository.existsByUsername(req.username()))
-            throw new RuntimeException("Username already used");
-
+        // User creation
         UserEntity user = new UserEntity();
         user.setFirstName(req.firstName());
         user.setLastName(req.lastName());
@@ -58,7 +70,7 @@ public class AuthenticationService {
         user.setInscriptionDate(LocalDate.now());
         user.setPassword(passwordEncoder.encode(req.password()));
 
-        // rôle par défaut
+        // Roles
         Set<RoleEntity> roles = new HashSet<>();
         Optional<RoleEntity> roleUser = this.roleRepository.findByName(RoleEnum.ROLE_USER);
         roleUser.ifPresent(roles::add);
@@ -81,10 +93,15 @@ public class AuthenticationService {
         );
     }
 
+    /**
+     * TODO
+     * @param req
+     * @return
+     */
     public AuthResponse login(LoginRequest req) {
 
         UserEntity user = userRepository.findByEmail(req.email())
-                                        .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+                                        .orElseThrow(() -> new RuntimeException("Invalid credentials")); // TODO: custom exception
 
         if (!passwordEncoder.matches(req.password(),
                                      user.getPassword()))

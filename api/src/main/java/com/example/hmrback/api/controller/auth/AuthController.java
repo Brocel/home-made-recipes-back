@@ -7,18 +7,12 @@ import com.example.hmrback.service.auth.AuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
+import org.springframework.web.bind.annotation.*;
 
 import static com.example.hmrback.constant.ControllerConstants.BASE_PATH;
 
 @RestController
-@RequestMapping(BASE_PATH)
+@RequestMapping(BASE_PATH + "/auth")
 public class AuthController {
 
     private final AuthenticationService authenticationService;
@@ -28,13 +22,20 @@ public class AuthController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping("/auth/google")
+    @GetMapping("/check-username")
+    public ResponseEntity<Boolean> existsByUsername(@RequestParam("username") String username) {
+        boolean existByUsername = this.authenticationService.existsByUsername(username);
+
+        return ResponseEntity.ok(existByUsername);
+    }
+
+    @PostMapping("/login")
     public ResponseEntity<AuthResponse> authenticateWithGoogle(
             @RequestBody
             @Valid
-            LoginRequest request) throws GeneralSecurityException, IOException {
+            LoginRequest request) {
 
-        AuthResponse response = this.authenticationService.authenticateViaGoogle(request);
+        AuthResponse response = this.authenticationService.login(request);
 
         return ResponseEntity.ok(response);
     }
