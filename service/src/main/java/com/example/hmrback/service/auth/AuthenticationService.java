@@ -1,5 +1,6 @@
 package com.example.hmrback.service.auth;
 
+import com.example.hmrback.exception.AuthException;
 import com.example.hmrback.mapper.UserMapper;
 import com.example.hmrback.model.request.LoginRequest;
 import com.example.hmrback.model.request.RegisterRequest;
@@ -9,12 +10,15 @@ import com.example.hmrback.persistence.entity.UserEntity;
 import com.example.hmrback.persistence.enums.RoleEnum;
 import com.example.hmrback.persistence.repository.RoleRepository;
 import com.example.hmrback.persistence.repository.UserRepository;
+import com.example.hmrback.utils.DateUtils;
 import com.example.hmrback.utils.JwtUtils;
 import com.example.hmrback.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.logging.LogLevel;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -69,7 +73,7 @@ public class AuthenticationService {
         user.setLastName(req.lastName());
         user.setUsername(req.username());
         user.setEmail(req.email());
-        user.setBirthDate(LocalDate.parse(req.birthDate()));
+        user.setBirthDate(DateUtils.parseLocalDate(req.birthDate()));
         user.setInscriptionDate(LocalDate.now());
         user.setPassword(passwordEncoder.encode(req.password()));
 
@@ -107,11 +111,16 @@ public class AuthenticationService {
     public AuthResponse login(LoginRequest req) {
 
         UserEntity user = userRepository.findByEmail(req.email())
-                                        .orElseThrow(() -> new RuntimeException("Invalid credentials")); // TODO: custom exception
+                                        .orElseThrow(() -> new AuthException(HttpStatus.UNAUTHORIZED,
+                                                                             LogLevel.WARN,
+                                                                             "Invalid email"));
 
         if (!passwordEncoder.matches(req.password(),
-                                     user.getPassword()))
-            throw new RuntimeException("Invalid credentials");
+                                     user.getPassword())) {
+            throw new AuthException(HttpStatus.UNAUTHORIZED,
+                                    LogLevel.WARN,
+                                    "Invalid password");
+        }
 
         String token = JwtUtils.generateToken(user,
                                               expirationMinutes,

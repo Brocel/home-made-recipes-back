@@ -30,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticateWithGoogle(
+    public ResponseEntity<AuthResponse> login(
             @RequestBody
             @Valid
             LoginRequest request) {
