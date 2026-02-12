@@ -3,8 +3,10 @@ package com.example.hmrback.utils.test;
 import com.example.hmrback.persistence.entity.IngredientEntity;
 import com.example.hmrback.persistence.entity.ProductEntity;
 import com.example.hmrback.persistence.entity.RecipeEntity;
+import com.example.hmrback.persistence.entity.UserEntity;
 import com.example.hmrback.persistence.enums.IngredientType;
 import com.example.hmrback.persistence.enums.Unit;
+import com.example.hmrback.utils.JwtUtils;
 import com.example.hmrback.utils.NormalizeUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,8 +20,8 @@ public class IntegrationTestUtils {
     }
 
     private static final ObjectMapper objectMapper = new ObjectMapper()
-        .findAndRegisterModules()
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            .findAndRegisterModules()
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     public static String toJson(Object obj) throws JsonProcessingException {
         return objectMapper.writeValueAsString(obj);
@@ -119,19 +121,42 @@ public class IntegrationTestUtils {
         starches.setIngredientType(IngredientType.STARCHES);
         starches.setNormalizedName(NormalizeUtils.normalizeText(starches.getName()));
 
-        return List.of(carrot, apple, chicken, fish, sf, cream, cheese, rice, spice, cond, nut, herb, fat, sugar, water, drink, starches);
+        return List.of(carrot,
+                       apple,
+                       chicken,
+                       fish,
+                       sf,
+                       cream,
+                       cheese,
+                       rice,
+                       spice,
+                       cond,
+                       nut,
+                       herb,
+                       fat,
+                       sugar,
+                       water,
+                       drink,
+                       starches);
     }
 
-    public static List<IngredientEntity> buildIngredientEntityList(RecipeEntity recipe, List<ProductEntity> products) {
+    public static List<IngredientEntity> buildIngredientEntityList(RecipeEntity recipe,
+                                                                   List<ProductEntity> products) {
         return products.stream()
-            .map(p -> {
-                IngredientEntity ing = new IngredientEntity();
-                ing.setRecipe(recipe);
-                ing.setProduct(p);
-                ing.setQuantity(100D);
-                ing.setUnit(Unit.GRAM);
-                return ing;
-            })
-            .toList();
+                       .map(p -> {
+                           IngredientEntity ing = new IngredientEntity();
+                           ing.setRecipe(recipe);
+                           ing.setProduct(p);
+                           ing.setQuantity(100D);
+                           ing.setUnit(Unit.GRAM);
+                           return ing;
+                       })
+                       .toList();
+    }
+
+    public static String generateToken(UserEntity user) {
+        return JwtUtils.generateToken(user,
+                                      10L,
+                                      "fake-secret-key-just-for-integration-tests-666");
     }
 }

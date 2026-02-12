@@ -9,7 +9,7 @@ import com.example.hmrback.persistence.entity.UserEntity;
 import com.example.hmrback.persistence.enums.RoleEnum;
 import com.example.hmrback.persistence.repository.RoleRepository;
 import com.example.hmrback.persistence.repository.UserRepository;
-import com.example.hmrback.service.security.JwtService;
+import com.example.hmrback.utils.JwtUtils;
 import com.example.hmrback.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -32,13 +32,15 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
-    private final JwtService jwtService;
-
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
     @Value("${admin.emails}")
     String adminEmailsRaw;
+    @Value("${jwt.secret-key}")
+    private String secretKey;
+    @Value("${jwt.expiration-minutes}")
+    private Long expirationMinutes;
 
     /**
      * TODO: régler ça à la volée lors de la saisie dans le front
@@ -52,6 +54,7 @@ public class AuthenticationService {
 
     /**
      * TODO
+     *
      * @param req
      * @return
      */
@@ -85,7 +88,9 @@ public class AuthenticationService {
 
         UserEntity savedUser = userRepository.save(user);
 
-        String token = jwtService.generateToken(savedUser);
+        String token = JwtUtils.generateToken(savedUser,
+                                              expirationMinutes,
+                                              secretKey);
 
         return new AuthResponse(
                 token,
@@ -95,6 +100,7 @@ public class AuthenticationService {
 
     /**
      * TODO
+     *
      * @param req
      * @return
      */
@@ -107,7 +113,9 @@ public class AuthenticationService {
                                      user.getPassword()))
             throw new RuntimeException("Invalid credentials");
 
-        String token = jwtService.generateToken(user);
+        String token = JwtUtils.generateToken(user,
+                                              expirationMinutes,
+                                              secretKey);
 
         return new AuthResponse(
                 token,

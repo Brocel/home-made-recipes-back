@@ -102,16 +102,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter() {
+    public Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
         return jwt -> {
-            String email = jwt.getSubject();
+            String username = jwt.getClaim("username");
+
             List<String> roles = jwt.getClaimAsStringList("roles");
             Collection<SimpleGrantedAuthority> authorities = roles == null ?
                                                              List.of() :
                                                              roles.stream()
                                                                   .map(SimpleGrantedAuthority::new)
                                                                   .toList();
-            return new UsernamePasswordAuthenticationToken(email,
+            return new UsernamePasswordAuthenticationToken(username,
                                                            null,
                                                            authorities);
         };

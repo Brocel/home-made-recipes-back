@@ -11,11 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Set;
 
-import static com.example.hmrback.utils.test.TestConstants.PASSWORD;
 import static com.example.hmrback.utils.test.TestConstants.SHOULD_BE_INITIALIZED_MESSAGE;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -48,9 +42,9 @@ public class RecipeBaseIntegrationTest {
     public static UserEntity savedAdmin;
     public static UserEntity savedOtherUser;
 
-    public static Authentication adminAuth;
-    public static Authentication userAuth;
-    public static Authentication otherUserAuth;
+    public static String userToken;
+    public static String adminToken;
+    public static String otherUserToken;
 
     public static RecipeEntity savedRecipe;
     public static RecipeEntity savedOtherRecipe;
@@ -64,8 +58,8 @@ public class RecipeBaseIntegrationTest {
      */
     @BeforeAll
     static void setup(
-        @Autowired
-        ApplicationContext context) {
+            @Autowired
+            ApplicationContext context) {
         LOG.info("[Integration Tests] Base Setup");
 
         // Role setup
@@ -93,21 +87,32 @@ public class RecipeBaseIntegrationTest {
     @Test
     @Order(0)
     void contextLoads() {
-        assertNotNull(roleUser, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Role USER"));
-        assertNotNull(roleAdmin, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Role ADMIN"));
+        assertNotNull(roleUser,
+                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Role USER"));
+        assertNotNull(roleAdmin,
+                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Role ADMIN"));
 
-        assertNotNull(savedUser, SHOULD_BE_INITIALIZED_MESSAGE.formatted("User"));
-        assertNotNull(savedAdmin, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Admin"));
-        assertNotNull(savedOtherUser, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Other User"));
+        assertNotNull(savedUser,
+                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("User"));
+        assertNotNull(savedAdmin,
+                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Admin"));
+        assertNotNull(savedOtherUser,
+                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Other User"));
 
-        assertNotNull(adminAuth, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Admin auth"));
-        assertNotNull(userAuth, SHOULD_BE_INITIALIZED_MESSAGE.formatted("User auth"));
-        assertNotNull(otherUserAuth, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Other user auth"));
+        assertNotNull(adminToken,
+                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Admin token"));
+        assertNotNull(userToken,
+                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("User token"));
+        assertNotNull(otherUserToken,
+                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Other user token"));
 
-        assertNotNull(savedRecipe, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Saved Recipe"));
-        assertNotNull(savedOtherRecipe, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Saved other Recipe"));
+        assertNotNull(savedRecipe,
+                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Saved Recipe"));
+        assertNotNull(savedOtherRecipe,
+                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Saved other Recipe"));
 
-        assertNotNull(savedProducts, SHOULD_BE_INITIALIZED_MESSAGE.formatted("Saved products"));
+        assertNotNull(savedProducts,
+                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Saved products"));
     }
 
     public static void roleSetup(ApplicationContext context) {
@@ -120,31 +125,36 @@ public class RecipeBaseIntegrationTest {
     public static void userSetup(ApplicationContext context) {
         UserRepository userRepository = context.getBean(UserRepository.class);
 
-        UserEntity user = EntityTestUtils.buildUserEntity(1L, true);
+        UserEntity user = EntityTestUtils.buildUserEntity(1L,
+                                                          true);
         user.setRoles(Set.of(roleUser));
         savedUser = userRepository.save(user);
 
-        UserEntity admin = EntityTestUtils.buildUserEntity(2L, true);
+        UserEntity admin = EntityTestUtils.buildUserEntity(2L,
+                                                           true);
         admin.setUsername("admin");
-        admin.setRoles(Set.of(roleAdmin, roleUser));
+        admin.setRoles(Set.of(roleAdmin,
+                              roleUser));
         savedAdmin = userRepository.save(admin);
 
-        UserEntity otherUser = EntityTestUtils.buildUserEntity(3L, true);
+        UserEntity otherUser = EntityTestUtils.buildUserEntity(3L,
+                                                               true);
         otherUser.setUsername("otherUser");
         otherUser.setRoles(Set.of(roleUser));
         savedOtherUser = userRepository.save(otherUser);
     }
 
     public static void authSetup() {
-        adminAuth = generateAuthentication(savedAdmin, "ROLE_ADMIN");
-        userAuth = generateAuthentication(savedUser, "ROLE_USER");
-        otherUserAuth = generateAuthentication(savedOtherUser, "ROLE_USER");
+        userToken = IntegrationTestUtils.generateToken(savedUser);
+        adminToken = IntegrationTestUtils.generateToken(savedAdmin);
+        otherUserToken = IntegrationTestUtils.generateToken(savedOtherUser);
     }
 
     public static void recipeSetup(ApplicationContext context) {
         RecipeRepository recipeRepository = context.getBean(RecipeRepository.class);
 
-        RecipeEntity recipeEntity = EntityTestUtils.buildRecipeEntity(1L, true);
+        RecipeEntity recipeEntity = EntityTestUtils.buildRecipeEntity(1L,
+                                                                      true);
         recipeEntity.setAuthor(savedUser);
         savedRecipe = recipeRepository.save(recipeEntity);
 
@@ -155,10 +165,11 @@ public class RecipeBaseIntegrationTest {
 
     public static void stepSetup(ApplicationContext context) {
         StepRepository stepRepository = context.getBean(StepRepository.class);
-        List<StepEntity> stepList = EntityTestUtils.buildStepEntityList(5, true)
-            .stream()
-            .peek(step -> step.setRecipe(savedRecipe))
-            .toList();
+        List<StepEntity> stepList = EntityTestUtils.buildStepEntityList(5,
+                                                                        true)
+                                                   .stream()
+                                                   .peek(step -> step.setRecipe(savedRecipe))
+                                                   .toList();
         stepRepository.saveAll(stepList);
     }
 
@@ -170,19 +181,10 @@ public class RecipeBaseIntegrationTest {
 
     public static void ingredientSetup(ApplicationContext context) {
         IngredientRepository ingredientRepository = context.getBean(IngredientRepository.class);
-        List<IngredientEntity> ingredientEntityList = IntegrationTestUtils.buildIngredientEntityList(savedRecipe, savedProducts);
+        List<IngredientEntity> ingredientEntityList = IntegrationTestUtils.buildIngredientEntityList(savedRecipe,
+                                                                                                     savedProducts);
         ingredientRepository.saveAll(ingredientEntityList);
 
-    }
-
-    public static Authentication generateAuthentication(UserEntity user, String role) {
-        UserDetails userDetails = User.withUsername(user.getUsername())
-            .password(PASSWORD)
-            .authorities(new SimpleGrantedAuthority(role))
-            .build();
-
-        return new UsernamePasswordAuthenticationToken(
-            userDetails, userDetails.getPassword(), userDetails.getAuthorities());
     }
 
 }

@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,11 +31,12 @@ class ProductControllerUpdateTest extends RecipeBaseIntegrationTest {
     void updateProduct_AsAdmin_ShouldSucceed() throws Exception {
 
         mockMvc.perform(put("/hmr/api/products/" + 1L)
-                .with(authentication(adminAuth))
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(updateProductRequest))
-            .andExpect(status().isOk());
+                                .header("Authorization",
+                                        "Bearer " + adminToken)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(updateProductRequest))
+               .andExpect(status().isOk());
     }
 
     @Test
@@ -44,10 +44,11 @@ class ProductControllerUpdateTest extends RecipeBaseIntegrationTest {
     @Transactional
     void updateProduct_AsUser_ShouldFail() throws Exception {
         mockMvc.perform(put("/hmr/api/products/" + 1L)
-                .with(authentication(userAuth))
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(updateProductRequest))
-            .andExpect(status().isForbidden());
+                                .header("Authorization",
+                                        "Bearer " + userToken)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(updateProductRequest))
+               .andExpect(status().isForbidden());
     }
 }

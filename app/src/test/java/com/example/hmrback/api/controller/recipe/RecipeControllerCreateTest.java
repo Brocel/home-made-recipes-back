@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,10 +22,11 @@ class RecipeControllerCreateTest extends RecipeBaseIntegrationTest {
         String createRecipeRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildRecipeForCreation(1L));
 
         mockMvc.perform(post("/hmr/api/recipes")
-                .with(authentication(userAuth))
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createRecipeRequest))
-            .andExpect(status().isOk());
+                                .header("Authorization",
+                                        "Bearer " + userToken)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(createRecipeRequest))
+               .andExpect(status().isOk());
     }
 }

@@ -12,23 +12,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Transactional
 class ProductControllerReadTest extends RecipeBaseIntegrationTest {
 
     private final Map<ProductFilterEnum, Integer> expectedContentSizeResults = Map.of(
-        ProductFilterEnum.NULL, 0,
-        ProductFilterEnum.JUST_NAME, 1,
-        ProductFilterEnum.ALL_TYPE, 17,
-        ProductFilterEnum.ONLY_OTHER, 0,
-        ProductFilterEnum.SINGLE_CATEGORY, 1,
-        ProductFilterEnum.THREE_CATEGORIES, 3
+            ProductFilterEnum.NULL,
+            0,
+            ProductFilterEnum.JUST_NAME,
+            1,
+            ProductFilterEnum.ALL_TYPE,
+            17,
+            ProductFilterEnum.ONLY_OTHER,
+            0,
+            ProductFilterEnum.SINGLE_CATEGORY,
+            1,
+            ProductFilterEnum.THREE_CATEGORIES,
+            3
     );
 
     @ParameterizedTest
@@ -37,31 +40,38 @@ class ProductControllerReadTest extends RecipeBaseIntegrationTest {
     @Transactional
     void searchProducts(ProductFilterEnum productFilterEnum) throws Exception {
 
-        String productsFilter = IntegrationTestUtils.toJson(CommonTestUtils.buildProductFilter(productFilterEnum, true));
+        String productsFilter = IntegrationTestUtils.toJson(CommonTestUtils.buildProductFilter(productFilterEnum,
+                                                                                               true));
 
         if (ProductFilterEnum.NULL.equals(productFilterEnum) || ProductFilterEnum.ONLY_OTHER.equals(productFilterEnum)) {
             mockMvc.perform(post("/hmr/api/products/search")
-                    .with(authentication(userAuth))
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(productsFilter)
-                    .param("page", "0")
-                    .param("size", "50"))
-                .andExpect(status().isNoContent());
+                                    .header("Authorization",
+                                            "Bearer " + userToken)
+                                    .with(csrf())
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(productsFilter)
+                                    .param("page",
+                                           "0")
+                                    .param("size",
+                                           "50"))
+                   .andExpect(status().isNoContent());
 
         } else {
             mockMvc.perform(post("/hmr/api/products/search")
-                    .with(authentication(userAuth))
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(productsFilter)
-                    .param("page", "0")
-                    .param("size", "50"))
-                .andExpect(status().isOk())
-                .andExpect(header().exists("X-Total-Count"))
-                .andExpect(jsonPath("$.content").exists())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content.length()").value(expectedContentSizeResults.get(productFilterEnum)));
+                                    .header("Authorization",
+                                            "Bearer " + userToken)
+                                    .with(csrf())
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(productsFilter)
+                                    .param("page",
+                                           "0")
+                                    .param("size",
+                                           "50"))
+                   .andExpect(status().isOk())
+                   .andExpect(header().exists("X-Total-Count"))
+                   .andExpect(jsonPath("$.content").exists())
+                   .andExpect(jsonPath("$.content").isArray())
+                   .andExpect(jsonPath("$.content.length()").value(expectedContentSizeResults.get(productFilterEnum)));
 
         }
     }
@@ -72,15 +82,19 @@ class ProductControllerReadTest extends RecipeBaseIntegrationTest {
     @Transactional
     void searchProducts_withNoMatchingFilter(ProductFilterEnum productFilterEnum) throws Exception {
 
-        String productsFilter = IntegrationTestUtils.toJson(CommonTestUtils.buildProductFilter(productFilterEnum, false));
+        String productsFilter = IntegrationTestUtils.toJson(CommonTestUtils.buildProductFilter(productFilterEnum,
+                                                                                               false));
 
         mockMvc.perform(post("/hmr/api/products/search")
-                .with(authentication(userAuth))
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(productsFilter)
-                .param("page", "0")
-                .param("size", "10"))
-            .andExpect(status().isNoContent());
+                                .header("Authorization",
+                                        "Bearer " + userToken)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(productsFilter)
+                                .param("page",
+                                       "0")
+                                .param("size",
+                                       "10"))
+               .andExpect(status().isNoContent());
     }
 }

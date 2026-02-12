@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -19,10 +18,11 @@ class ProductControllerDeleteTest extends RecipeBaseIntegrationTest {
     void deleteProduct_AsAdmin_ShouldSucceed() throws Exception {
 
         mockMvc.perform(delete("/hmr/api/products/" + 1L)
-                .with(authentication(adminAuth))
-                .with(csrf())
-            )
-            .andExpect(status().isNoContent());
+                                .header("Authorization",
+                                        "Bearer " + adminToken)
+                                .with(csrf())
+               )
+               .andExpect(status().isNoContent());
     }
 
     @Test
@@ -30,9 +30,10 @@ class ProductControllerDeleteTest extends RecipeBaseIntegrationTest {
     @Transactional
     void deleteProduct_AsUser_ShouldFail() throws Exception {
         mockMvc.perform(delete("/hmr/api/products/" + 1L)
-                .with(authentication(userAuth))
-                .with(csrf())
-            )
-            .andExpect(status().isForbidden());
+                                .header("Authorization",
+                                        "Bearer " + userToken)
+                                .with(csrf())
+               )
+               .andExpect(status().isForbidden());
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.example.hmrback.utils.test.TestConstants.FAKE;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,16 +25,17 @@ class ProductControllerCreateTest extends RecipeBaseIntegrationTest {
         String createProductRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildProductForCreation(existingProduct));
 
         mockMvc.perform(post("/hmr/api/products")
-                .with(authentication(userAuth))
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createProductRequest))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").exists())
-            .andExpect(jsonPath("$.name").exists())
-            .andExpect(jsonPath("$.name").value(FAKE))
-            .andExpect(jsonPath("$.ingredient_type").exists())
-            .andExpect(jsonPath("$.ingredient_type").value("OTHER"));
+                                .header("Authorization",
+                                        "Bearer " + userToken)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(createProductRequest))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.id").exists())
+               .andExpect(jsonPath("$.name").exists())
+               .andExpect(jsonPath("$.name").value(FAKE))
+               .andExpect(jsonPath("$.ingredient_type").exists())
+               .andExpect(jsonPath("$.ingredient_type").value("OTHER"));
     }
 
     @Test
@@ -46,16 +46,17 @@ class ProductControllerCreateTest extends RecipeBaseIntegrationTest {
         String createProductRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildProductForCreation(existingProduct));
 
         mockMvc.perform(post("/hmr/api/products")
-                .with(authentication(adminAuth))
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createProductRequest))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").exists())
-            .andExpect(jsonPath("$.name").exists())
-            .andExpect(jsonPath("$.name").value(FAKE))
-            .andExpect(jsonPath("$.ingredient_type").exists())
-            .andExpect(jsonPath("$.ingredient_type").value("OTHER"));
+                                .header("Authorization",
+                                        "Bearer " + adminToken)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(createProductRequest))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.id").exists())
+               .andExpect(jsonPath("$.name").exists())
+               .andExpect(jsonPath("$.name").value(FAKE))
+               .andExpect(jsonPath("$.ingredient_type").exists())
+               .andExpect(jsonPath("$.ingredient_type").value("OTHER"));
     }
 
     @Test
@@ -66,15 +67,16 @@ class ProductControllerCreateTest extends RecipeBaseIntegrationTest {
         String createProductRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildProductForCreation(existingProduct));
 
         mockMvc.perform(post("/hmr/api/products")
-                .with(authentication(userAuth))
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createProductRequest))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").exists())
-            .andExpect(jsonPath("$.name").exists())
-            .andExpect(jsonPath("$.name").value("Carrot"))
-            .andExpect(jsonPath("$.ingredient_type").exists())
-            .andExpect(jsonPath("$.ingredient_type").value("VEGETABLE"));
+                                .header("Authorization",
+                                        "Bearer " + userToken)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(createProductRequest))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.id").exists())
+               .andExpect(jsonPath("$.name").exists())
+               .andExpect(jsonPath("$.name").value("Carrot"))
+               .andExpect(jsonPath("$.ingredient_type").exists())
+               .andExpect(jsonPath("$.ingredient_type").value("VEGETABLE"));
     }
 }
