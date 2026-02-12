@@ -1,0 +1,38 @@
+type: object
+properties:
+  id:
+    type: string
+
+  first_name:
+    type: string
+
+  last_name:
+    type: string
+
+  username:
+    type: string
+
+  email:
+    type: string
+    format: email
+
+  birth_date:
+    type: string
+    description: Date in format validated by @ValidDate
+
+  inscription_date:
+    type: string
+    description: Registration date (ISO string or custom format)
+
+  roles:
+    type: array
+    items:
+      $ref: './role.yaml'
+
+required:
+  - first_name
+  - last_name
+  - username
+  - email
+  - birth_date
+  - roles

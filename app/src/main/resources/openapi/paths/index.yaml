@@ -1,0 +1,28 @@
+#RECIPES
+/recipes:
+  $ref: './recipes.yaml#/recipes'
+
+/recipes/search:
+  $ref: './recipes.yaml#/recipes_search'
+
+/recipes/daily:
+  $ref: './recipes.yaml#/recipes_daily'
+
+/recipes/{id}:
+  $ref: './recipes.yaml#/recipes_id'
+
+# PRODUCTS
+  /products:
+    $ref: './products.yaml#/products'
+  /products/search:
+    $ref: './products.yaml#/products-search'
+  /products/{id}:
+    $ref: './products.yaml#/products-id'
+
+  # AUTH
+  /auth/login:
+    $ref: './auth.yaml#/login'
+  /auth/register:
+    $ref: './auth.yaml#/register'
+  /auth/check-username:
+    $ref: './auth.yaml#/check-username'

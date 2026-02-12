@@ -1,0 +1,55 @@
+put:
+  tags:
+    - Products
+  summary: Update product
+  description: Requires ADMIN.
+  security:
+    - bearerAuth: [ ]
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../schemas/product.yaml'
+  responses:
+    '200':
+      description: Product updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/product.yaml'
+    '401':
+      description: Unauthorized
+    '403':
+      description: Forbidden
+    '404':
+      description: Product not found
+
+delete:
+  tags:
+    - Products
+  summary: Delete product
+  description: Requires ADMIN.
+  security:
+    - bearerAuth: [ ]
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+  responses:
+    '204':
+      description: Product deleted successfully
+    '401':
+      description: Unauthorized
+    '403':
+      description: Forbidden
+    '404':
+      description: Product not found

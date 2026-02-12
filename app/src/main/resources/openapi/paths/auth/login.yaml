@@ -1,0 +1,22 @@
+post:
+  tags:
+    - Auth
+  summary: Login
+  description: Authenticates a user using email and password. Returns a JWT token.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../schemas/login-request.yaml'
+  responses:
+    '200':
+      description: Successful login
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/auth-response.yaml'
+    '400':
+      description: Invalid request
+    '401':
+      description: Invalid credentials

@@ -1,0 +1,20 @@
+type: string
+enum:
+  - VEGETABLE
+  - FRUIT
+  - MEAT
+  - FISH
+  - SEA_FRUIT
+  - DAIRY
+  - CHEESE
+  - GRAIN
+  - SPICE
+  - CONDIMENT
+  - NUT
+  - HERBS
+  - FAT
+  - SUGAR
+  - BEVERAGE
+  - ALCOHOL
+  - STARCHES
+  - OTHER

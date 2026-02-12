@@ -1,0 +1,12 @@
+get:
+  tags:
+    - Recipes
+  summary: Get daily recipe
+  description: Fetches the daily recipe.
+  responses:
+    '200':
+      description: Daily recipe
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/recipe.yaml'

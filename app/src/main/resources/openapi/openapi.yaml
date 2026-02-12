@@ -1,0 +1,41 @@
+openapi: 3.0.3
+info:
+  title: HMR API
+  version: 1.0.0
+
+servers:
+  - url: /hmr/api
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  # RECIPES
+  /recipes:
+    $ref: './paths/recipes/recipes.yaml'
+  /recipes/search:
+    $ref: './paths/recipes/recipes-search.yaml'
+  /recipes/daily:
+    $ref: './paths/recipes/recipes-daily.yaml'
+  /recipes/{id}:
+    $ref: './paths/recipes/recipes-id.yaml'
+
+  # PRODUCTS
+  /products:
+    $ref: './paths/products/products.yaml'
+  /products/search:
+    $ref: './paths/products/products-search.yaml'
+  /products/{id}:
+    $ref: './paths/products/products-id.yaml'
+
+  # AUTH
+  /auth/login:
+    $ref: './paths/auth/login.yaml'
+  /auth/register:
+    $ref: './paths/auth/register.yaml'
+  /auth/check-username:
+    $ref: './paths/auth/check-username.yaml'

@@ -45,6 +45,6 @@ public record Recipe(
     List<@Valid Ingredient> ingredientList,
 
     @JsonProperty("step_list")
-    @NotEmpty(message = "Ingredient list" + CANNOT_BE_EMPTY)
+    @NotEmpty(message = "Step list" + CANNOT_BE_EMPTY)
     List<@Valid Step> stepList) {
 }

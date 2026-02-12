@@ -1,0 +1,22 @@
+type: object
+properties:
+  id:
+    type: integer
+  title:
+    type: string
+  description:
+    type: string
+  preparation_time:
+    type: integer
+  recipe_type:
+    $ref: './recipe_type.yaml'
+  publication_date:
+    type: string
+  ingredient_list:
+    type: array
+    items:
+      $ref: './ingredient.yaml'
+  step_list:
+    type: array
+    items:
+      $ref: './step.yaml'

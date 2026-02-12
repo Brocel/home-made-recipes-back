@@ -1,0 +1,9 @@
+type: string
+enum:
+  - STARTER
+  - MAIN_COURSE
+  - DESSERT
+  - BEVERAGE
+  - SNACK
+  - APPETIZER
+  - SIDE_DISH

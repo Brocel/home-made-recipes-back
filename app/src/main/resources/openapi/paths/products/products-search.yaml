@@ -1,0 +1,42 @@
+post:
+  tags:
+    - Products
+  summary: Search products
+  description: Filter and pageable search.
+  security:
+    - bearerAuth: [ ]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../schemas/product-filter.yaml'
+  parameters:
+    - in: query
+      name: page
+      schema:
+        type: integer
+        default: 0
+    - in: query
+      name: size
+      schema:
+        type: integer
+        default: 20
+    - in: query
+      name: sort
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Paginated list of products
+      headers:
+        X-Total-Count:
+          description: Total number of matching products
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/page-product.yaml'
+    '204':
+      description: No products found

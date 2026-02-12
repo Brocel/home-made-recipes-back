@@ -1,0 +1,10 @@
+type: object
+properties:
+  id:
+    type: integer
+  quantity:
+    type: number
+  unit:
+    $ref: './unit.yaml'
+  product:
+    $ref: './product.yaml'

@@ -1,0 +1,18 @@
+get:
+  tags:
+    - Auth
+  summary: Check if username exists
+  description: Returns true if the username already exists.
+  parameters:
+    - in: query
+      name: username
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Boolean result
+      content:
+        application/json:
+          schema:
+            type: boolean

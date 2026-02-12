@@ -1,0 +1,10 @@
+type: string
+enum:
+  - GRAM
+  - KILOGRAM
+  - LITER
+  - MILLILITER
+  - CUP
+  - TABLESPOON
+  - TEASPOON
+  - PIECE

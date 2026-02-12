@@ -1,0 +1,22 @@
+post:
+  tags:
+    - Auth
+  summary: Register
+  description: Creates a new user account.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../schemas/register-request.yaml'
+  responses:
+    '200':
+      description: Successful registration
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/auth-response.yaml'
+    '400':
+      description: Invalid request
+    '409':
+      description: Username or email already exists
