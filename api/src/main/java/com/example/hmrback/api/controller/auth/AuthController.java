@@ -1,5 +1,6 @@
 package com.example.hmrback.api.controller.auth;
 
+import com.example.hmrback.exception.AuthException;
 import com.example.hmrback.model.request.LoginRequest;
 import com.example.hmrback.model.request.RegisterRequest;
 import com.example.hmrback.model.response.AuthResponse;
@@ -33,7 +34,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(
             @RequestBody
             @Valid
-            LoginRequest request) {
+            LoginRequest request) throws AuthException {
 
         AuthResponse response = this.authenticationService.login(request);
 
@@ -44,7 +45,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> register(
             @RequestBody
             @Valid
-            RegisterRequest request) {
+            RegisterRequest request) throws AuthException {
 
         AuthResponse response = this.authenticationService.register(request);
 

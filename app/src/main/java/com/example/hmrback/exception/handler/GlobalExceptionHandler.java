@@ -2,6 +2,7 @@ package com.example.hmrback.exception.handler;
 
 import com.example.hmrback.exception.HomeMadeRecipeGenericException;
 import com.example.hmrback.exception.util.ApiError;
+import com.example.hmrback.exception.util.ExceptionMessageEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,20 +23,28 @@ public class GlobalExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
-        return buildResponseEntity(HttpStatus.FORBIDDEN, ACCESS_DENIED_EXCEPTION_MESSAGE, request.getRequestURI());
+    public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex,
+                                                       HttpServletRequest request) {
+        return buildResponseEntity(HttpStatus.FORBIDDEN,
+                                   ExceptionMessageEnum.ACCESS_DENIED,
+                                   request.getRequestURI());
     }
 
     @ExceptionHandler(HomeMadeRecipeGenericException.class)
-    public ResponseEntity<ApiError> handleHomeMadeRecipeGenericException(HomeMadeRecipeGenericException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleHomeMadeRecipeGenericException(HomeMadeRecipeGenericException ex,
+                                                                         HttpServletRequest request) {
 
         if (LogLevel.WARN.equals(ex.getLogLevel())) {
-            LOGGER.warn(ex.getMessage());
+            LOGGER.warn(ex.getExceptionEnum());
         } else {
-            LOGGER.error(EXCEPTION_BASE_MESSAGE, request.getRequestURI(), ex);
+            LOGGER.error(EXCEPTION_BASE_MESSAGE,
+                         request.getRequestURI(),
+                         ex);
         }
 
-        return buildResponseEntity(ex.getStatus(), ex.getMessage(), request.getRequestURI());
+        return buildResponseEntity(ex.getStatus(),
+                                   ex.getExceptionEnum(),
+                                   request.getRequestURI());
     }
 
 }

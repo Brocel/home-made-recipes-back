@@ -1,6 +1,7 @@
 package com.example.hmrback.service.auth;
 
 import com.example.hmrback.exception.AuthException;
+import com.example.hmrback.exception.util.ExceptionMessageEnum;
 import com.example.hmrback.mapper.UserMapper;
 import com.example.hmrback.model.request.LoginRequest;
 import com.example.hmrback.model.request.RegisterRequest;
@@ -47,25 +48,36 @@ public class AuthenticationService {
     private Long expirationMinutes;
 
     /**
-     * TODO: régler ça à la volée lors de la saisie dans le front
+     * Check if the User with given username exists in DB
      *
-     * @param username
-     * @return
+     * @param username String
+     * @return boolean
      */
     public boolean existsByUsername(String username) {
         return this.userRepository.existsByUsername(username);
     }
 
     /**
-     * TODO
+     * Registers a new user in DB
      *
-     * @param req
-     * @return
+     * <ul>
+     *     <li>Checks if a User with given email already exists in DB</li>
+     *     <li>Build UserEntity</li>
+     *     <li>Save UserEntity in DB</li>
+     *     <li>Generates a token</li>
+     * </ul>
+     *
+     * @param req The params form register request
+     * @return AuthResponse with token and created User
+     * @throws AuthException if email already exists in DB
      */
-    public AuthResponse register(RegisterRequest req) {
+    public AuthResponse register(RegisterRequest req) throws AuthException {
 
-        if (this.userRepository.existsByEmail(req.email()))
-            throw new RuntimeException("Email already used"); // TODO: create custom exception
+        if (this.userRepository.existsByEmail(req.email())) {
+            throw new AuthException(HttpStatus.UNPROCESSABLE_ENTITY,
+                                    LogLevel.WARN,
+                                    ExceptionMessageEnum.EMAIL_ALREADY_EXISTS);
+        }
 
         // User creation
         UserEntity user = new UserEntity();
@@ -82,9 +94,9 @@ public class AuthenticationService {
         Optional<RoleEntity> roleUser = this.roleRepository.findByName(RoleEnum.ROLE_USER);
         roleUser.ifPresent(roles::add);
 
-        Optional<RoleEntity> roleAdmin = this.roleRepository.findByName(RoleEnum.ROLE_ADMIN);
         Set<String> adminEmails = UserUtils.getCommaSeparatedEmails(adminEmailsRaw);
         if (adminEmails.contains(user.getEmail())) {
+            Optional<RoleEntity> roleAdmin = this.roleRepository.findByName(RoleEnum.ROLE_ADMIN);
             roleAdmin.ifPresent(roles::add);
         }
 
@@ -103,23 +115,30 @@ public class AuthenticationService {
     }
 
     /**
-     * TODO
+     * Log a user in.
      *
-     * @param req
-     * @return
+     * <ul>
+     *     <li>Find the user, using email</li>
+     *     <li>Check the password</li>
+     *     <li>Generates a token</li>
+     * </ul>
+     *
+     * @param req The params from login request
+     * @return AuthResponse with token and User infos
+     * @throws AuthException when email is not found OR password doesn't match
      */
-    public AuthResponse login(LoginRequest req) {
+    public AuthResponse login(LoginRequest req) throws AuthException {
 
         UserEntity user = userRepository.findByEmail(req.email())
                                         .orElseThrow(() -> new AuthException(HttpStatus.UNAUTHORIZED,
                                                                              LogLevel.WARN,
-                                                                             "Invalid email"));
+                                                                             ExceptionMessageEnum.EMAIL_NOT_FOUND));
 
         if (!passwordEncoder.matches(req.password(),
                                      user.getPassword())) {
             throw new AuthException(HttpStatus.UNAUTHORIZED,
                                     LogLevel.WARN,
-                                    "Invalid password");
+                                    ExceptionMessageEnum.INVALID_PASSWORD);
         }
 
         String token = JwtUtils.generateToken(user,

@@ -10,8 +10,16 @@ public class ExceptionUtils {
     private ExceptionUtils() {
     }
 
-    public static ResponseEntity<ApiError> buildResponseEntity(HttpStatus status, String message, String path) {
-        ApiError error = new ApiError(Instant.now(), status.value(), status.getReasonPhrase(), message, path);
-        return new ResponseEntity<>(error, status);
+    public static ResponseEntity<ApiError> buildResponseEntity(HttpStatus status,
+                                                               ExceptionMessageEnum message,
+                                                               String path) {
+        ApiError error = new ApiError(Instant.now(),
+                                      status.value(),
+                                      message.name(),
+                                      message.getMessage(),
+                                      path);
+
+        return ResponseEntity.status(status)
+                             .body(error);
     }
 }

@@ -40,6 +40,7 @@ public class EntityTestUtils {
         userEntity.setLastName(LAST_NAME.formatted(ordinal));
         userEntity.setUsername(USERNAME.formatted(ordinal));
         userEntity.setEmail(EMAIL.formatted(ordinal));
+        userEntity.setPassword(FAKE);
         userEntity.setBirthDate(LocalDate.now().minusYears(10 * ordinal));
         userEntity.setInscriptionDate(LocalDate.now().minusMonths(ordinal));
         userEntity.setRoles(new HashSet<>(Collections.singleton(buildRoleEntity())));
