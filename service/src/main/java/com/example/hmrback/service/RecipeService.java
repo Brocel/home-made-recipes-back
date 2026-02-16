@@ -1,5 +1,7 @@
 package com.example.hmrback.service;
 
+import com.example.hmrback.exception.CustomEntityNotFoundException;
+import com.example.hmrback.exception.util.ExceptionMessageEnum;
 import com.example.hmrback.mapper.RecipeMapper;
 import com.example.hmrback.model.Recipe;
 import com.example.hmrback.model.filter.RecipeFilter;
@@ -10,21 +12,21 @@ import com.example.hmrback.persistence.repository.UserRepository;
 import com.example.hmrback.predicate.factory.RecipePredicateFactory;
 import com.example.hmrback.utils.RecipeUtils;
 import com.querydsl.core.types.Predicate;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.*;
-
-import static com.example.hmrback.exception.util.ExceptionMessageConstants.RECIPE_NOT_FOUND_EXCEPTION_MESSAGE;
-import static com.example.hmrback.exception.util.ExceptionMessageConstants.USER_NOT_FOUND_MESSAGE;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,18 +44,25 @@ public class RecipeService {
     /**
      * Create a new recipe.
      *
+     * <ul>
+     *     <li>Checks if recipe's author exists in DB</li>
+     *     <li>Save new recipe</li>
+     *     <li>returns Recipe DTO</li>
+     * </ul>
+     *
      * @param recipe   The recipe to create.
      * @param username The username of the user creating the recipe.
      * @return The created recipe.
-     * @throws EntityNotFoundException if the user is not found.
+     * @throws CustomEntityNotFoundException if the author is not found.
      */
     public Recipe createRecipe(Recipe recipe,
                                String username) {
         UserEntity author = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        USER_NOT_FOUND_MESSAGE.formatted(username)));
+                                          .orElseThrow(() -> new CustomEntityNotFoundException(ExceptionMessageEnum.USER_NOT_FOUND,
+                                                                                               ExceptionMessageEnum.USER_NOT_FOUND.getMessage()
+                                                                                                                                  .formatted(username)));
 
-        LOG.info("Création d'une recette par l'utilisateur {}",
+        LOG.info("Recipe created by user: {}",
                  username);
 
         RecipeEntity recipeEntity = recipeMapper.toEntity(recipe);
@@ -72,13 +81,13 @@ public class RecipeService {
     public Page<Recipe> searchRecipes(RecipeFilter filter,
                                       Pageable pageable) {
 
-        LOG.info("Recherche de recettes avec filtres {}",
+        LOG.info("Search recipes for given filters: {}",
                  filter);
 
         if (filter != null) {
             return recipeRepository.findAll(RecipePredicateFactory.fromFilters(filter),
                                             pageable)
-                    .map(recipeMapper::toModel);
+                                   .map(recipeMapper::toModel);
         }
         return Page.empty();
     }
@@ -90,10 +99,13 @@ public class RecipeService {
      * Calculate a deterministic index using a hash of today's date and a fixed string
      *
      * @return The daily recipe.
-     * @throws IllegalStateException if no recipes are available for today's type.
+     * @throws CustomEntityNotFoundException if no recipes are available for today's type.
      */
     public Recipe fetchDailyRecipe() {
         LocalDate today = LocalDate.now();
+
+        LOG.debug("Fetching daily recipe: {}",
+                  today);
 
         // Predicate
         RecipeFilter todayFilter = RecipeUtils.getDailyRecipeFilter(today);
@@ -108,7 +120,8 @@ public class RecipeService {
                                                                       sort);
 
         if (recipeList.isEmpty()) {
-            throw new IllegalStateException("No recipes for today's type");
+            throw new CustomEntityNotFoundException(ExceptionMessageEnum.DAILY_RECIPE_NOT_FOUND,
+                                                    ExceptionMessageEnum.DAILY_RECIPE_NOT_FOUND.getMessage());
         }
 
         // Index Calculus
@@ -126,7 +139,7 @@ public class RecipeService {
      * @param recipeId The ID of the recipe to update.
      * @param recipe   The updated recipe data.
      * @return The updated recipe.
-     * @throws EntityNotFoundException if the recipe is not found.
+     * @throws CustomEntityNotFoundException if the recipe is not found.
      */
     @Transactional
     public Recipe updateRecipe(
@@ -135,13 +148,14 @@ public class RecipeService {
             @Valid
             Recipe recipe) {
 
-        LOG.info("Update de la recette {}",
+        LOG.info("Updating recipe: {}",
                  recipeId);
 
         // Check if recipe exists
         RecipeEntity existingRecipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        RECIPE_NOT_FOUND_EXCEPTION_MESSAGE.formatted(recipeId)));
+                                                      .orElseThrow(() -> new CustomEntityNotFoundException(ExceptionMessageEnum.RECIPE_NOT_FOUND_BY_ID,
+                                                                                                           ExceptionMessageEnum.RECIPE_NOT_FOUND_BY_ID.getMessage()
+                                                                                                                                                      .formatted(recipeId)));
 
         RecipeEntity recipeEntity = recipeMapper.toEntity(recipe);
         recipeEntity.setAuthor(existingRecipe.getAuthor()); // Prevent changing the author during update
@@ -153,20 +167,22 @@ public class RecipeService {
      * Delete a recipe by its ID.
      *
      * @param id The ID of the recipe to delete.
-     * @throws EntityNotFoundException if the recipe is not found.
+     * @throws CustomEntityNotFoundException if the recipe is not found.
      */
     @Transactional
     public void deleteRecipe(
             @NotNull
             Long id) {
 
-        LOG.info("Suppression de la recette {}",
+        LOG.info("Deleting recipe: {}",
                  id);
 
         Optional<RecipeEntity> recipeEntity = recipeRepository.findById(id);
         recipeEntity.ifPresentOrElse(recipeRepository::delete,
                                      () -> {
-                                         throw new EntityNotFoundException(RECIPE_NOT_FOUND_EXCEPTION_MESSAGE.formatted(id));
+                                         throw new CustomEntityNotFoundException(ExceptionMessageEnum.RECIPE_NOT_FOUND_BY_ID,
+                                                                                 ExceptionMessageEnum.RECIPE_NOT_FOUND_BY_ID.getMessage()
+                                                                                                                            .formatted(id));
                                      });
     }
 }

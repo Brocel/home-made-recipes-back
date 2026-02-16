@@ -15,6 +15,7 @@ public enum ExceptionMessageEnum {
     // Recipe
     RECIPE_NOT_FOUND_BY_ID("The recipe (id :: %s) couldn't be found."),
     RECIPE_NOT_FOUND_BY_NAME("The recipe (name :: %s) couldn't be found."),
+    DAILY_RECIPE_NOT_FOUND("Daily recipe couldn't be found"),
     // Product
     PRODUCT_NOT_FOUND_BY_ID("The product (id :: %s) couldn't be found."),
     PRODUCT_NOT_FOUND_BY_NAME("The product (name :: %s) couldn't be found.");

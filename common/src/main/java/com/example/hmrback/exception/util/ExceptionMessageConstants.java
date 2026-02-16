@@ -5,8 +5,6 @@ public class ExceptionMessageConstants {
     private ExceptionMessageConstants() {
     }
 
-    public static final String EXCEPTION_BASE_MESSAGE = "HMRGenericException {}";
-
     // User
     public static final String USER_NOT_FOUND_MESSAGE = "L'utilisateur %s est introuvable.";
 
