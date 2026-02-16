@@ -54,6 +54,7 @@ public class AuthenticationService {
      * @return boolean
      */
     public boolean existsByUsername(String username) {
+        LOG.debug("Checks if username '{}' exists.", username);
         return this.userRepository.existsByUsername(username);
     }
 
@@ -72,6 +73,7 @@ public class AuthenticationService {
      * @throws AuthException if email already exists in DB
      */
     public AuthResponse register(RegisterRequest req) throws AuthException {
+        LOG.info("Registering a new user: {}({})", req.username(), req.email());
 
         if (this.userRepository.existsByEmail(req.email())) {
             throw new AuthException(HttpStatus.UNPROCESSABLE_ENTITY,
@@ -96,6 +98,7 @@ public class AuthenticationService {
 
         Set<String> adminEmails = UserUtils.getCommaSeparatedEmails(adminEmailsRaw);
         if (adminEmails.contains(user.getEmail())) {
+            LOG.debug("The user has an admin email.");
             Optional<RoleEntity> roleAdmin = this.roleRepository.findByName(RoleEnum.ROLE_ADMIN);
             roleAdmin.ifPresent(roles::add);
         }
@@ -128,6 +131,7 @@ public class AuthenticationService {
      * @throws AuthException when email is not found OR password doesn't match
      */
     public AuthResponse login(LoginRequest req) throws AuthException {
+        LOG.info("New login for user: {}", req.email());
 
         UserEntity user = userRepository.findByEmail(req.email())
                                         .orElseThrow(() -> new AuthException(HttpStatus.UNAUTHORIZED,

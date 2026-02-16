@@ -48,6 +48,5 @@ spring.log
 # Environment / secrets
 # ------------------------
 .env
-.env.*
 *.keystore
 *.p12
