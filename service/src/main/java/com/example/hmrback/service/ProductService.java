@@ -1,5 +1,7 @@
 package com.example.hmrback.service;
 
+import com.example.hmrback.exception.CustomEntityNotFoundException;
+import com.example.hmrback.exception.util.ExceptionMessageEnum;
 import com.example.hmrback.mapper.ProductMapper;
 import com.example.hmrback.model.Product;
 import com.example.hmrback.model.filter.ProductFilter;
@@ -9,7 +11,6 @@ import com.example.hmrback.persistence.repository.UserRepository;
 import com.example.hmrback.predicate.factory.ProductPredicateFactory;
 import com.example.hmrback.utils.NormalizeUtils;
 import com.querydsl.core.types.Predicate;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
-import static com.example.hmrback.exception.util.ExceptionMessageConstants.PRODUCT_NOT_FOUND_EXCEPTION_MESSAGE;
-import static com.example.hmrback.exception.util.ExceptionMessageConstants.USER_NOT_FOUND_MESSAGE;
 
 @Service
 @RequiredArgsConstructor
@@ -48,15 +46,17 @@ public class ProductService {
      * @param product  The product to create.
      * @param username The username of the user creating the product.
      * @return The created or existing product.
-     * @throws EntityNotFoundException if the user is not found.
+     * @throws CustomEntityNotFoundException if the user is not found.
      */
     public Product createProduct(
             @Valid
             Product product,
-            String username) throws EntityNotFoundException {
+            String username) throws CustomEntityNotFoundException {
 
         userRepository.findByUsername(username)
-                      .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(username)));
+                      .orElseThrow(() -> new CustomEntityNotFoundException(ExceptionMessageEnum.USER_NOT_FOUND,
+                                                                           ExceptionMessageEnum.USER_NOT_FOUND.getMessage()
+                                                                                                              .formatted(username)));
 
         LOG.info("New product cretaed by: {}",
                  username);
@@ -107,11 +107,11 @@ public class ProductService {
      * @param productId The ID of the product to update.
      * @param product   The updated product data.
      * @return The updated product.
-     * @throws EntityNotFoundException if the product is not found.
+     * @throws CustomEntityNotFoundException if the product is not found.
      */
     public Product updateProduct(Long productId,
                                  @Valid
-                                 Product product) throws EntityNotFoundException {
+                                 Product product) throws CustomEntityNotFoundException {
 
         LOG.info("Update product {}",
                  productId);
@@ -123,7 +123,9 @@ public class ProductService {
             ProductEntity productEntity = productMapper.toEntity(product);
             return productMapper.toModel(productRepository.saveAndFlush(productEntity));
         } else {
-            throw new EntityNotFoundException(PRODUCT_NOT_FOUND_EXCEPTION_MESSAGE.formatted(productId));
+            throw new CustomEntityNotFoundException(ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID,
+                                                    ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID.getMessage()
+                                                                                                .formatted(productId));
         }
     }
 
@@ -131,11 +133,11 @@ public class ProductService {
      * Delete a product.
      *
      * @param productId The ID of the product to delete.
-     * @throws EntityNotFoundException if the product is not found.
+     * @throws CustomEntityNotFoundException if the product is not found.
      */
     public void deleteProduct(
             @NotNull
-            Long productId) throws EntityNotFoundException {
+            Long productId) throws CustomEntityNotFoundException {
 
         LOG.info("Deleting product: {}",
                  productId);
@@ -143,7 +145,9 @@ public class ProductService {
         Optional<ProductEntity> recipeEntity = productRepository.findById(productId);
         recipeEntity.ifPresentOrElse(productRepository::delete,
                                      () -> {
-                                         throw new EntityNotFoundException(PRODUCT_NOT_FOUND_EXCEPTION_MESSAGE.formatted(productId));
+                                         throw new CustomEntityNotFoundException(ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID,
+                                                                                 ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID.getMessage()
+                                                                                                                             .formatted(productId));
                                      });
     }
 }

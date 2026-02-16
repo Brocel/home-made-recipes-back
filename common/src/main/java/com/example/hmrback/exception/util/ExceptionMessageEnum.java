@@ -11,7 +11,7 @@ public enum ExceptionMessageEnum {
     EMAIL_ALREADY_EXISTS("Email already exists."),
     EMAIL_NOT_FOUND("Email not found."),
     USERNAME_ALREADY_EXISTS("Username already exists."),
-    USER_NOT_FOUND("User not found."),
+    USER_NOT_FOUND("User '%s' not found."),
     // Recipe
     RECIPE_NOT_FOUND_BY_ID("The recipe (id :: %s) couldn't be found."),
     RECIPE_NOT_FOUND_BY_NAME("The recipe (name :: %s) couldn't be found."),
