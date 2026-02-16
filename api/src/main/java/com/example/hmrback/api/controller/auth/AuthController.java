@@ -10,10 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static com.example.hmrback.constant.ControllerConstants.AUTH;
 import static com.example.hmrback.constant.ControllerConstants.BASE_PATH;
 
 @RestController
-@RequestMapping(BASE_PATH + "/auth")
+@RequestMapping(BASE_PATH + AUTH)
 public class AuthController {
 
     private final AuthenticationService authenticationService;
