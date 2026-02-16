@@ -38,7 +38,12 @@ public class ProductService {
     private final ProductMapper productMapper;
 
     /**
-     * Create a new product if it does not already exist (based on normalized name).
+     * Create a new product if it does not already exist.
+     * <ul>
+     *     <li>Checks if User exists</li>
+     *     <li>Checks if created product already exists in DB (search from normalizedName)</li>
+     *     <li>If product already exists, return product, else persists the new product and return it</li>
+     * </ul>
      *
      * @param product  The product to create.
      * @param username The username of the user creating the product.
@@ -46,14 +51,22 @@ public class ProductService {
      * @throws EntityNotFoundException if the user is not found.
      */
     public Product createProduct(
-        @Valid
-        Product product, String username) throws EntityNotFoundException {
-        userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(username)));
-        LOG.info("Création d'un produit par l'utilisateur {}", username);
+            @Valid
+            Product product,
+            String username) throws EntityNotFoundException {
+
+        userRepository.findByUsername(username)
+                      .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(username)));
+
+        LOG.info("New product cretaed by: {}",
+                 username);
 
         String normalizedName = NormalizeUtils.normalizeText(product.name());
         boolean productAlreadyExists = productRepository.existsByNormalizedName(normalizedName);
-        LOG.info("Le produit '{}' ({}) existe déjà :: {}", product.name(), normalizedName, productAlreadyExists);
+        LOG.info("Product '{}' ({}) already exists :: {}",
+                 product.name(),
+                 normalizedName,
+                 productAlreadyExists);
 
         if (productAlreadyExists) {
             return productMapper.toModel(productRepository.findByNormalizedName(normalizedName));
@@ -70,15 +83,19 @@ public class ProductService {
      * @return A page of products matching the filters.
      */
     public Page<Product> searchProducts(
-        @NotNull
-        ProductFilter filter, Pageable pageable) {
+            @NotNull
+            ProductFilter filter,
+            Pageable pageable) {
 
-        LOG.info("Recherche de produits avec filtres {}", filter);
+        LOG.info("Search products with given filters: {}",
+                 filter);
 
         Predicate predicate = ProductPredicateFactory.fromFilters(filter);
 
         if (predicate != null) {
-            return productRepository.findAll(predicate, pageable).map(productMapper::toModel);
+            return productRepository.findAll(predicate,
+                                             pageable)
+                                    .map(productMapper::toModel);
         } else {
             return Page.empty();
         }
@@ -93,10 +110,11 @@ public class ProductService {
      * @throws EntityNotFoundException if the product is not found.
      */
     public Product updateProduct(Long productId,
-        @Valid
-        Product product) throws EntityNotFoundException {
+                                 @Valid
+                                 Product product) throws EntityNotFoundException {
 
-        LOG.info("Update du produit {}", productId);
+        LOG.info("Update product {}",
+                 productId);
 
         // Check if product exists
         boolean productExists = productRepository.existsById(productId);
@@ -110,20 +128,22 @@ public class ProductService {
     }
 
     /**
-     * Delete a product by its ID.
+     * Delete a product.
      *
      * @param productId The ID of the product to delete.
      * @throws EntityNotFoundException if the product is not found.
      */
     public void deleteProduct(
-        @NotNull
-        Long productId) throws EntityNotFoundException {
+            @NotNull
+            Long productId) throws EntityNotFoundException {
 
-        LOG.info("Suppression du produit {}", productId);
+        LOG.info("Deleting product: {}",
+                 productId);
 
         Optional<ProductEntity> recipeEntity = productRepository.findById(productId);
-        recipeEntity.ifPresentOrElse(productRepository::delete, () -> {
-            throw new EntityNotFoundException(PRODUCT_NOT_FOUND_EXCEPTION_MESSAGE.formatted(productId));
-        });
+        recipeEntity.ifPresentOrElse(productRepository::delete,
+                                     () -> {
+                                         throw new EntityNotFoundException(PRODUCT_NOT_FOUND_EXCEPTION_MESSAGE.formatted(productId));
+                                     });
     }
 }
