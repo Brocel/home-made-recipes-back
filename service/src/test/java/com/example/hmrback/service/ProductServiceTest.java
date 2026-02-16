@@ -1,6 +1,8 @@
 package com.example.hmrback.service;
 
 import com.example.hmrback.BaseTU;
+import com.example.hmrback.exception.CustomEntityNotFoundException;
+import com.example.hmrback.exception.util.ExceptionMessageEnum;
 import com.example.hmrback.mapper.ProductMapper;
 import com.example.hmrback.model.Product;
 import com.example.hmrback.model.filter.ProductFilter;
@@ -14,7 +16,6 @@ import com.example.hmrback.utils.test.EntityTestUtils;
 import com.example.hmrback.utils.test.ModelTestUtils;
 import com.example.hmrback.utils.test.ProductFilterEnum;
 import com.querydsl.core.types.Predicate;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -30,20 +31,11 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.hmrback.exception.util.ExceptionMessageConstants.PRODUCT_NOT_FOUND_EXCEPTION_MESSAGE;
-import static com.example.hmrback.exception.util.ExceptionMessageConstants.USER_NOT_FOUND_MESSAGE;
-import static com.example.hmrback.utils.test.TestConstants.NOT_NULL_MESSAGE;
-import static com.example.hmrback.utils.test.TestConstants.NUMBER_1;
-import static com.example.hmrback.utils.test.TestConstants.SHOULD_BE_EQUALS_MESSAGE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static com.example.hmrback.utils.test.TestConstants.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest extends BaseTU {
@@ -152,13 +144,14 @@ class ProductServiceTest extends BaseTU {
     void createProduct_UserNotFound_ShouldThrowException() {
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
-        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
-                                                  () -> service.createProduct(product,
+        CustomEntityNotFoundException ex = assertThrows(CustomEntityNotFoundException.class,
+                                                        () -> service.createProduct(product,
                                                                               "nonexistentuser"));
 
         assertNotNull(ex,
-                      NOT_NULL_MESSAGE.formatted("EntityNotFoundException"));
-        assertEquals(USER_NOT_FOUND_MESSAGE.formatted("nonexistentuser"),
+                      NOT_NULL_MESSAGE.formatted("CustomEntityNotFoundException"));
+        assertEquals(ExceptionMessageEnum.USER_NOT_FOUND.getMessage()
+                                                        .formatted("nonexistentuser"),
                      ex.getMessage());
 
         verify(userRepository,
@@ -256,13 +249,14 @@ class ProductServiceTest extends BaseTU {
     void updateProduct_ProductDoesNotExist_ShouldThrowException() {
         when(repository.existsById(any(Long.class))).thenReturn(false);
 
-        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+        CustomEntityNotFoundException ex = assertThrows(CustomEntityNotFoundException.class,
                                                   () -> service.updateProduct(NUMBER_1,
                                                                               product));
 
         assertNotNull(ex,
-                      NOT_NULL_MESSAGE.formatted("EntityNotFoundException"));
-        assertEquals(PRODUCT_NOT_FOUND_EXCEPTION_MESSAGE.formatted(NUMBER_1),
+                      NOT_NULL_MESSAGE.formatted("CustomEntityNotFoundException"));
+        assertEquals(ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID.getMessage()
+                                                                 .formatted(NUMBER_1),
                      ex.getMessage());
 
         verify(repository,
@@ -295,12 +289,13 @@ class ProductServiceTest extends BaseTU {
     void deleteProduct_ProductDoesNotExist_ShouldThrowException() {
         when(repository.findById(any(Long.class))).thenReturn(Optional.empty());
 
-        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+        CustomEntityNotFoundException ex = assertThrows(CustomEntityNotFoundException.class,
                                                   () -> service.deleteProduct(1L));
 
         assertNotNull(ex,
-                      NOT_NULL_MESSAGE.formatted("EntityNotFoundException"));
-        assertEquals(PRODUCT_NOT_FOUND_EXCEPTION_MESSAGE.formatted(NUMBER_1),
+                      NOT_NULL_MESSAGE.formatted("CustomEntityNotFoundException"));
+        assertEquals(ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID.getMessage()
+                                                                 .formatted(NUMBER_1),
                      ex.getMessage());
 
         verify(repository,

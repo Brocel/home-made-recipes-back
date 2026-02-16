@@ -1,6 +1,8 @@
 package com.example.hmrback.service;
 
 import com.example.hmrback.BaseTU;
+import com.example.hmrback.exception.CustomEntityNotFoundException;
+import com.example.hmrback.exception.util.ExceptionMessageEnum;
 import com.example.hmrback.mapper.RecipeMapper;
 import com.example.hmrback.model.Recipe;
 import com.example.hmrback.model.filter.RecipeFilter;
@@ -13,7 +15,6 @@ import com.example.hmrback.utils.test.EntityTestUtils;
 import com.example.hmrback.utils.test.ModelTestUtils;
 import com.example.hmrback.utils.test.RecipeFilterEnum;
 import com.querydsl.core.types.Predicate;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -23,21 +24,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import static com.example.hmrback.utils.test.TestConstants.NOT_NULL_MESSAGE;
-import static com.example.hmrback.utils.test.TestConstants.NUMBER_1;
-import static com.example.hmrback.utils.test.TestConstants.SHOULD_BE_EQUALS_MESSAGE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static com.example.hmrback.utils.test.TestConstants.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RecipeServiceTest extends BaseTU {
@@ -104,12 +98,12 @@ class RecipeServiceTest extends BaseTU {
     void createRecipe_whenUserNotFound_thenThrowException() {
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
-        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
-                                                  () -> service.createRecipe(recipe,
+        CustomEntityNotFoundException ex = assertThrows(CustomEntityNotFoundException.class,
+                                                        () -> service.createRecipe(recipe,
                                                                              "username1"));
 
         assertNotNull(ex,
-                      NOT_NULL_MESSAGE.formatted("EntityNotFoundException"));
+                      NOT_NULL_MESSAGE.formatted("CustomEntityNotFoundException"));
 
         verify(userRepository,
                times(1)).findByUsername(anyString());
@@ -213,11 +207,11 @@ class RecipeServiceTest extends BaseTU {
     void deleteRecipe_whenRecipeNotFound_thenThrowsException() {
         when(repository.findById(anyLong())).thenReturn(Optional.empty());
 
-        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+        CustomEntityNotFoundException ex = assertThrows(CustomEntityNotFoundException.class,
                                                   () -> service.deleteRecipe(NUMBER_1));
 
         assertNotNull(ex);
-        assertEquals("La recette avec l'id %s est introuvable.".formatted(NUMBER_1),
+        assertEquals(ExceptionMessageEnum.RECIPE_NOT_FOUND_BY_ID.getMessage().formatted(NUMBER_1),
                      ex.getMessage());
 
         verify(repository,
@@ -250,11 +244,11 @@ class RecipeServiceTest extends BaseTU {
         when(repository.findAll(any(Predicate.class),
                                 any(Sort.class))).thenReturn(new ArrayList<>());
 
-        IllegalStateException ex = assertThrows(IllegalStateException.class,
+        CustomEntityNotFoundException ex = assertThrows(CustomEntityNotFoundException.class,
                                                 () -> service.fetchDailyRecipe());
 
         assertNotNull(ex);
-        assertEquals("No recipes for today's type",
+        assertEquals(ExceptionMessageEnum.DAILY_RECIPE_NOT_FOUND.getMessage(),
                      ex.getMessage());
 
         verify(repository,
