@@ -65,7 +65,6 @@ public class AuthenticationService {
      *     <li>Checks if a User with given email already exists in DB</li>
      *     <li>Build UserEntity</li>
      *     <li>Save UserEntity in DB</li>
-     *     <li>Generates a token</li>
      * </ul>
      *
      * @param req The params form register request
@@ -107,12 +106,8 @@ public class AuthenticationService {
 
         UserEntity savedUser = userRepository.save(user);
 
-        String token = JwtUtils.generateToken(savedUser,
-                                              expirationMinutes,
-                                              secretKey);
-
         return new AuthResponse(
-                token,
+                null,
                 this.userMapper.toModel(savedUser)
         );
     }

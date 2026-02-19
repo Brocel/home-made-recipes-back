@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
@@ -38,11 +37,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@TestPropertySource(properties = {
-        "admin.emails=test1@example.com,test2@example.com",
-        "jwt.secret-key=fake-secret",
-        "jwt.expiration-minutes=999"
-})
 class AuthenticationServiceTest extends BaseTU {
 
     private static final String USERNAME = "Username";
@@ -149,7 +143,7 @@ class AuthenticationServiceTest extends BaseTU {
 
         // Assertions
         assertNotNull(result);
-        assertNotNull(result.token());
+        assertNull(result.token());
         assertNotNull(result.user());
 
         verify(userRepository,
@@ -183,7 +177,7 @@ class AuthenticationServiceTest extends BaseTU {
 
         // Assertions
         assertNotNull(result);
-        assertNotNull(result.token());
+        assertNull(result.token());
         assertNotNull(result.user());
 
         verify(userRepository,
