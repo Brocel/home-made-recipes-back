@@ -46,6 +46,9 @@ public class UserEntity {
     @Column(name = "PASSWORD")
     private String password;
 
+    @Column(name = "AVATAR_NAME", length = 100)
+    private String avatarName;
+
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecipeEntity> recipes;
 

@@ -36,6 +36,9 @@ public record User(
         @JsonProperty("inscription_date")
         String inscriptionDate,
 
+        @JsonProperty("avatar_name")
+        String avatarName,
+
         @JsonProperty("roles")
         Set<Role> roles
 ) {

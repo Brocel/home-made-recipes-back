@@ -15,7 +15,9 @@ spring:
 
   flyway:
     enabled: true
-    locations: classpath:db/local
+    locations:
+      - classpath:db/migration
+      - classpath:db/local
     baseline-on-migrate: true   # useful if DB has been partially initialized
     placeholder-replacement: true
 

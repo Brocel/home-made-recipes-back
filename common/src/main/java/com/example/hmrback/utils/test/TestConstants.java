@@ -13,6 +13,7 @@ public class TestConstants {
     public static final String EMAIL = "username.%s@test.com";
     public static final String PASSWORD = "StrongP@ssw0rd!";
     public static final String ENCODED_PASSWORD = "a1b2c3d4e5f6g7h8i9j0";
+    public static final String AVATAR_NAME = "avatar%s.svg";
 
     public static final String PRODUCT_NAME = "Product %s";
 

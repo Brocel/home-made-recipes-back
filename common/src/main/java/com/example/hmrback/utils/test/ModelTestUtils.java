@@ -50,6 +50,7 @@ public class ModelTestUtils {
                                                            .minusYears(10 * ordinal)),
                         DateUtils.formatLocalDate(LocalDate.now()
                                                            .minusMonths(ordinal)),
+                        AVATAR_NAME.formatted(ordinal),
                         new HashSet<>(Collections.singleton(buildRole())));
     }
 
