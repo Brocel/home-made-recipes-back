@@ -5,8 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.util.Optional;
+import java.util.UUID;
 
-public interface UserRepository extends JpaRepository<UserEntity, Long>, QuerydslPredicateExecutor<UserEntity> {
+public interface UserRepository extends JpaRepository<UserEntity, UUID>, QuerydslPredicateExecutor<UserEntity> {
     Optional<UserEntity> findByEmail(String email);
     boolean existsByEmail(String email);
 
