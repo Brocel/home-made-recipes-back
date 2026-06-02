@@ -1,6 +1,7 @@
 package com.example.hmrback.config;
 
 import org.flywaydb.core.Flyway;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -12,6 +13,7 @@ import javax.sql.DataSource;
 public class FlywayConfig {
 
     @Bean
+    @ConditionalOnProperty(name = "spring.flyway.enabled", havingValue = "true")
     public Flyway flywayConfiguration(DataSource dataSource,
                                       Environment env,
                                       FlywayProperties flywayProperties) {

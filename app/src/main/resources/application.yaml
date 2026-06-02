@@ -3,7 +3,11 @@ spring:
     name: home-made-recipes-back
 
   security:
-    oauth2: # TODO: complete later
+    # OAuth2 configuration - NOT YET IMPLEMENTED
+    # Status: Pending architectural decisions on OAuth2 provider strategy
+    # TODO: Configure OAuth2 client credentials when provider is selected
+    # See: .github/generated/OAUTH2_IMPLEMENTATION_ROADMAP.md (when created)
+    oauth2:
 
   jackson:
     serialization:
@@ -36,9 +40,19 @@ app:
     locations:
       migration: classpath:db/migration
       local: classpath:db/local
-#    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-#    user: ${DB_USERNAME}
-#    password: ${DB_PASSWORD}
+  cors:
+    frontend-urls: ${FRONTEND_URLS:http://localhost:4200}
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - Content-Type
+      - Authorization
+      - Accept
+      - X-Requested-With
 
 springdoc:
   api-docs:
@@ -47,8 +61,12 @@ springdoc:
     path: /swagger-ui.html
     operationsSorter: alpha
     oauth:
-      client-id: #TODO
-      client-secret: #TODO
+      # Swagger OAuth2 configuration - NOT YET IMPLEMENTED
+      # These credentials are for Swagger UI OAuth flow only (not backend authentication)
+      # TODO: Add OAuth2 Provider (Google, GitHub, or custom) credentials here when available
+      # Format: client-id: ${OAUTH2_CLIENT_ID:placeholder}
+      client-id: # PENDING: OAuth2 provider selection
+      client-secret: # PENDING: OAuth2 provider credentials
       scopes: openid, profile, email
       use-pkce-with-authorization-code-grant: true
     oauth2-redirect-url: ${SWAGGER_OAUTH2_REDIRECT_URL:http://localhost:8080/swagger-ui/oauth2-redirect.html}

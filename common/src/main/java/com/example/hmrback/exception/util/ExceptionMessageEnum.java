@@ -5,7 +5,9 @@ import lombok.Getter;
 @Getter
 public enum ExceptionMessageEnum {
     // Auth
+    AUTHENTICATION_REQUIRED("Authentication is required to access this resource."),
     ACCESS_DENIED("You don't have permission to perform this action."),
+    RECIPE_AUTHOR_ONLY("Only the recipe author can modify this recipe."),
     INVALID_PASSWORD("Password is not valid."),
     // User
     EMAIL_ALREADY_EXISTS("Email already exists."),

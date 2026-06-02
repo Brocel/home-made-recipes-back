@@ -29,6 +29,7 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableMethodSecurity
@@ -39,8 +40,8 @@ public class SecurityConfig {
     public static final String BASE_API = "/hmr/api";
     public static final String AUTH_API = "/auth";
 
-    @Value("${FRONTEND_URLS:http://localhost:4200}")
-    private String frontendUrlsRaw;
+    private final CorsProperties corsProperties;
+
     @Value("${jwt.secret-key}")
     private String secret;
 
@@ -83,9 +84,20 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(frontendUrlsRaw.split(",")));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+
+        // Parse frontend URLs from configuration (comma-separated, trim whitespace)
+        List<String> origins = Stream.of(corsProperties.getFrontendUrls().split(","))
+            .map(String::trim)
+            .toList();
+        config.setAllowedOrigins(origins);
+
+        // Set allowed methods from configuration
+        config.setAllowedMethods(corsProperties.getAllowedMethods());
+
+        // Set allowed headers from configuration (explicit whitelist, not wildcard)
+        config.setAllowedHeaders(corsProperties.getAllowedHeaders());
+
+        // Allow credentials for JWT authentication
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

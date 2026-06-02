@@ -6,7 +6,10 @@ spring:
     password:
 
   security:
-    oauth2: #TODO
+    # OAuth2 configuration - DISABLED FOR TESTING
+    # Tests use JWT authentication instead of OAuth2
+    # When OAuth2 is implemented, add oauth2 configuration here as needed
+    oauth2: # PENDING: OAuth2 implementation
 
   jpa:
     hibernate:
@@ -16,10 +19,29 @@ spring:
       hibernate:
         format_sql: true
     defer-datasource-initialization: true
-#    database-platform: org.hibernate.dialect.H2Dialect
 
   flyway:
     enabled: false
+
+# Flyway configuration for testing
+app:
+  flyway:
+    locations:
+      migration: classpath:db/migration
+      local: classpath:db/local
+  cors:
+    frontend-urls: http://localhost:4200
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - Content-Type
+      - Authorization
+      - Accept
+      - X-Requested-With
 
 logging:
   level:

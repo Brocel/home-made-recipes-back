@@ -18,6 +18,6 @@ public class RecipeSecurity {
 
         return recipeRepository.findById(recipeId)
             .map(recipe -> recipe.getAuthor().getUsername().equals(currentUsername))
-            .orElseThrow(() -> new AccessDeniedException("Seul l'auteur de cette recette peut la modifer."));
+            .orElseThrow(() -> new AccessDeniedException("Only the recipe author can modify this recipe."));
     }
 }

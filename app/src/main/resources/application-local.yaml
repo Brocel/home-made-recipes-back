@@ -27,6 +27,19 @@ app:
     locations:
       migration: classpath:db/migration
       local: classpath:db/local
+  cors:
+    frontend-urls: http://localhost:4200,http://localhost:3000
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - Content-Type
+      - Authorization
+      - Accept
+      - X-Requested-With
 
 springdoc:
   api-docs:
