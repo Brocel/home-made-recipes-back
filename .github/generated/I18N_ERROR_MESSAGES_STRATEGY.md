@@ -672,3 +672,36 @@ When ready, implement the refactoring plan above to move from Step 3 (current du
 
 **Should I proceed with implementing this refactor?**
 
+# Most recent refactor plan:
+## Refactor Plan — Add `translationKey` and placeholders to `ApiError` (Single-solution)
+
+Checklist (apply these changes)
+- Add new fields to `ApiError` (preferred: `messageParams: Map<String,Object>`; alternate: `messagePlaceholders: List<String>` + `messageArgs: List<Object>`).
+- Update the error-builder helper (e.g. `ExceptionUtils.buildResponseEntity(...)`) to populate `translationKey` and param fields.
+- Update `GlobalExceptionHandler` and all places that construct `ApiError` (including security entry points) to pass params/placeholders when available.
+- Update API docs and generated `.github` docs (`ERROR_KEYS_REFERENCE.md`, `FRONTEND_ERROR_HANDLING.md`) with the new contract and examples.
+- Add unit/integration tests asserting the JSON shape and param interpolation behavior.
+- Coordinate with frontend (Angular) developers to consume `translationKey` and `messageParams` and to fall back to `message` if translation missing.
+
+Goal
+- Send a stable i18n key from the backend together with an English fallback message for logs and structured parameters for interpolation.
+- Keep the change non-breaking: new fields are optional/nullable.
+
+Design choices
+- Field name: `translationKey` (per your preference). Equivalent to `errorKey`.
+- Placeholder strategy:
+    - Recommended: `messageParams: Map<String,Object>` (named parameters) — easiest & least error-prone for frontend.
+    - Alternative (minimal): `messagePlaceholders: List<String>` + `messageArgs: List<Object>` (ordered lists).
+- Preserve existing fields (`status`, `error`, `message`, `path`) for backwards compatibility.
+
+API contract (recommended)
+```json
+{
+  "timestamp": "2026-06-02T10:30:15.456789Z",
+  "status": 403,
+  "error": "USER_NOT_AUTHORIZED",
+  "translationKey": "exception.userNotAuthorized",
+  "message": "User Maxime cannot access this feature.",
+  "messageParams": { "username": "Maxime" },
+  "path": "/hmr/api/some-action"
+}
