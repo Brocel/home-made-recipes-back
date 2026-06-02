@@ -4,7 +4,6 @@ import com.example.hmrback.exception.CustomEntityNotFoundException;
 import com.example.hmrback.exception.HomeMadeRecipeGenericException;
 import com.example.hmrback.exception.util.ApiError;
 import com.example.hmrback.exception.util.ExceptionMessageEnum;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +24,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiError> handleAccessDenied(HttpServletRequest request) {
         return buildResponseEntity(HttpStatus.FORBIDDEN,
-                                   ExceptionMessageEnum.ACCESS_DENIED,
-                                   request.getRequestURI());
+                ExceptionMessageEnum.ACCESS_DENIED,
+                request.getRequestURI());
     }
 
     @ExceptionHandler(CustomEntityNotFoundException.class)
     public ResponseEntity<ApiError> handleEntityNotFound(CustomEntityNotFoundException ex,
                                                          HttpServletRequest request) {
         return buildResponseEntity(HttpStatus.NOT_FOUND,
-                                   ex.getExceptionEnum(),
-                                   request.getRequestURI());
+                ex.getExceptionEnum(),
+                request.getRequestURI());
     }
 
     @ExceptionHandler(HomeMadeRecipeGenericException.class)
@@ -43,17 +42,17 @@ public class GlobalExceptionHandler {
 
         if (LogLevel.WARN.equals(ex.getLogLevel())) {
             LOGGER.warn(ex.getExceptionEnum()
-                          .getMessage());
+                    .getMessage());
         } else {
             LOGGER.error(ex.getExceptionEnum()
-                           .getMessage(),
-                         request.getRequestURI(),
-                         ex);
+                            .getMessage(),
+                    request.getRequestURI(),
+                    ex);
         }
 
         return buildResponseEntity(ex.getStatus(),
-                                   ex.getExceptionEnum(),
-                                   request.getRequestURI());
+                ex.getExceptionEnum(),
+                request.getRequestURI());
     }
 
 }

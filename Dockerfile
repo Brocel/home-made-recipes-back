@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk
+FROM maven:4.0.0-eclipse-temurin-21
 
 WORKDIR /home-made-recipes-back
 
@@ -8,11 +8,6 @@ COPY app/pom.xml app/
 COPY common/pom.xml common/
 COPY persistence/pom.xml persistence/
 COPY service/pom.xml service/
-
-# Maven config
-COPY mvnw .
-COPY .mvn .mvn
-RUN ./mvnw -q -e -DskipTests dependency:go-offline || true
 
 # Source code copy
 COPY . .
@@ -24,4 +19,4 @@ EXPOSE 8080
 ENV SPRING_DEVTOOLS_RESTART_ENABLED=true
 
 # Run Spring Boot from the app module
-CMD ["./mvnw", "-f", "app/pom.xml", "spring-boot:run"]
+CMD ["mvn", "-f", "app/pom.xml", "spring-boot:run"]
