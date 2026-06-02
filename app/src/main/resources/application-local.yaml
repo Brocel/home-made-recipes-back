@@ -21,6 +21,13 @@ spring:
     baseline-on-migrate: true   # useful if DB has been partially initialized
     placeholder-replacement: true
 
+# Flyway configuration overrides for local profile
+app:
+  flyway:
+    locations:
+      migration: classpath:db/migration
+      local: classpath:db/local
+
 springdoc:
   api-docs:
     path: /v3/api-docs

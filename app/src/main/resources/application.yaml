@@ -29,6 +29,13 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true   # useful if DB has been partially initialized
     placeholder-replacement: true
+
+# Flyway configuration
+app:
+  flyway:
+    locations:
+      migration: classpath:db/migration
+      local: classpath:db/local
 #    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
 #    user: ${DB_USERNAME}
 #    password: ${DB_PASSWORD}
