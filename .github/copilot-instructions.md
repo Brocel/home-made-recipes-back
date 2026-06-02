@@ -57,6 +57,7 @@ boundary.
 - Evaluate design patterns when a concrete problem exists.
 - Prefer the simplest solution that satisfies current requirements.
 - Do not introduce patterns without clear justification.
+- Prefer creating new classes over writing nested classes.
 
 ## Java and Spring rules
 
@@ -79,6 +80,15 @@ boundary.
 - Do not remove tests unless they are obsolete and replaced with better coverage.
 - If there are multiple valid approaches, choose the one that best matches the existing repository style.
 - If requirements are ambiguous, make the smallest reasonable assumption and keep the change reversible.
+
+## Markdown artifact policy
+
+- Do not create markdown files in the repository root.
+- Do not create report, plan, review, or completion markdown files in feature folders.
+- If a markdown artifact is needed, place it only under `.github/generated/`.
+- If the destination folder does not exist, ask before creating a new one.
+- Prefer answering in chat instead of creating a markdown file unless the user explicitly requests a file.
+- Do not create useless markdown reports, summarys or plans without user's confimation
 
 ## What to avoid
 
