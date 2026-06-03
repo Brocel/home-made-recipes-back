@@ -33,7 +33,7 @@ public class UserService {
 
     public UserEntity createUser(User user) {
         LOG.info("Saving new user :: {}",
-                 user.email());
+                user.email());
         return this.userRepository.save(this.userMapper.toEntity(user));
     }
 
@@ -41,33 +41,29 @@ public class UserService {
                            @Valid UserUpdateRequest request) {
 
         LOG.info("Updating user: {}",
-                 userId);
+                userId);
 
         Optional<UserEntity> existingUser = this.userRepository.findById(UUID.fromString(userId));
 
         if (existingUser.isPresent()) {
             UserEntity user = UserUtils.updateUser(existingUser.get(),
-                                                   request);
+                    request);
             return this.userMapper.toModel(this.userRepository.save(user));
         } else {
-            throw new CustomEntityNotFoundException(ExceptionMessageEnum.USER_NOT_FOUND,
-                                                    ExceptionMessageEnum.USER_NOT_FOUND.getMessage()
-                                                                                       .formatted(userId));
+            throw new CustomEntityNotFoundException(ExceptionMessageEnum.USER_NOT_FOUND, userId);
         }
     }
 
     public void deleteUser(String userId) {
 
         LOG.info("Deleting user: {}",
-                 userId);
+                userId);
 
         Optional<UserEntity> existingUser = this.userRepository.findById(UUID.fromString(userId));
 
         existingUser.ifPresentOrElse(userRepository::delete,
-                                     () -> {
-                                         throw new CustomEntityNotFoundException(ExceptionMessageEnum.USER_NOT_FOUND,
-                                                                                 ExceptionMessageEnum.USER_NOT_FOUND.getMessage()
-                                                                                                                    .formatted(userId));
-                                     });
+                () -> {
+                    throw new CustomEntityNotFoundException(ExceptionMessageEnum.USER_NOT_FOUND, userId);
+                });
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.http.HttpStatus;
 
 public class AuthException extends HomeMadeRecipeGenericException {
-    public AuthException(HttpStatus status, LogLevel logLevel, ExceptionMessageEnum message) {
-        super(status, logLevel, message);
+    public AuthException(ExceptionMessageEnum exceptionMessageEnum, HttpStatus status, LogLevel logLevel, Object... args) {
+        super(exceptionMessageEnum, null, status, logLevel, args);
     }
 }

@@ -55,15 +55,11 @@ public class RecipeService {
      * @return The created recipe.
      * @throws CustomEntityNotFoundException if the author is not found.
      */
-    public Recipe createRecipe(Recipe recipe,
-                               String username) {
-        UserEntity author = userRepository.findByUsername(username)
-                                          .orElseThrow(() -> new CustomEntityNotFoundException(ExceptionMessageEnum.USER_NOT_FOUND,
-                                                                                               ExceptionMessageEnum.USER_NOT_FOUND.getMessage()
-                                                                                                                                  .formatted(username)));
+    public Recipe createRecipe(Recipe recipe, String username) {
+        UserEntity author = userRepository.findByUsername(username).orElseThrow(() ->
+                new CustomEntityNotFoundException(ExceptionMessageEnum.USER_NOT_FOUND, username));
 
-        LOG.info("Recipe created by user: {}",
-                 username);
+        LOG.info("Recipe created by user: {}", username);
 
         RecipeEntity recipeEntity = recipeMapper.toEntity(recipe);
         recipeEntity.setAuthor(author);
@@ -78,16 +74,12 @@ public class RecipeService {
      * @param pageable The pagination information.
      * @return A page of recipes matching the filters.
      */
-    public Page<Recipe> searchRecipes(RecipeFilter filter,
-                                      Pageable pageable) {
+    public Page<Recipe> searchRecipes(RecipeFilter filter, Pageable pageable) {
 
-        LOG.info("Search recipes for given filters: {}",
-                 filter);
+        LOG.info("Search recipes for given filters: {}", filter);
 
         if (filter != null) {
-            return recipeRepository.findAll(RecipePredicateFactory.fromFilters(filter),
-                                            pageable)
-                                   .map(recipeMapper::toModel);
+            return recipeRepository.findAll(RecipePredicateFactory.fromFilters(filter), pageable).map(recipeMapper::toModel);
         }
         return Page.empty();
     }
@@ -104,31 +96,25 @@ public class RecipeService {
     public Recipe fetchDailyRecipe() {
         LocalDate today = LocalDate.now();
 
-        LOG.debug("Fetching daily recipe: {}",
-                  today);
+        LOG.debug("Fetching daily recipe: {}", today);
 
         // Predicate
         RecipeFilter todayFilter = RecipeUtils.getDailyRecipeFilter(today);
         Predicate todayPredicate = RecipePredicateFactory.fromFilters(todayFilter);
 
         // Sort
-        Sort sort = Sort.by(Sort.Order.asc("publicationDate"),
-                            Sort.Order.asc("id"));
+        Sort sort = Sort.by(Sort.Order.asc("publicationDate"), Sort.Order.asc("id"));
 
         // Recipe List
-        List<RecipeEntity> recipeList = this.recipeRepository.findAll(todayPredicate,
-                                                                      sort);
+        List<RecipeEntity> recipeList = this.recipeRepository.findAll(todayPredicate, sort);
 
         if (recipeList.isEmpty()) {
-            throw new CustomEntityNotFoundException(ExceptionMessageEnum.DAILY_RECIPE_NOT_FOUND,
-                                                    ExceptionMessageEnum.DAILY_RECIPE_NOT_FOUND.getMessage());
+            throw new CustomEntityNotFoundException(ExceptionMessageEnum.DAILY_RECIPE_NOT_FOUND);
         }
 
         // Index Calculus
-        int seed = Objects.hash(today,
-                                "DAILY_RECIPE_V1");
-        int index = Math.floorMod(seed,
-                                  recipeList.size());
+        int seed = Objects.hash(today, "DAILY_RECIPE_V1");
+        int index = Math.floorMod(seed, recipeList.size());
 
         return recipeMapper.toModel(recipeList.get(index));
     }
@@ -142,20 +128,13 @@ public class RecipeService {
      * @throws CustomEntityNotFoundException if the recipe is not found.
      */
     @Transactional
-    public Recipe updateRecipe(
-            @NotNull
-            Long recipeId,
-            @Valid
-            Recipe recipe) {
+    public Recipe updateRecipe(@NotNull Long recipeId, @Valid Recipe recipe) {
 
-        LOG.info("Updating recipe: {}",
-                 recipeId);
+        LOG.info("Updating recipe: {}", recipeId);
 
         // Check if recipe exists
-        RecipeEntity existingRecipe = recipeRepository.findById(recipeId)
-                                                      .orElseThrow(() -> new CustomEntityNotFoundException(ExceptionMessageEnum.RECIPE_NOT_FOUND_BY_ID,
-                                                                                                           ExceptionMessageEnum.RECIPE_NOT_FOUND_BY_ID.getMessage()
-                                                                                                                                                      .formatted(recipeId)));
+        RecipeEntity existingRecipe = recipeRepository.findById(recipeId).orElseThrow(() ->
+                new CustomEntityNotFoundException(ExceptionMessageEnum.RECIPE_NOT_FOUND_BY_ID, recipeId));
 
         RecipeEntity recipeEntity = recipeMapper.toEntity(recipe);
         recipeEntity.setAuthor(existingRecipe.getAuthor()); // Prevent changing the author during update
@@ -170,19 +149,13 @@ public class RecipeService {
      * @throws CustomEntityNotFoundException if the recipe is not found.
      */
     @Transactional
-    public void deleteRecipe(
-            @NotNull
-            Long id) {
+    public void deleteRecipe(@NotNull Long id) {
 
-        LOG.info("Deleting recipe: {}",
-                 id);
+        LOG.info("Deleting recipe: {}", id);
 
         Optional<RecipeEntity> recipeEntity = recipeRepository.findById(id);
-        recipeEntity.ifPresentOrElse(recipeRepository::delete,
-                                     () -> {
-                                         throw new CustomEntityNotFoundException(ExceptionMessageEnum.RECIPE_NOT_FOUND_BY_ID,
-                                                                                 ExceptionMessageEnum.RECIPE_NOT_FOUND_BY_ID.getMessage()
-                                                                                                                            .formatted(id));
-                                     });
+        recipeEntity.ifPresentOrElse(recipeRepository::delete, () -> {
+            throw new CustomEntityNotFoundException(ExceptionMessageEnum.RECIPE_NOT_FOUND_BY_ID, id);
+        });
     }
 }

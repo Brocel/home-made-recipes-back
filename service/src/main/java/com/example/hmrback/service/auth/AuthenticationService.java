@@ -75,9 +75,11 @@ public class AuthenticationService {
         LOG.info("Registering a new user: {}({})", req.username(), req.email());
 
         if (this.userRepository.existsByEmail(req.email())) {
-            throw new AuthException(HttpStatus.UNPROCESSABLE_ENTITY,
-                                    LogLevel.WARN,
-                                    ExceptionMessageEnum.EMAIL_ALREADY_EXISTS);
+            throw new AuthException(
+                    ExceptionMessageEnum.EMAIL_ALREADY_EXISTS,
+                    HttpStatus.UNPROCESSABLE_ENTITY,
+                    LogLevel.WARN, req.email()
+            );
         }
 
         // User creation
@@ -129,20 +131,25 @@ public class AuthenticationService {
         LOG.info("New login for user: {}", req.email());
 
         UserEntity user = userRepository.findByEmail(req.email())
-                                        .orElseThrow(() -> new AuthException(HttpStatus.UNAUTHORIZED,
-                                                                             LogLevel.WARN,
-                                                                             ExceptionMessageEnum.EMAIL_NOT_FOUND));
+                .orElseThrow(() -> new AuthException(
+                        ExceptionMessageEnum.EMAIL_NOT_FOUND,
+                        HttpStatus.UNAUTHORIZED,
+                        LogLevel.WARN,
+                        req.email()
+                ));
 
         if (!passwordEncoder.matches(req.password(),
-                                     user.getPassword())) {
-            throw new AuthException(HttpStatus.UNAUTHORIZED,
-                                    LogLevel.WARN,
-                                    ExceptionMessageEnum.INVALID_PASSWORD);
+                user.getPassword())) {
+            throw new AuthException(
+                    ExceptionMessageEnum.INVALID_PASSWORD,
+                    HttpStatus.UNAUTHORIZED,
+                    LogLevel.WARN
+            );
         }
 
         String token = JwtUtils.generateToken(user,
-                                              expirationMinutes,
-                                              secretKey);
+                expirationMinutes,
+                secretKey);
 
         return new AuthResponse(
                 token,

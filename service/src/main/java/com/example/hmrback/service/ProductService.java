@@ -54,19 +54,17 @@ public class ProductService {
             String username) throws CustomEntityNotFoundException {
 
         userRepository.findByUsername(username)
-                      .orElseThrow(() -> new CustomEntityNotFoundException(ExceptionMessageEnum.USER_NOT_FOUND,
-                                                                           ExceptionMessageEnum.USER_NOT_FOUND.getMessage()
-                                                                                                              .formatted(username)));
+                .orElseThrow(() -> new CustomEntityNotFoundException(ExceptionMessageEnum.USER_NOT_FOUND, username));
 
         LOG.info("New product cretaed by: {}",
-                 username);
+                username);
 
         String normalizedName = NormalizeUtils.normalizeText(product.name());
         boolean productAlreadyExists = productRepository.existsByNormalizedName(normalizedName);
         LOG.info("Product '{}' ({}) already exists :: {}",
-                 product.name(),
-                 normalizedName,
-                 productAlreadyExists);
+                product.name(),
+                normalizedName,
+                productAlreadyExists);
 
         if (productAlreadyExists) {
             return productMapper.toModel(productRepository.findByNormalizedName(normalizedName));
@@ -88,14 +86,14 @@ public class ProductService {
             Pageable pageable) {
 
         LOG.info("Search products with given filters: {}",
-                 filter);
+                filter);
 
         Predicate predicate = ProductPredicateFactory.fromFilters(filter);
 
         if (predicate != null) {
             return productRepository.findAll(predicate,
-                                             pageable)
-                                    .map(productMapper::toModel);
+                            pageable)
+                    .map(productMapper::toModel);
         } else {
             return Page.empty();
         }
@@ -114,7 +112,7 @@ public class ProductService {
                                  Product product) throws CustomEntityNotFoundException {
 
         LOG.info("Update product {}",
-                 productId);
+                productId);
 
         // Check if product exists
         boolean productExists = productRepository.existsById(productId);
@@ -123,9 +121,7 @@ public class ProductService {
             ProductEntity productEntity = productMapper.toEntity(product);
             return productMapper.toModel(productRepository.saveAndFlush(productEntity));
         } else {
-            throw new CustomEntityNotFoundException(ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID,
-                                                    ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID.getMessage()
-                                                                                                .formatted(productId));
+            throw new CustomEntityNotFoundException(ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID, productId);
         }
     }
 
@@ -140,14 +136,12 @@ public class ProductService {
             Long productId) throws CustomEntityNotFoundException {
 
         LOG.info("Deleting product: {}",
-                 productId);
+                productId);
 
         Optional<ProductEntity> recipeEntity = productRepository.findById(productId);
         recipeEntity.ifPresentOrElse(productRepository::delete,
-                                     () -> {
-                                         throw new CustomEntityNotFoundException(ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID,
-                                                                                 ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID.getMessage()
-                                                                                                                             .formatted(productId));
-                                     });
+                () -> {
+                    throw new CustomEntityNotFoundException(ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID, productId);
+                });
     }
 }
