@@ -1,6 +1,6 @@
 package com.example.hmrback.utils;
 
-import com.example.hmrback.model.request.UserUpdateRequest;
+import com.example.hmrback.model.request.UpdateUserRequest;
 import com.example.hmrback.persistence.entity.UserEntity;
 
 import java.util.Arrays;
@@ -28,7 +28,7 @@ public class UserUtils {
      * @return the updated user
      */
     public static UserEntity updateUser(UserEntity user,
-                                        UserUpdateRequest req) {
+                                        UpdateUserRequest req) {
 
         if (user != null && req != null) {
             if (req.firstName() != null) {

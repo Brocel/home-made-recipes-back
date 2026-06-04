@@ -1,8 +1,9 @@
-package com.example.hmrback.model;
+package com.example.hmrback.model.response;
 
+import com.example.hmrback.model.Product;
 import com.example.hmrback.persistence.enums.Unit;
 
-public record Ingredient(
+public record IngredientResponse(
         Long id,
 
         Double quantity,
@@ -10,5 +11,4 @@ public record Ingredient(
         Unit unit,
 
         Product product
-) {
-}
+) {}

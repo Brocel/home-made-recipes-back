@@ -1,6 +1,7 @@
 package com.example.hmrback.api.controller.recipe;
 
 import com.example.hmrback.api.controller.RecipeBaseIntegrationTest;
+import com.example.hmrback.utils.test.DtoTestUtils;
 import com.example.hmrback.utils.test.IntegrationTestUtils;
 import com.example.hmrback.utils.test.ModelTestUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,8 +23,7 @@ class RecipeControllerUpdateTest extends RecipeBaseIntegrationTest {
     @BeforeAll
     static void setup() throws JsonProcessingException {
         // Request setup
-        updateRecipeRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildRecipe(1L,
-                                                                                     false));
+        updateRecipeRequest = IntegrationTestUtils.toJson(DtoTestUtils.buildUpdateRecipeRequest(1L));
     }
 
     @Test

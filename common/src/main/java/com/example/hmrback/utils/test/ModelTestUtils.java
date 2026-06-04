@@ -1,8 +1,6 @@
 package com.example.hmrback.utils.test;
 
 import com.example.hmrback.model.*;
-import com.example.hmrback.model.request.LoginRequest;
-import com.example.hmrback.model.request.RegisterRequest;
 import com.example.hmrback.persistence.enums.IngredientType;
 import com.example.hmrback.persistence.enums.RecipeType;
 import com.example.hmrback.persistence.enums.RoleEnum;
@@ -181,51 +179,8 @@ public class ModelTestUtils {
                                         isCreation));
     }
 
-    public static Recipe buildRecipeForCreation(Long ordinal) {
-        return new Recipe(null,
-                          RECIPE_TITLE.formatted(ordinal),
-                          RECIPE_DESCRIPTION.formatted(ordinal),
-                          ordinal.intValue() * 40,
-                          RecipeType.APPETIZER,
-                          DateUtils.formatLocalDate(LocalDate.now()
-                                                             .minusDays(10 * ordinal)),
-                          null,
-                          buildIngredientList(4,
-                                              true),
-                          buildStepList(5,
-                                        true));
-    }
-
     public static Role buildRole() {
         return new Role(1L,
                         RoleEnum.ROLE_USER.toString());
-    }
-
-    public static Product buildProductForCreation(boolean existingProduct) {
-        return new Product(null,
-                           existingProduct ?
-                           "Carrot" :
-                           FAKE,
-                           existingProduct ?
-                           IngredientType.VEGETABLE :
-                           IngredientType.OTHER);
-    }
-
-    public static RegisterRequest buildRegisterRequest(boolean valid) {
-        return new RegisterRequest(valid ?
-                                   "Test" :
-                                   null,
-                                   "TEST",
-                                   "Test666",
-                                   "valid.email@domain.com",
-                                   "123456",
-                                   "01/01/1966");
-    }
-
-    public static LoginRequest buildLoginRequest(boolean valid) {
-        return new LoginRequest("valid.email@domain.com",
-                                valid ?
-                                "123456" :
-                                "bouh!");
     }
 }

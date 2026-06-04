@@ -1,6 +1,7 @@
 package com.example.hmrback.api.controller.product;
 
 import com.example.hmrback.api.controller.RecipeBaseIntegrationTest;
+import com.example.hmrback.utils.test.DtoTestUtils;
 import com.example.hmrback.utils.test.IntegrationTestUtils;
 import com.example.hmrback.utils.test.ModelTestUtils;
 import org.junit.jupiter.api.Order;
@@ -22,7 +23,7 @@ class ProductControllerCreateTest extends RecipeBaseIntegrationTest {
     @Transactional
     void createProduct_withUser() throws Exception {
         boolean existingProduct = false;
-        String createProductRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildProductForCreation(existingProduct));
+        String createProductRequest = IntegrationTestUtils.toJson(DtoTestUtils.buildCreateProductRequest(existingProduct));
 
         mockMvc.perform(post("/hmr/api/products")
                                 .header("Authorization",
@@ -43,7 +44,7 @@ class ProductControllerCreateTest extends RecipeBaseIntegrationTest {
     @Transactional
     void createProduct_withAdmin() throws Exception {
         boolean existingProduct = false;
-        String createProductRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildProductForCreation(existingProduct));
+        String createProductRequest = IntegrationTestUtils.toJson(DtoTestUtils.buildCreateProductRequest(existingProduct));
 
         mockMvc.perform(post("/hmr/api/products")
                                 .header("Authorization",
@@ -64,7 +65,7 @@ class ProductControllerCreateTest extends RecipeBaseIntegrationTest {
     @Transactional
     void createProduct_withExistingProduct() throws Exception {
         boolean existingProduct = true;
-        String createProductRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildProductForCreation(existingProduct));
+        String createProductRequest = IntegrationTestUtils.toJson(DtoTestUtils.buildCreateProductRequest(existingProduct));
 
         mockMvc.perform(post("/hmr/api/products")
                                 .header("Authorization",

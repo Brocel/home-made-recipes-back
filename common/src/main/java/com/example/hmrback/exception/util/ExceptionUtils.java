@@ -1,6 +1,7 @@
 package com.example.hmrback.exception.util;
 
 import com.example.hmrback.model.error.ApiError;
+import com.example.hmrback.validation.util.ValidationMessageEnum;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -4,7 +4,7 @@ import com.example.hmrback.exception.CustomEntityNotFoundException;
 import com.example.hmrback.exception.util.ExceptionMessageEnum;
 import com.example.hmrback.mapper.UserMapper;
 import com.example.hmrback.model.User;
-import com.example.hmrback.model.request.UserUpdateRequest;
+import com.example.hmrback.model.request.UpdateUserRequest;
 import com.example.hmrback.persistence.entity.UserEntity;
 import com.example.hmrback.persistence.repository.UserRepository;
 import com.example.hmrback.utils.UserUtils;
@@ -38,7 +38,7 @@ public class UserService {
     }
 
     public User updateUser(String userId,
-                           @Valid UserUpdateRequest request) {
+                           @Valid UpdateUserRequest request) {
 
         LOG.info("Updating user: {}",
                 userId);

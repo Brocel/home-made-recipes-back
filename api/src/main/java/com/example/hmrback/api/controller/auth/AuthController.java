@@ -6,9 +6,11 @@ import com.example.hmrback.model.request.RegisterRequest;
 import com.example.hmrback.model.response.AuthResponse;
 import com.example.hmrback.service.auth.AuthenticationService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 import static com.example.hmrback.constant.ControllerConstants.AUTH;
 import static com.example.hmrback.constant.ControllerConstants.BASE_PATH;
@@ -19,7 +21,6 @@ public class AuthController {
 
     private final AuthenticationService authenticationService;
 
-    @Autowired
     public AuthController(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
@@ -50,6 +51,9 @@ public class AuthController {
 
         AuthResponse response = this.authenticationService.register(request);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .location(URI.create(BASE_PATH + "/user/" + response.user().id()))
+                .body(response);
     }
 }

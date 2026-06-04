@@ -1,10 +1,10 @@
 package com.example.hmrback.api.controller.user;
 
 import com.example.hmrback.model.User;
-import com.example.hmrback.model.request.UserUpdateRequest;
+import com.example.hmrback.model.request.UpdateUserRequest;
+import com.example.hmrback.model.response.UserResponse;
 import com.example.hmrback.service.user.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,32 +18,45 @@ public class UserController {
 
     private final UserService userService;
 
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and @recipeSecurity.isAuthor(#id))")
-    public ResponseEntity<User> updateUser(
+    public ResponseEntity<UserResponse> updateUser(
             @PathVariable
             String id,
             @Valid
             @RequestBody
-            UserUpdateRequest request
+            UpdateUserRequest request
     ) {
-        return ResponseEntity.ok(this.userService.updateUser(id,
-                                                             request));
+        User updatedUser = this.userService.updateUser(id, request);
+        return ResponseEntity.ok(userToResponse(updatedUser));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and @recipeSecurity.isAuthor(#id))")
-    public ResponseEntity<User> deleteUser(
+    public ResponseEntity<Void> deleteUser(
             @PathVariable
             String id
     ) {
         this.userService.deleteUser(id);
-        return ResponseEntity.noContent()
-                             .build();
+        return ResponseEntity.noContent().build();
+    }
+
+    // Conversion helper
+    private UserResponse userToResponse(User user) {
+        return new UserResponse(
+                user.id(),
+                user.firstName(),
+                user.lastName(),
+                user.username(),
+                user.email(),
+                user.birthDate(),
+                user.inscriptionDate(),
+                user.avatarName(),
+                user.roles()
+        );
     }
 }

@@ -1,23 +1,23 @@
 package com.example.hmrback.model.request;
 
+import com.example.hmrback.constant.DtoContants;
 import com.example.hmrback.validation.ValidDate;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record UserUpdateRequest(
-        @JsonProperty("first_name")
+public record UpdateUserRequest(
+        @JsonProperty(DtoContants.FIRST_NAME)
         String firstName,
 
-        @JsonProperty("last_name")
+        @JsonProperty(DtoContants.LAST_NAME)
         String lastName,
 
-        @JsonProperty("username")
         String username,
 
-        @JsonProperty("birth_date")
+        @JsonProperty(DtoContants.BIRTH_DATE)
         @ValidDate
         String birthDate,
 
-        @JsonProperty("avatar_name")
+        @JsonProperty(DtoContants.AVATAR_NAME)
         String avatarName
 ) {
 }

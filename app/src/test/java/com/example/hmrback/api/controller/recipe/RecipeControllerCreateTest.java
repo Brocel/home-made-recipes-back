@@ -1,8 +1,8 @@
 package com.example.hmrback.api.controller.recipe;
 
 import com.example.hmrback.api.controller.RecipeBaseIntegrationTest;
+import com.example.hmrback.utils.test.DtoTestUtils;
 import com.example.hmrback.utils.test.IntegrationTestUtils;
-import com.example.hmrback.utils.test.ModelTestUtils;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -19,14 +19,14 @@ class RecipeControllerCreateTest extends RecipeBaseIntegrationTest {
     @Order(1)
     @Transactional
     void createRecipe() throws Exception {
-        String createRecipeRequest = IntegrationTestUtils.toJson(ModelTestUtils.buildRecipeForCreation(1L));
+        String createRecipeRequest = IntegrationTestUtils.toJson(DtoTestUtils.buildCreateRecipeRequest(1L));
 
         mockMvc.perform(post("/hmr/api/recipes")
-                                .header("Authorization",
-                                        "Bearer " + userToken)
-                                .with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(createRecipeRequest))
-               .andExpect(status().isOk());
+                        .header("Authorization",
+                                "Bearer " + userToken)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createRecipeRequest))
+                .andExpect(status().isOk());
     }
 }
