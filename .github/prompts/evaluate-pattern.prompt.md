@@ -1,5 +1,5 @@
 ---
-agent: 'agent'
+agent: 'ask'
 name: 'evaluate-pattern'
 description: 'Evaluate whether a design pattern or abstraction is justified'
 ---

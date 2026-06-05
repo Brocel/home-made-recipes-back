@@ -1,19 +1,9 @@
+---
+description: "Guidelines for code generation in Java projects using Copilot"
+applyTo: "**/*.java"
+---
+
 # Code generation instructions
-
-## Scope
-
-Apply these rules whenever Copilot refactors or generates a new Java file or proposes a new type, including:
-
-- classes
-- interfaces
-- abstract classes
-- DTOs
-- records
-- utilities
-- constants
-- enums
-- mappers
-- exception types
 
 ## General rules
 
@@ -54,33 +44,6 @@ Apply these rules whenever Copilot refactors or generates a new Java file or pro
 - Keep abstract classes narrow and explicit.
 - Do not introduce inheritance hierarchies unless the codebase already supports them.
 
-## DTO generation
-
-- Use DTOs for API input and output models.
-- Do not expose JPA entities through the API layer.
-- Keep DTOs flat unless nesting is truly required.
-- Prefer immutable DTOs.
-- Use records for simple request/response DTOs when they fit naturally.
-- Use validation annotations on input DTOs.
-- Keep DTO names descriptive, such as:
-    - `CreateRecipeRequest`
-    - `UpdateRecipeRequest`
-    - `RecipeResponse`
-    - `SearchRecipesQuery`
-- Do not put business logic in DTOs.
-
-## Record generation
-
-- Prefer records for simple, immutable data carriers.
-- Use records when the type is only transporting data and does not need mutable state.
-- Keep record components minimal and intentional.
-- Do not use records when the type needs lifecycle behavior, mutation, or complex invariants.
-- Prefer records for:
-    - request/response DTOs
-    - simple command objects
-    - small projection models
-    - value-like return types
-
 ## Utility generation
 
 - Use a utility class only for stateless reusable helpers.
@@ -103,27 +66,12 @@ Apply these rules whenever Copilot refactors or generates a new Java file or pro
 - Use clear constant names in `UPPER_SNAKE_CASE`.
 - Do not place unrelated constants in the same class.
 
-## Mapper generation
-
-- Prefer MapStruct for object mapping when the project already uses it.
-- Keep mappers focused on translation only.
-- Do not embed business logic in mappers.
-- Keep mapping names explicit and readable.
-- Prefer one mapper per aggregate or feature area when practical.
-
 ## Enum generation
 
 - Use enums for fixed sets of domain values.
 - Keep enum names clear and business-oriented.
 - Do not overload enums with unrelated responsibilities.
 - Prefer helper methods only when they improve readability and stay simple.
-
-## Exception generation
-
-- Use specific exception types for specific failure cases.
-- Keep exception names descriptive and stable.
-- Do not create generic exception wrappers unless the architecture already requires them.
-- Include only the context needed to diagnose the problem safely.
 
 ## Naming rules
 

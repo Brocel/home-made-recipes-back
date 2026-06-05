@@ -1,3 +1,8 @@
+---
+description: API instructions for controllers, REST rules, filtering/sorting/pagination, validation/errors.
+applyTo: "'api/**/*.java'"
+---
+
 # API instructions
 
 ## Controller rules
@@ -47,3 +52,20 @@
 - Keep OpenAPI yaml aligned with the actual behavior.
 - Document validation rules, required fields, and important error responses.
 - Keep examples realistic and consistent with the domain.
+
+# Security instructions
+
+## Input and output
+
+- Assume all external input is untrusted.
+- Validate and sanitize inputs at the boundary.
+- Never hardcode secrets.
+- Never log credentials, tokens, or sensitive personal data.
+- Do not echo sensitive values in error messages.
+
+## Authentication and authorization
+
+- Validate authorization explicitly at the boundary.
+- Keep authentication logic isolated and easy to audit.
+- Prefer least-privilege access for service accounts and integrations.
+- Do not weaken access checks to make tests pass.

@@ -11,7 +11,7 @@ User groups:
 - Guest users can browse, search, and view recipes.
 - Registered users can manage recipes, products, meal plans, and profile preferences.
 
-Main domains:
+Main business domains:
 
 - Dashboard: personalized summary, weekly menu, profile shortcuts, and useful insights.
 - Recipes: browse, search, filter, view, create, edit, and share recipes.
@@ -43,6 +43,13 @@ Main domains:
 The repository contains multiple microservices. Each service owns its own domain, persistence model, and deployment
 boundary.
 
+- `api`: REST controllers, and API-facing mapping.
+- `app`: application bootstrap, configuration, global exception handling, and resources such as migrations and OpenAPI
+  files.
+- `common`: shared technical code such as utilities, exceptions, mappers, models, predicates, and validators.
+- `persistence`: JPA entities, repositories, and persistence enums.
+- `service`: business logic and use-case orchestration.
+
 ## Global engineering rules
 
 - Prefer readability, maintainability, explicitness, and consistency over clever abstractions.
@@ -58,6 +65,7 @@ boundary.
 - Prefer the simplest solution that satisfies current requirements.
 - Do not introduce patterns without clear justification.
 - Prefer creating new classes over writing nested classes.
+- If a bug is fixed, add a regression test that fails before the fix and passes after it.
 
 ## Java and Spring rules
 

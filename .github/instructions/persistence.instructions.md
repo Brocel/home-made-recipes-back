@@ -1,3 +1,8 @@
+---
+description: "This file contains instructions for persistence design and usage in Java projects. It provides guidelines on how to create and maintain persistence entities, repositories, and Querydsl usage to ensure efficient and maintainable data access patterns."
+applyTo: "'common/**/predicate/**/*.java', 'persistence/**/*.java'"
+---
+
 # Persistence instructions
 
 ## Entity modeling

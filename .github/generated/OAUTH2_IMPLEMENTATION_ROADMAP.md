@@ -9,7 +9,9 @@
 
 ## Executive Summary
 
-This document outlines the implementation path for OAuth2 authentication in the Home Made Recipes backend. OAuth2 is currently NOT implemented—the application uses JWT authentication. This roadmap provides guidance for when OAuth2 becomes a requirement.
+This document outlines the implementation path for OAuth2 authentication in the Home Made Recipes backend. OAuth2 is
+currently NOT implemented—the application uses JWT authentication. This roadmap provides guidance for when OAuth2
+becomes a requirement.
 
 **Current Status:** ✅ JWT authentication working  
 **OAuth2 Status:** ⏳ PENDING (awaiting architectural decision)  
@@ -19,14 +21,18 @@ This document outlines the implementation path for OAuth2 authentication in the 
 
 ## What is OAuth2 in This Context?
 
-OAuth2 enables users to authenticate using third-party providers (Google, GitHub, etc.) instead of managing local credentials. This roadmap covers implementing OAuth2 as an **additional authentication method** alongside the existing JWT system.
+OAuth2 enables users to authenticate using third-party providers (Google, GitHub, etc.) instead of managing local
+credentials. This roadmap covers implementing OAuth2 as an **additional authentication method** alongside the existing
+JWT system.
 
 ### Current Authentication
+
 ```
 User → Login → Generate JWT → Access Protected Resources
 ```
 
 ### Future with OAuth2
+
 ```
 User → Auth with Google/GitHub → Generate JWT → Access Protected Resources
 OR
@@ -41,12 +47,12 @@ Before implementing OAuth2, the following must be decided:
 
 ### 1. OAuth2 Provider Selection (REQUIRED)
 
-| Provider | Pros | Cons | Recommendation |
-|----------|------|------|-----------------|
-| **Google** | Large user base, reliable, SDKs mature, easy setup | Privacy concerns, requires Google account | ✅ Good for general users |
-| **GitHub** | Developer-friendly, popular for tech products | Limited to GitHub users | ✅ Good if user base is developers |
-| **Custom (Keycloak/Auth0)** | Full control, independent, multi-tenant | Complex to set up and maintain | ⚠️ For enterprise needs |
-| **Multiple (Google + GitHub)** | Flexibility for users | More configuration | ✅ Best UX |
+| Provider                       | Pros                                               | Cons                                      | Recommendation                    |
+|--------------------------------|----------------------------------------------------|-------------------------------------------|-----------------------------------|
+| **Google**                     | Large user base, reliable, SDKs mature, easy setup | Privacy concerns, requires Google account | ✅ Good for general users          |
+| **GitHub**                     | Developer-friendly, popular for tech products      | Limited to GitHub users                   | ✅ Good if user base is developers |
+| **Custom (Keycloak/Auth0)**    | Full control, independent, multi-tenant            | Complex to set up and maintain            | ⚠️ For enterprise needs           |
+| **Multiple (Google + GitHub)** | Flexibility for users                              | More configuration                        | ✅ Best UX                         |
 
 **Recommendation:** Start with **Google** for broad user base, optionally add **GitHub** for developer users.
 
@@ -76,20 +82,23 @@ Decide what OAuth2 will be used for:
 ## Implementation Phases
 
 ### Phase 0: Preparation (Week 1)
+
 **Duration:** 1-2 days  
 **Responsible:** Architecture Team
 
 **Tasks:**
+
 - [ ] Decision: Select OAuth2 provider(s) (Google, GitHub, or both)
 - [ ] Decision: Determine integration scope (auth only, or include profile sync)
 - [ ] Obtain provider credentials:
-  - [ ] Create OAuth2 application in provider console
-  - [ ] Get Client ID and Client Secret
-  - [ ] Register redirect URIs (e.g., `http://localhost:8080/login/oauth2/code/google`)
+    - [ ] Create OAuth2 application in provider console
+    - [ ] Get Client ID and Client Secret
+    - [ ] Register redirect URIs (e.g., `http://localhost:8080/login/oauth2/code/google`)
 - [ ] Create GitHub issue(s) for implementation tracking
 - [ ] Brief frontend team on requirements
 
 **Output:**
+
 - Provider credentials in secure vault
 - Architectural decision document
 - Implementation acceptance criteria
@@ -97,20 +106,24 @@ Decide what OAuth2 will be used for:
 ---
 
 ### Phase 1: Backend OAuth2 Configuration (Week 1-2)
+
 **Duration:** 2-3 hours  
 **Responsible:** Backend Team
 
 **Tasks:**
 
 #### 1.1 Add Spring Security OAuth2 Dependency
+
 ```xml
+
 <dependency>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-starter-oauth2-client</artifactId>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-oauth2-client</artifactId>
 </dependency>
 ```
 
 #### 1.2 Update Configuration Files
+
 ```yaml
 # application.yaml
 spring:
@@ -128,18 +141,21 @@ spring:
 ```
 
 #### 1.3 Create OAuth2 Success Handler
+
 - Handle successful authentication
 - Create/update user in database
 - Generate JWT token
 - Redirect with token to frontend
 
 #### 1.4 Implement User Synchronization
+
 - Map OAuth2 user info to local User entity
 - Handle first-time login (create user)
 - Handle existing user (link OAuth2 identity)
 - Store provider identity for future logins
 
 #### 1.5 Update Error Handling
+
 - Handle OAuth2 authentication failures
 - Comprehensive error messages
 - Logging for debugging
@@ -147,10 +163,12 @@ spring:
 ---
 
 ### Phase 2: Frontend Integration (Week 2-3)
+
 **Duration:** 2-3 hours  
 **Responsible:** Frontend Team
 
 **Tasks:**
+
 - [ ] Add "Sign in with Google/GitHub" buttons to login page
 - [ ] Handle OAuth2 redirect callback
 - [ ] Store JWT token from backend after OAuth2 auth
@@ -161,10 +179,12 @@ spring:
 ---
 
 ### Phase 3: Security Hardening (Week 3)
+
 **Duration:** 2-4 hours  
 **Responsible:** Security Team + Backend Team
 
 **Tasks:**
+
 - [ ] Implement PKCE (Proof Key for Code Exchange)
 - [ ] Add CSRF protection to OAuth2 flow
 - [ ] Validate OAuth2 tokens before creating JWT
@@ -176,10 +196,12 @@ spring:
 ---
 
 ### Phase 4: Testing & QA (Week 3-4)
+
 **Duration:** 2-3 days  
 **Responsible:** QA + Backend Team
 
 **Tasks:**
+
 - [ ] Unit tests for OAuth2 user mapping
 - [ ] Integration tests for OAuth2 flow
 - [ ] E2E tests for complete login workflow
@@ -191,10 +213,12 @@ spring:
 ---
 
 ### Phase 5: Documentation & Deployment (Week 4)
+
 **Duration:** 1-2 days  
 **Responsible:** Backend Team + DevOps
 
 **Tasks:**
+
 - [ ] Document OAuth2 setup for developers
 - [ ] Create deployment guide for OAuth2 credentials
 - [ ] Document environment variables needed
@@ -208,6 +232,7 @@ spring:
 ## Configuration Checklist
 
 ### Environment Variables (Production)
+
 ```bash
 # OAuth2 Provider Credentials
 export OAUTH2_GOOGLE_CLIENT_ID="..."
@@ -224,6 +249,7 @@ export OAUTH2_PKCE_ENABLED="true"
 ```
 
 ### Local Development
+
 ```bash
 # .env.local (not committed)
 OAUTH2_GOOGLE_CLIENT_ID="xxx-local.apps.googleusercontent.com"
@@ -235,6 +261,7 @@ OAUTH2_GITHUB_REDIRECT_URI="http://localhost:8080/login/oauth2/code/github"
 ```
 
 ### application.yaml Configuration
+
 ```yaml
 spring:
   security:
@@ -274,6 +301,7 @@ spring:
 ## Implementation Files to Create/Modify
 
 ### New Files
+
 ```
 app/src/main/java/com/example/hmrback/security/oauth2/
 ├── OAuth2UserService.java              # Map OAuth2 user to JPA User
@@ -287,6 +315,7 @@ common/src/main/java/com/example/hmrback/oauth2/
 ```
 
 ### Modified Files
+
 ```
 app/src/main/java/com/example/hmrback/config/SecurityConfig.java
   - Add OAuth2 client configuration
@@ -314,24 +343,25 @@ app/src/main/resources/application.yaml
 When OAuth2 is implemented, the User entity should support linking local and OAuth2 identities:
 
 ```java
+
 @Entity
 @Table(name = "app_user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private String username;
     private String email;
     private String password;  // Optional if OAuth2-only
-    
+
     // OAuth2 Identity (NEW)
     @Enumerated(EnumType.STRING)
     private OAuth2Provider oauth2Provider;  // GOOGLE, GITHUB (optional)
-    
+
     private String oauth2ProviderId;       // Provider-specific ID
     private LocalDateTime oauth2ConnectedAt;  // When linked to OAuth2
-    
+
     // ... other fields
 }
 ```
@@ -341,6 +371,7 @@ public class User {
 ## Error Handling & Edge Cases
 
 ### Scenario 1: User Signs Up with OAuth2, Then Tries Local Login
+
 ```
 User registers via Google → System creates local User record
 User tries to login with email/password → NOT ALLOWED
@@ -348,6 +379,7 @@ Solution: Suggest "Sign in with Google" instead
 ```
 
 ### Scenario 2: User Signs Up Locally, Then Tries OAuth2
+
 ```
 User registers with email/password → System creates User
 User tries "Sign in with Google" same email → Should link accounts
@@ -355,12 +387,14 @@ Solution: Detect email match, prompt to confirm linking
 ```
 
 ### Scenario 3: OAuth2 Provider API Unavailable
+
 ```
 User clicks "Sign in with Google" → Google unreachable
 Solution: Show error page, suggest retry or local login
 ```
 
 ### Scenario 4: User Revokes OAuth2 Authorization
+
 ```
 User revokes app access in Google Settings → Next login fails
 Solution: Treat as new OAuth2 attempt, ask for permission again
@@ -381,22 +415,22 @@ If OAuth2 implementation has issues:
 
 ## Timeline Estimate
 
-| Phase | Task | Duration | Start Week |
-|-------|------|----------|-----------|
-| 0 | Preparation & decisions | 1-2 days | Week 1 |
-| 1 | Backend OAuth2 config | 2-3 hours | Week 1 |
-| 2 | Frontend integration | 2-3 hours | Week 2 |
-| 3 | Security hardening | 2-4 hours | Week 3 |
-| 4 | Testing & QA | 2-3 days | Week 3 |
-| 5 | Documentation & deploy | 1-2 days | Week 4 |
-| **TOTAL** | **OAuth2 Implementation** | **~2 weeks** | |
+| Phase     | Task                      | Duration     | Start Week |
+|-----------|---------------------------|--------------|------------|
+| 0         | Preparation & decisions   | 1-2 days     | Week 1     |
+| 1         | Backend OAuth2 config     | 2-3 hours    | Week 1     |
+| 2         | Frontend integration      | 2-3 hours    | Week 2     |
+| 3         | Security hardening        | 2-4 hours    | Week 3     |
+| 4         | Testing & QA              | 2-3 days     | Week 3     |
+| 5         | Documentation & deploy    | 1-2 days     | Week 4     |
+| **TOTAL** | **OAuth2 Implementation** | **~2 weeks** |            |
 
 ---
 
 ## Success Criteria
 
 - ✅ Users can sign in with Google (if selected)
-- ✅ Users can sign in with GitHub (if selected)  
+- ✅ Users can sign in with GitHub (if selected)
 - ✅ OAuth2 credentials securely stored in environment variables
 - ✅ User profile auto-populated from OAuth2 provider
 - ✅ JWT token generated after OAuth2 authentication
@@ -411,6 +445,7 @@ If OAuth2 implementation has issues:
 ## Future Enhancements
 
 ### Phase 6+: Advanced OAuth2 Features (Future)
+
 - [ ] Social identity linking (link multiple providers to one user)
 - [ ] WebAuthn/FIDO2 authentication
 - [ ] Passwordless login with magic links
@@ -432,18 +467,22 @@ If OAuth2 implementation has issues:
 ## References & Useful Links
 
 ### Providers
+
 - https://developers.google.com/identity/protocols/oauth2/web-server-flow
 - https://github.com/settings/applications
 - https://auth0.com/docs/get-started
 
 ### Spring Security OAuth2
+
 - https://spring.io/projects/spring-security-oauth2-client
 - https://spring.io/guides/tutorials/spring-security-and-angular-js/
 
 ### PKCE (Proof Key for Code Exchange)
+
 - https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce
 
 ### Best Practices
+
 - https://datatracker.ietf.org/doc/html/rfc6749 (OAuth2 Spec)
 - https://datatracker.ietf.org/doc/html/rfc7636 (PKCE)
 
@@ -452,6 +491,7 @@ If OAuth2 implementation has issues:
 ## Contact & Questions
 
 For questions about OAuth2 implementation:
+
 - Backend Team Lead: [TBD]
 - Security Lead: [TBD]
 - Product Manager: [TBD]
@@ -460,9 +500,9 @@ For questions about OAuth2 implementation:
 
 ## Document History
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | 2026-06-02 | GitHub Copilot | Initial roadmap created |
+| Version | Date       | Author         | Changes                 |
+|---------|------------|----------------|-------------------------|
+| 1.0     | 2026-06-02 | GitHub Copilot | Initial roadmap created |
 
 **Next Review Date:** When OAuth2 becomes a prioritized feature
 

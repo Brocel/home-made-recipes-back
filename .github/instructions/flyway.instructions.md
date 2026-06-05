@@ -1,3 +1,8 @@
+---
+description: "This file contains instructions for Flyway database migrations in Java projects. It provides guidelines on how to create and maintain Flyway migration files that manage schema changes, ensuring they are safe, reviewable, and compatible with the project's database version."
+applyTo: "'app/**/db/migration/**/*.sql'"
+---
+
 # Flyway instructions
 
 ## Migration rules
