@@ -114,15 +114,12 @@ public class ProductService {
         LOG.info("Update product {}",
                 productId);
 
-        // Check if product exists
-        boolean productExists = productRepository.existsById(productId);
+        ProductEntity existingProduct = productRepository.findById(productId).orElseThrow(() ->
+                new CustomEntityNotFoundException(ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID, productId));
 
-        if (productExists) {
-            ProductEntity productEntity = productMapper.toEntity(product);
-            return productMapper.toModel(productRepository.saveAndFlush(productEntity));
-        } else {
-            throw new CustomEntityNotFoundException(ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID, productId);
-        }
+        productMapper.updateEntityFromModel(product, existingProduct);
+
+        return productMapper.toModel(productRepository.saveAndFlush(existingProduct));
     }
 
     /**

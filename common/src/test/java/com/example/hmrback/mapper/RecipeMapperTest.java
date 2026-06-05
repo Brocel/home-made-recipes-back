@@ -14,9 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.example.hmrback.utils.test.TestConstants.NUMBER_1;
-import static com.example.hmrback.utils.test.TestConstants.RECIPE_DESCRIPTION;
-import static com.example.hmrback.utils.test.TestConstants.RECIPE_TITLE;
+import static com.example.hmrback.utils.test.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -47,7 +45,7 @@ class RecipeMapperTest extends BaseTU {
         entity = EntityTestUtils.buildRecipeEntity(NUMBER_1, false);
         entity.setIngredientList(EntityTestUtils.buildIngredientEntityList(5, false));
         entity.setStepList(EntityTestUtils.buildStepEntityList(5, false));
-        entity.setAuthor(EntityTestUtils.buildUserEntity(NUMBER_1, false));
+        entity.setAuthor(EntityTestUtils.buildUserEntity(NUMBER_1, false, FAKE));
     }
 
     @Test

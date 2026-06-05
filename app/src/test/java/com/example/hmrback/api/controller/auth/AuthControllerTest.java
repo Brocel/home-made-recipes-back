@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,17 +49,12 @@ class AuthControllerTest extends RecipeBaseIntegrationTest {
     @Transactional
     void login() throws Exception {
         String loginRequest = IntegrationTestUtils.toJson(DtoTestUtils.buildLoginRequest(true));
-        String registerRequest = IntegrationTestUtils.toJson(DtoTestUtils.buildRegisterRequest(true));
-
-        mockMvc.perform(post("/hmr/api/auth/register")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(registerRequest));
 
         mockMvc.perform(post("/hmr/api/auth/login")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginRequest))
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 

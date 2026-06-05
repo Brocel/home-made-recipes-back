@@ -300,11 +300,12 @@ public class DtoTestUtils {
      * @return the RegisterRequest object
      */
     public static RegisterRequest buildRegisterRequest(boolean valid) {
+        Long ordinal = valid? 666L: 0L;
         return new RegisterRequest(
-                valid ? FIRST_NAME.formatted(1L) : null,
-                LAST_NAME.formatted(1L),
-                USERNAME.formatted(1L),
-                EMAIL.formatted(1L),
+                valid ? FIRST_NAME.formatted(ordinal) : null,
+                LAST_NAME.formatted(ordinal),
+                USERNAME.formatted(ordinal),
+                EMAIL.formatted(ordinal),
                 "123456",
                 "01/01/1966");
     }
@@ -323,7 +324,7 @@ public class DtoTestUtils {
     public static LoginRequest buildLoginRequest(boolean valid) {
         return new LoginRequest(
                 EMAIL.formatted(1L),
-                valid ? "123456" : "invalidPassword");
+                valid ? FAKE : "invalidPassword");
     }
 
     // ============ HELPERS ============

@@ -1,15 +1,16 @@
 package com.example.hmrback.mapper.dto;
 
 import com.example.hmrback.model.User;
+import com.example.hmrback.model.request.UpdateUserRequest;
 import com.example.hmrback.model.response.UserResponse;
 
 /**
  * Maps User domain models to UserResponse DTOs and vice versa.
- *
+ * <p>
  * This utility mapper provides stateless, static transformations between
  * the User domain model and the UserResponse DTO. All methods are null-safe
  * and preserve all user information including roles and dates.
- *
+ * <p>
  * Usage:
  * <pre>
  *   UserResponse response = UserDTOMapper.toDtoResponse(user);
@@ -25,9 +26,9 @@ public final class UserDTOMapper {
 
     /**
      * Converts a User domain model to a UserResponse DTO.
-     *
+     * <p>
      * All fields are preserved: id, firstName, lastName, username, email,
-     * birthDate, inscriptionDate, avatarName, and roles.
+     * birthDate, inscriptionDate, avatar, and roles.
      *
      * @param user the User domain model to convert (may be null)
      * @return UserResponse DTO, or null if input is null
@@ -45,8 +46,34 @@ public final class UserDTOMapper {
                 user.email(),
                 user.birthDate(),
                 user.inscriptionDate(),
-                user.avatarName(),
+                user.avatar(),
                 user.roles()
+        );
+    }
+
+    /**
+     * Converts an UpdateUserRequest to a User domain model.
+     * <p>
+     * Note: in the returned model, null fields are not updatable (see UserMapper)
+     *
+     * @param request the UpdateUserRequest to convert (may be null)
+     * @return User domain model
+     */
+    public static User toUser(UpdateUserRequest request) {
+        if (request == null) {
+            return null;
+        }
+
+        return new User(
+                null,
+                request.firstName(),
+                request.lastName(),
+                null,
+                null,
+                request.birthDate(),
+                null,
+                request.avatar(),
+                null
         );
     }
 }

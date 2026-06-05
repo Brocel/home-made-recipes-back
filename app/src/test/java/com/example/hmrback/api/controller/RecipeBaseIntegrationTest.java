@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Set;
 
+import static com.example.hmrback.utils.test.TestConstants.FAKE;
 import static com.example.hmrback.utils.test.TestConstants.SHOULD_BE_INITIALIZED_MESSAGE;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -59,14 +61,16 @@ public class RecipeBaseIntegrationTest {
     @BeforeAll
     static void setup(
             @Autowired
-            ApplicationContext context) {
+            ApplicationContext context,
+            @Autowired
+            PasswordEncoder passwordEncoder) {
         LOG.info("[Integration Tests] Base Setup");
 
         // Role setup
         roleSetup(context);
 
         // User setup
-        userSetup(context);
+        userSetup(context, passwordEncoder);
 
         // Authentication setup
         authSetup();
@@ -88,31 +92,31 @@ public class RecipeBaseIntegrationTest {
     @Order(0)
     void contextLoads() {
         assertNotNull(roleUser,
-                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Role USER"));
+                SHOULD_BE_INITIALIZED_MESSAGE.formatted("Role USER"));
         assertNotNull(roleAdmin,
-                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Role ADMIN"));
+                SHOULD_BE_INITIALIZED_MESSAGE.formatted("Role ADMIN"));
 
         assertNotNull(savedUser,
-                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("User"));
+                SHOULD_BE_INITIALIZED_MESSAGE.formatted("User"));
         assertNotNull(savedAdmin,
-                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Admin"));
+                SHOULD_BE_INITIALIZED_MESSAGE.formatted("Admin"));
         assertNotNull(savedOtherUser,
-                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Other User"));
+                SHOULD_BE_INITIALIZED_MESSAGE.formatted("Other User"));
 
         assertNotNull(adminToken,
-                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Admin token"));
+                SHOULD_BE_INITIALIZED_MESSAGE.formatted("Admin token"));
         assertNotNull(userToken,
-                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("User token"));
+                SHOULD_BE_INITIALIZED_MESSAGE.formatted("User token"));
         assertNotNull(otherUserToken,
-                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Other user token"));
+                SHOULD_BE_INITIALIZED_MESSAGE.formatted("Other user token"));
 
         assertNotNull(savedRecipe,
-                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Saved Recipe"));
+                SHOULD_BE_INITIALIZED_MESSAGE.formatted("Saved Recipe"));
         assertNotNull(savedOtherRecipe,
-                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Saved other Recipe"));
+                SHOULD_BE_INITIALIZED_MESSAGE.formatted("Saved other Recipe"));
 
         assertNotNull(savedProducts,
-                      SHOULD_BE_INITIALIZED_MESSAGE.formatted("Saved products"));
+                SHOULD_BE_INITIALIZED_MESSAGE.formatted("Saved products"));
     }
 
     public static void roleSetup(ApplicationContext context) {
@@ -122,23 +126,27 @@ public class RecipeBaseIntegrationTest {
         roleAdmin = roleRepository.save(EntityTestUtils.buildRoleEntity(true));
     }
 
-    public static void userSetup(ApplicationContext context) {
+    public static void userSetup(ApplicationContext context, PasswordEncoder passwordEncoder) {
         UserRepository userRepository = context.getBean(UserRepository.class);
+        String encodedPassword = passwordEncoder.encode(FAKE);
 
         UserEntity user = EntityTestUtils.buildUserEntity(1L,
-                                                          true);
+                true,
+                encodedPassword);
         user.setRoles(Set.of(roleUser));
         savedUser = userRepository.save(user);
 
         UserEntity admin = EntityTestUtils.buildUserEntity(2L,
-                                                           true);
+                true,
+                encodedPassword);
         admin.setUsername("admin");
         admin.setRoles(Set.of(roleAdmin,
-                              roleUser));
+                roleUser));
         savedAdmin = userRepository.save(admin);
 
         UserEntity otherUser = EntityTestUtils.buildUserEntity(3L,
-                                                               true);
+                true,
+                encodedPassword);
         otherUser.setUsername("otherUser");
         otherUser.setRoles(Set.of(roleUser));
         savedOtherUser = userRepository.save(otherUser);
@@ -154,7 +162,7 @@ public class RecipeBaseIntegrationTest {
         RecipeRepository recipeRepository = context.getBean(RecipeRepository.class);
 
         RecipeEntity recipeEntity = EntityTestUtils.buildRecipeEntity(1L,
-                                                                      true);
+                true);
         recipeEntity.setAuthor(savedUser);
         savedRecipe = recipeRepository.save(recipeEntity);
 
@@ -166,10 +174,10 @@ public class RecipeBaseIntegrationTest {
     public static void stepSetup(ApplicationContext context) {
         StepRepository stepRepository = context.getBean(StepRepository.class);
         List<StepEntity> stepList = EntityTestUtils.buildStepEntityList(5,
-                                                                        true)
-                                                   .stream()
-                                                   .peek(step -> step.setRecipe(savedRecipe))
-                                                   .toList();
+                        true)
+                .stream()
+                .peek(step -> step.setRecipe(savedRecipe))
+                .toList();
         stepRepository.saveAll(stepList);
     }
 
@@ -182,7 +190,7 @@ public class RecipeBaseIntegrationTest {
     public static void ingredientSetup(ApplicationContext context) {
         IngredientRepository ingredientRepository = context.getBean(IngredientRepository.class);
         List<IngredientEntity> ingredientEntityList = IntegrationTestUtils.buildIngredientEntityList(savedRecipe,
-                                                                                                     savedProducts);
+                savedProducts);
         ingredientRepository.saveAll(ingredientEntityList);
 
     }

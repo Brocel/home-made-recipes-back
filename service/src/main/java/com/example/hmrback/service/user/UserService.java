@@ -4,10 +4,8 @@ import com.example.hmrback.exception.CustomEntityNotFoundException;
 import com.example.hmrback.exception.util.ExceptionMessageEnum;
 import com.example.hmrback.mapper.UserMapper;
 import com.example.hmrback.model.User;
-import com.example.hmrback.model.request.UpdateUserRequest;
 import com.example.hmrback.persistence.entity.UserEntity;
 import com.example.hmrback.persistence.repository.UserRepository;
-import com.example.hmrback.utils.UserUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -38,20 +36,17 @@ public class UserService {
     }
 
     public User updateUser(String userId,
-                           @Valid UpdateUserRequest request) {
+                           @Valid User user) throws CustomEntityNotFoundException {
 
         LOG.info("Updating user: {}",
                 userId);
 
-        Optional<UserEntity> existingUser = this.userRepository.findById(UUID.fromString(userId));
+        UserEntity existingUser = this.userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new CustomEntityNotFoundException(ExceptionMessageEnum.USER_NOT_FOUND, userId));
 
-        if (existingUser.isPresent()) {
-            UserEntity user = UserUtils.updateUser(existingUser.get(),
-                    request);
-            return this.userMapper.toModel(this.userRepository.save(user));
-        } else {
-            throw new CustomEntityNotFoundException(ExceptionMessageEnum.USER_NOT_FOUND, userId);
-        }
+        userMapper.updateEntityFromModel(user, existingUser);
+
+        return userMapper.toModel(this.userRepository.saveAndFlush(existingUser));
     }
 
     public void deleteUser(String userId) {

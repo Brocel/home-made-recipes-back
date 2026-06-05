@@ -43,8 +43,8 @@ public class UserUtils {
             if (req.birthDate() != null) {
                 user.setBirthDate(DateUtils.parseLocalDate(req.birthDate()));
             }
-            if (req.avatarName() != null) {
-                user.setAvatarName(req.avatarName());
+            if (req.avatar() != null) {
+                user.setAvatarName(req.avatar());
             }
         }
 

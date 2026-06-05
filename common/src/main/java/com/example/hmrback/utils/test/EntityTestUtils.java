@@ -33,14 +33,14 @@ public class EntityTestUtils {
      * @param ordinal the position number to differentiate users
      * @return UserEntity instance
      */
-    public static UserEntity buildUserEntity(Long ordinal, boolean isCreation) {
+    public static UserEntity buildUserEntity(Long ordinal, boolean isCreation, String encodedPassword) {
         UserEntity userEntity = new UserEntity();
         userEntity.setId(isCreation ? null : CommonTestUtils.uuidFromLong(ordinal));
         userEntity.setFirstName(FIRST_NAME.formatted(ordinal));
         userEntity.setLastName(LAST_NAME.formatted(ordinal));
         userEntity.setUsername(USERNAME.formatted(ordinal));
         userEntity.setEmail(EMAIL.formatted(ordinal));
-        userEntity.setPassword(FAKE);
+        userEntity.setPassword(encodedPassword);
         userEntity.setBirthDate(LocalDate.now().minusYears(10 * ordinal));
         userEntity.setInscriptionDate(LocalDate.now().minusMonths(ordinal));
         userEntity.setRoles(new HashSet<>(Collections.singleton(buildRoleEntity())));
@@ -55,7 +55,7 @@ public class EntityTestUtils {
      */
     public static List<UserEntity> buildUserEntityList(int count) {
         return LongStream.rangeClosed(1, count)
-            .mapToObj(num -> buildUserEntity(num, false))
+            .mapToObj(num -> buildUserEntity(num, false, FAKE))
             .toList();
     }
 

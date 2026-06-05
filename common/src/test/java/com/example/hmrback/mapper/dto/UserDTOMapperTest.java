@@ -30,7 +30,7 @@ class UserDTOMapperTest {
         assertEquals(user.email(), response.email());
         assertEquals(user.birthDate(), response.birthDate());
         assertEquals(user.inscriptionDate(), response.inscriptionDate());
-        assertEquals(user.avatarName(), response.avatarName());
+        assertEquals(user.avatar(), response.avatarName());
         assertEquals(user.roles(), response.roles());
     }
 
@@ -91,7 +91,7 @@ class UserDTOMapperTest {
                 () -> assertEquals(user.email(), response.email(), "Email should be preserved"),
                 () -> assertEquals(user.birthDate(), response.birthDate(), "Birth date should be preserved"),
                 () -> assertEquals(user.inscriptionDate(), response.inscriptionDate(), "Inscription date should be preserved"),
-                () -> assertEquals(user.avatarName(), response.avatarName(), "Avatar name should be preserved"),
+                () -> assertEquals(user.avatar(), response.avatarName(), "Avatar name should be preserved"),
                 () -> assertEquals(user.roles(), response.roles(), "Roles should be preserved")
         );
     }

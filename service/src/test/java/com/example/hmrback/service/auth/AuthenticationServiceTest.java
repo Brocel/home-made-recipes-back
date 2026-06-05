@@ -31,6 +31,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Optional;
 
 import static com.example.hmrback.utils.test.CommonTestUtils.ADMIN_EMAIL;
+import static com.example.hmrback.utils.test.TestConstants.FAKE;
 import static com.example.hmrback.utils.test.TestConstants.NUMBER_1;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -67,32 +68,32 @@ class AuthenticationServiceTest extends BaseTU {
     @BeforeEach
     void valueSetup() {
         ReflectionTestUtils.setField(service,
-                                     "adminEmailsRaw",
-                                     ADMIN_EMAIL);
+                "adminEmailsRaw",
+                ADMIN_EMAIL);
         ReflectionTestUtils.setField(service,
-                                     "secretKey",
-                                     "fake-secret-key-just-for-unit-tests-666_@!#");
+                "secretKey",
+                "fake-secret-key-just-for-unit-tests-666_@!#");
         ReflectionTestUtils.setField(service,
-                                     "expirationMinutes",
-                                     999L);
+                "expirationMinutes",
+                999L);
     }
 
     @BeforeAll
     static void setup() {
         // Entities
         userEntity = EntityTestUtils.buildUserEntity(NUMBER_1,
-                                                     false);
+                false, FAKE);
 
         adminRole = EntityTestUtils.buildRoleEntity(true);
         userRole = EntityTestUtils.buildRoleEntity(false);
 
         // Models
         userModel = ModelTestUtils.buildUser(1L,
-                                             false);
+                false);
 
         // Requests
         registerRequest = CommonTestUtils.buildRegisterRequest(userModel,
-                                                               false);
+                false);
         loginRequest = CommonTestUtils.buildLoginRequest();
     }
 
@@ -110,7 +111,7 @@ class AuthenticationServiceTest extends BaseTU {
         assertTrue(result);
 
         verify(userRepository,
-               times(1)).existsByUsername(USERNAME);
+                times(1)).existsByUsername(USERNAME);
     }
 
     @Test
@@ -126,7 +127,7 @@ class AuthenticationServiceTest extends BaseTU {
         assertFalse(result);
 
         verify(userRepository,
-               times(1)).existsByUsername(USERNAME);
+                times(1)).existsByUsername(USERNAME);
     }
 
     @Test
@@ -147,15 +148,15 @@ class AuthenticationServiceTest extends BaseTU {
         assertNotNull(result.user());
 
         verify(userRepository,
-               times(1)).existsByEmail(anyString());
+                times(1)).existsByEmail(anyString());
         verify(roleRepository,
-               times(1)).findByName(RoleEnum.ROLE_USER);
+                times(1)).findByName(RoleEnum.ROLE_USER);
         verify(roleRepository,
-               times(0)).findByName(RoleEnum.ROLE_ADMIN);
+                times(0)).findByName(RoleEnum.ROLE_ADMIN);
         verify(userRepository,
-               times(1)).save(any(UserEntity.class));
+                times(1)).save(any(UserEntity.class));
         verify(userMapper,
-               times(1)).toModel(any(UserEntity.class));
+                times(1)).toModel(any(UserEntity.class));
     }
 
     @Test
@@ -163,7 +164,7 @@ class AuthenticationServiceTest extends BaseTU {
     void register_withAdminUser() throws AuthException {
         // Custom Setup
         RegisterRequest adminRegisterRequest = CommonTestUtils.buildRegisterRequest(userModel,
-                                                                                    true);
+                true);
 
         // Mocks
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
@@ -181,15 +182,15 @@ class AuthenticationServiceTest extends BaseTU {
         assertNotNull(result.user());
 
         verify(userRepository,
-               times(1)).existsByEmail(anyString());
+                times(1)).existsByEmail(anyString());
         verify(roleRepository,
-               times(1)).findByName(RoleEnum.ROLE_USER);
+                times(1)).findByName(RoleEnum.ROLE_USER);
         verify(roleRepository,
-               times(1)).findByName(RoleEnum.ROLE_ADMIN);
+                times(1)).findByName(RoleEnum.ROLE_ADMIN);
         verify(userRepository,
-               times(1)).save(any(UserEntity.class));
+                times(1)).save(any(UserEntity.class));
         verify(userMapper,
-               times(1)).toModel(any(UserEntity.class));
+                times(1)).toModel(any(UserEntity.class));
     }
 
     @Test
@@ -200,7 +201,7 @@ class AuthenticationServiceTest extends BaseTU {
 
         // Test
         AuthException ex = assertThrows(AuthException.class,
-                                        () -> service.register(registerRequest));
+                () -> service.register(registerRequest));
 
         // Assertions
         assertNotNull(ex);
@@ -208,20 +209,20 @@ class AuthenticationServiceTest extends BaseTU {
         assertNotNull(ex.getStatus());
 
         assertEquals(ExceptionMessageEnum.EMAIL_ALREADY_EXISTS,
-                     ex.getExceptionEnum());
+                ex.getExceptionEnum());
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY,
-                     ex.getStatus());
+                ex.getStatus());
 
         verify(userRepository,
-               times(1)).existsByEmail(anyString());
+                times(1)).existsByEmail(anyString());
         verify(roleRepository,
-               times(0)).findByName(RoleEnum.ROLE_USER);
+                times(0)).findByName(RoleEnum.ROLE_USER);
         verify(roleRepository,
-               times(0)).findByName(RoleEnum.ROLE_ADMIN);
+                times(0)).findByName(RoleEnum.ROLE_ADMIN);
         verify(userRepository,
-               times(0)).save(any(UserEntity.class));
+                times(0)).save(any(UserEntity.class));
         verify(userMapper,
-               times(0)).toModel(any(UserEntity.class));
+                times(0)).toModel(any(UserEntity.class));
     }
 
     @Test
@@ -241,11 +242,11 @@ class AuthenticationServiceTest extends BaseTU {
         assertNotNull(result.user());
 
         verify(userRepository,
-               times(1)).findByEmail(anyString());
+                times(1)).findByEmail(anyString());
         verify(passwordEncoder,
-               times(1)).matches(anyString(), anyString());
+                times(1)).matches(anyString(), anyString());
         verify(userMapper,
-               times(1)).toModel(any(UserEntity.class));
+                times(1)).toModel(any(UserEntity.class));
     }
 
     @Test
@@ -257,7 +258,7 @@ class AuthenticationServiceTest extends BaseTU {
 
         // Test
         AuthException ex = assertThrows(AuthException.class,
-                                        () -> service.login(loginRequest));
+                () -> service.login(loginRequest));
 
         // Assertions
         assertNotNull(ex);
@@ -265,16 +266,16 @@ class AuthenticationServiceTest extends BaseTU {
         assertNotNull(ex.getStatus());
 
         assertEquals(ExceptionMessageEnum.INVALID_PASSWORD,
-                     ex.getExceptionEnum());
+                ex.getExceptionEnum());
         assertEquals(HttpStatus.UNAUTHORIZED,
-                     ex.getStatus());
+                ex.getStatus());
 
         verify(userRepository,
-               times(1)).findByEmail(anyString());
+                times(1)).findByEmail(anyString());
         verify(passwordEncoder,
-               times(1)).matches(anyString(), anyString());
+                times(1)).matches(anyString(), anyString());
         verify(userMapper,
-               times(0)).toModel(any(UserEntity.class));
+                times(0)).toModel(any(UserEntity.class));
     }
 
     @Test
@@ -285,7 +286,7 @@ class AuthenticationServiceTest extends BaseTU {
 
         // Test
         AuthException ex = assertThrows(AuthException.class,
-                                        () -> service.login(loginRequest));
+                () -> service.login(loginRequest));
 
         // Assertions
         assertNotNull(ex);
@@ -293,15 +294,15 @@ class AuthenticationServiceTest extends BaseTU {
         assertNotNull(ex.getStatus());
 
         assertEquals(ExceptionMessageEnum.EMAIL_NOT_FOUND,
-                     ex.getExceptionEnum());
+                ex.getExceptionEnum());
         assertEquals(HttpStatus.UNAUTHORIZED,
-                     ex.getStatus());
+                ex.getStatus());
 
         verify(userRepository,
-               times(1)).findByEmail(anyString());
+                times(1)).findByEmail(anyString());
         verify(passwordEncoder,
-               times(0)).matches(anyString(), anyString());
+                times(0)).matches(anyString(), anyString());
         verify(userMapper,
-               times(0)).toModel(any(UserEntity.class));
+                times(0)).toModel(any(UserEntity.class));
     }
 }

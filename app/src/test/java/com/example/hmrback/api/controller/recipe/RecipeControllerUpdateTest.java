@@ -3,7 +3,6 @@ package com.example.hmrback.api.controller.recipe;
 import com.example.hmrback.api.controller.RecipeBaseIntegrationTest;
 import com.example.hmrback.utils.test.DtoTestUtils;
 import com.example.hmrback.utils.test.IntegrationTestUtils;
-import com.example.hmrback.utils.test.ModelTestUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
@@ -32,12 +31,12 @@ class RecipeControllerUpdateTest extends RecipeBaseIntegrationTest {
     void updateRecipe_AsAdmin_ShouldSucceed() throws Exception {
 
         mockMvc.perform(put("/hmr/api/recipes/" + 1L)
-                                .header("Authorization",
-                                        "Bearer " + adminToken)
-                                .with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(updateRecipeRequest))
-               .andExpect(status().isOk());
+                        .header("Authorization",
+                                "Bearer " + adminToken)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRecipeRequest))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -46,12 +45,12 @@ class RecipeControllerUpdateTest extends RecipeBaseIntegrationTest {
     void updateRecipe_AsAuthor_ShouldSucceed() throws Exception {
 
         mockMvc.perform(put("/hmr/api/recipes/" + 1L)
-                                .header("Authorization",
-                                        "Bearer " + userToken)
-                                .with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(updateRecipeRequest))
-               .andExpect(status().isOk());
+                        .header("Authorization",
+                                "Bearer " + userToken)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRecipeRequest))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -59,11 +58,11 @@ class RecipeControllerUpdateTest extends RecipeBaseIntegrationTest {
     @Transactional
     void updateRecipe_AsOtherUser_ShouldFail() throws Exception {
         mockMvc.perform(put("/hmr/api/recipes/" + 1L)
-                                .header("Authorization",
-                                        "Bearer " + otherUserToken)
-                                .with(csrf())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(updateRecipeRequest))
-               .andExpect(status().isForbidden());
+                        .header("Authorization",
+                                "Bearer " + otherUserToken)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRecipeRequest))
+                .andExpect(status().isForbidden());
     }
 }

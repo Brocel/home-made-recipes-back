@@ -27,6 +27,6 @@ class RecipeControllerCreateTest extends RecipeBaseIntegrationTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createRecipeRequest))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 }

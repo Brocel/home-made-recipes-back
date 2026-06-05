@@ -37,7 +37,7 @@ class UserMapperTest extends BaseTU {
     @BeforeAll
     static void setUp() {
         // UserEntity
-        entity = EntityTestUtils.buildUserEntity(NUMBER_1, false);
+        entity = EntityTestUtils.buildUserEntity(NUMBER_1, false, FAKE);
         // User
         model = ModelTestUtils.buildUser(NUMBER_1, false);
     }

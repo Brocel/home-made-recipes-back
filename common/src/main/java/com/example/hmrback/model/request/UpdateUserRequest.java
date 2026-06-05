@@ -17,7 +17,7 @@ public record UpdateUserRequest(
         @ValidDate
         String birthDate,
 
-        @JsonProperty(DtoContants.AVATAR_NAME)
-        String avatarName
+        @JsonProperty(DtoContants.AVATAR)
+        String avatar
 ) {
 }

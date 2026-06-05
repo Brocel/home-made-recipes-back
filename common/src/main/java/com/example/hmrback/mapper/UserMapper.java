@@ -8,6 +8,7 @@ import com.example.hmrback.model.User;
 import com.example.hmrback.persistence.entity.UserEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(
     config = GlobalMapperConfig.class,
@@ -29,4 +30,14 @@ public interface UserMapper extends BaseMapper<User, UserEntity> {
     @Mapping(source = "birthDate", target = "birthDate", qualifiedByName = "stringToLocalDate")
     @Mapping(source = "inscriptionDate", target = "inscriptionDate", qualifiedByName = "stringToLocalDate")
     UserEntity toEntity(User model);
+
+    @Override
+    @Mapping(source = "birthDate", target = "birthDate", qualifiedByName = "stringToLocalDate")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "inscriptionDate", ignore = true)
+    @Mapping(target = "username", ignore = true)
+    @Mapping(target = "email", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "roles", ignore = true)
+    void updateEntityFromModel(User model,  @MappingTarget UserEntity entity);
 }

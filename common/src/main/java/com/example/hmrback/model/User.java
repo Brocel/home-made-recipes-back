@@ -17,7 +17,7 @@ public record User(
 
         String inscriptionDate,
 
-        String avatarName,
+        String avatar,
 
         Set<Role> roles
 ) {

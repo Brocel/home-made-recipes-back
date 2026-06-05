@@ -5,7 +5,13 @@ import com.example.hmrback.mapper.config.GlobalMapperConfig;
 import com.example.hmrback.model.Product;
 import com.example.hmrback.persistence.entity.ProductEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(config = GlobalMapperConfig.class)
 public interface ProductMapper extends BaseMapper<Product, ProductEntity> {
+
+    @Override
+    @Mapping(target = "id", ignore = true)
+    void updateEntityFromModel(Product product, @MappingTarget ProductEntity entity);
 }

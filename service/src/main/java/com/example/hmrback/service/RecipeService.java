@@ -136,10 +136,9 @@ public class RecipeService {
         RecipeEntity existingRecipe = recipeRepository.findById(recipeId).orElseThrow(() ->
                 new CustomEntityNotFoundException(ExceptionMessageEnum.RECIPE_NOT_FOUND_BY_ID, recipeId));
 
-        RecipeEntity recipeEntity = recipeMapper.toEntity(recipe);
-        recipeEntity.setAuthor(existingRecipe.getAuthor()); // Prevent changing the author during update
+        recipeMapper.updateEntityFromModel(recipe, existingRecipe);
 
-        return recipeMapper.toModel(recipeRepository.saveAndFlush(recipeEntity));
+        return recipeMapper.toModel(recipeRepository.saveAndFlush(existingRecipe));
     }
 
     /**

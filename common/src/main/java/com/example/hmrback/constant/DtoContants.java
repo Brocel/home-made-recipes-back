@@ -19,5 +19,5 @@ public class DtoContants {
     public static final String LAST_NAME = "last_name";
     public static final String BIRTH_DATE = "birth_date";
     public static final String INSCRIPTION_DATE = "inscription_date";
-    public static final String AVATAR_NAME = "avatar_name";
+    public static final String AVATAR = "avatar";
 }

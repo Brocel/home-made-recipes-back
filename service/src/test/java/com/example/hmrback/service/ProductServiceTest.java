@@ -63,13 +63,13 @@ class ProductServiceTest extends BaseTU {
     static void setup() {
         product = ModelTestUtils.buildProduct(NUMBER_1);
         productEntity = EntityTestUtils.buildProductEntity(NUMBER_1,
-                                                           false);
+                false);
         userEntity = EntityTestUtils.buildUserEntity(NUMBER_1,
-                                                     false);
+                false, FAKE);
         productFilter = CommonTestUtils.buildProductFilter(ProductFilterEnum.JUST_NAME,
-                                                           true);
+                true);
         productEntityList = EntityTestUtils.buildProductEntityList(5,
-                                                                   false);
+                false);
     }
 
     @Test
@@ -84,25 +84,25 @@ class ProductServiceTest extends BaseTU {
         when(productMapper.toModel(any(ProductEntity.class))).thenReturn(product);
 
         Product result = service.createProduct(product,
-                                               "testuser");
+                "testuser");
 
         assertNotNull(result);
         assertEquals(product,
-                     result,
-                     "The created product should match the expected product.");
+                result,
+                "The created product should match the expected product.");
 
         verify(userRepository,
-               times(1)).findByUsername(anyString());
+                times(1)).findByUsername(anyString());
         verify(repository,
-               times(1)).existsByNormalizedName(normalizedName);
+                times(1)).existsByNormalizedName(normalizedName);
         verify(productMapper,
-               times(1)).toEntity(product);
+                times(1)).toEntity(product);
         verify(repository,
-               times(1)).save(productEntity);
+                times(1)).save(productEntity);
         verify(productMapper,
-               times(1)).toModel(productEntity);
+                times(1)).toModel(productEntity);
         verify(repository,
-               times(0)).findByNormalizedName(normalizedName);
+                times(0)).findByNormalizedName(normalizedName);
     }
 
     @Test
@@ -116,26 +116,26 @@ class ProductServiceTest extends BaseTU {
         when(productMapper.toModel(any(ProductEntity.class))).thenReturn(product);
 
         Product result = service.createProduct(product,
-                                               "testuser");
+                "testuser");
 
         assertNotNull(result,
-                      NOT_NULL_MESSAGE.formatted("Product"));
+                NOT_NULL_MESSAGE.formatted("Product"));
         assertEquals(product,
-                     result,
-                     "The created product should match the expected product.");
+                result,
+                "The created product should match the expected product.");
 
         verify(userRepository,
-               times(1)).findByUsername(anyString());
+                times(1)).findByUsername(anyString());
         verify(repository,
-               times(1)).existsByNormalizedName(normalizedName);
+                times(1)).existsByNormalizedName(normalizedName);
         verify(productMapper,
-               times(0)).toEntity(product);
+                times(0)).toEntity(product);
         verify(repository,
-               times(0)).save(productEntity);
+                times(0)).save(productEntity);
         verify(productMapper,
-               times(1)).toModel(productEntity);
+                times(1)).toModel(productEntity);
         verify(repository,
-               times(1)).findByNormalizedName(normalizedName);
+                times(1)).findByNormalizedName(normalizedName);
 
     }
 
@@ -145,128 +145,128 @@ class ProductServiceTest extends BaseTU {
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
         CustomEntityNotFoundException ex = assertThrows(CustomEntityNotFoundException.class,
-                                                        () -> service.createProduct(product,
-                                                                              "nonexistentuser"));
+                () -> service.createProduct(product,
+                        "nonexistentuser"));
 
         assertNotNull(ex,
-                      NOT_NULL_MESSAGE.formatted("CustomEntityNotFoundException"));
+                NOT_NULL_MESSAGE.formatted("CustomEntityNotFoundException"));
         assertEquals(ExceptionMessageEnum.USER_NOT_FOUND.getMessage()
-                                                        .formatted("nonexistentuser"),
-                     ex.getMessage());
+                        .formatted("nonexistentuser"),
+                ex.getMessage());
 
         verify(userRepository,
-               times(1)).findByUsername(anyString());
+                times(1)).findByUsername(anyString());
         verify(repository,
-               times(0)).existsByNormalizedName(anyString());
+                times(0)).existsByNormalizedName(anyString());
         verify(productMapper,
-               times(0)).toEntity(any(Product.class));
+                times(0)).toEntity(any(Product.class));
         verify(repository,
-               times(0)).save(any(ProductEntity.class));
+                times(0)).save(any(ProductEntity.class));
         verify(productMapper,
-               times(0)).toModel(any(ProductEntity.class));
+                times(0)).toModel(any(ProductEntity.class));
         verify(repository,
-               times(0)).findByNormalizedName(anyString());
+                times(0)).findByNormalizedName(anyString());
     }
 
     @Test
     @Order(4)
     void searchProducts_WithValidFilter_ShouldReturnProductsPage() {
         when(repository.findAll(any(Predicate.class),
-                                any(Pageable.class))).thenReturn(new PageImpl<>(productEntityList));
+                any(Pageable.class))).thenReturn(new PageImpl<>(productEntityList));
         when(productMapper.toModel(any(ProductEntity.class))).thenReturn(product);
 
         Page<Product> result = service.searchProducts(productFilter,
-                                                      PageRequest.of(0,
-                                                                     10));
+                PageRequest.of(0,
+                        10));
 
         assertNotNull(result,
-                      NOT_NULL_MESSAGE.formatted("Page<Product>"));
+                NOT_NULL_MESSAGE.formatted("Page<Product>"));
         assertNotNull(result.getContent(),
-                      NOT_NULL_MESSAGE.formatted("Page<Product>.content"));
+                NOT_NULL_MESSAGE.formatted("Page<Product>.content"));
         assertEquals(5,
-                     result.getTotalElements(),
-                     SHOULD_BE_EQUALS_MESSAGE.formatted("Total elements",
-                                                        "5"));
+                result.getTotalElements(),
+                SHOULD_BE_EQUALS_MESSAGE.formatted("Total elements",
+                        "5"));
 
         verify(repository,
-               times(1)).findAll(any(Predicate.class),
-                                 any(Pageable.class));
+                times(1)).findAll(any(Predicate.class),
+                any(Pageable.class));
         verify(productMapper,
-               times(5)).toModel(any(ProductEntity.class));
+                times(5)).toModel(any(ProductEntity.class));
     }
 
     @Test
     @Order(5)
     void shouldSearchProducts_whenFiltersIsNull_thenReturnEmptyList() {
         when(repository.findAll(any(Predicate.class),
-                                any(Pageable.class))).thenReturn(Page.empty());
+                any(Pageable.class))).thenReturn(Page.empty());
 
         Page<Product> result = service.searchProducts(productFilter,
-                                                      PageRequest.of(0,
-                                                                     10));
+                PageRequest.of(0,
+                        10));
 
         assertNotNull(result);
         assertNotNull(result.getContent());
         assertEquals(0,
-                     result.getTotalElements());
+                result.getTotalElements());
 
         verify(repository,
-               times(1)).findAll(any(Predicate.class),
-                                 any(Pageable.class));
+                times(1)).findAll(any(Predicate.class),
+                any(Pageable.class));
         verify(productMapper,
-               times(0)).toModel(any(ProductEntity.class));
+                times(0)).toModel(any(ProductEntity.class));
     }
 
     @Test
     @Order(6)
     void updateProduct_ProductExists_ShouldUpdateAndReturnProduct() {
-        when(repository.existsById(any(Long.class))).thenReturn(true);
-        when(productMapper.toEntity(any(Product.class))).thenReturn(productEntity);
+        when(repository.findById(any(Long.class))).thenReturn(Optional.ofNullable(productEntity));
+        doNothing().when(productMapper).updateEntityFromModel(any(Product.class), any(ProductEntity.class));
         when(repository.saveAndFlush(any(ProductEntity.class))).thenReturn(productEntity);
         when(productMapper.toModel(any(ProductEntity.class))).thenReturn(product);
 
         Product result = service.updateProduct(NUMBER_1,
-                                               product);
+                product);
 
         assertNotNull(result,
-                      NOT_NULL_MESSAGE.formatted("Product"));
+                NOT_NULL_MESSAGE.formatted("Product"));
         assertEquals(product,
-                     result,
-                     "The updated product should match the expected product.");
+                result,
+                "The updated product should match the expected product.");
 
         verify(repository,
-               times(1)).existsById(NUMBER_1);
+                times(1)).findById(NUMBER_1);
         verify(productMapper,
-               times(1)).toEntity(product);
+                times(1)).updateEntityFromModel(any(Product.class), any(ProductEntity.class));
         verify(repository,
-               times(1)).saveAndFlush(productEntity);
+                times(1)).saveAndFlush(productEntity);
         verify(productMapper,
-               times(1)).toModel(productEntity);
+                times(1)).toModel(productEntity);
     }
 
     @Test
     @Order(7)
     void updateProduct_ProductDoesNotExist_ShouldThrowException() {
-        when(repository.existsById(any(Long.class))).thenReturn(false);
+        when(repository.findById(any(Long.class))).thenReturn(Optional.empty());
 
         CustomEntityNotFoundException ex = assertThrows(CustomEntityNotFoundException.class,
-                                                  () -> service.updateProduct(NUMBER_1,
-                                                                              product));
+                () -> service.updateProduct(NUMBER_1,
+                        product));
 
         assertNotNull(ex,
-                      NOT_NULL_MESSAGE.formatted("CustomEntityNotFoundException"));
+                NOT_NULL_MESSAGE.formatted("CustomEntityNotFoundException"));
         assertEquals(ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID.getMessage()
-                                                                 .formatted(NUMBER_1),
-                     ex.getMessage());
+                        .formatted(NUMBER_1),
+                ex.getMessage());
 
         verify(repository,
-               times(1)).existsById(NUMBER_1);
+                times(1)).findById(NUMBER_1);
         verify(productMapper,
-               times(0)).toEntity(any(Product.class));
+                times(0)).updateEntityFromModel(any(Product.class), any(ProductEntity.class));
         verify(repository,
-               times(0)).saveAndFlush(any(ProductEntity.class));
+                times(0)).saveAndFlush(any(ProductEntity.class));
         verify(productMapper,
-               times(0)).toModel(any(ProductEntity.class));
+                times(0)).toModel(any(ProductEntity.class));
     }
 
     @Test
@@ -274,14 +274,14 @@ class ProductServiceTest extends BaseTU {
     void deleteProduct_ProductExists_ShouldDeleteProduct() {
         when(repository.findById(any(Long.class))).thenReturn(Optional.ofNullable(productEntity));
         doNothing().when(repository)
-                   .delete(any(ProductEntity.class));
+                .delete(any(ProductEntity.class));
 
         service.deleteProduct(NUMBER_1);
 
         verify(repository,
-               times(1)).findById(NUMBER_1);
+                times(1)).findById(NUMBER_1);
         verify(repository,
-               times(1)).delete(any(ProductEntity.class));
+                times(1)).delete(any(ProductEntity.class));
     }
 
     @Test
@@ -290,17 +290,17 @@ class ProductServiceTest extends BaseTU {
         when(repository.findById(any(Long.class))).thenReturn(Optional.empty());
 
         CustomEntityNotFoundException ex = assertThrows(CustomEntityNotFoundException.class,
-                                                  () -> service.deleteProduct(1L));
+                () -> service.deleteProduct(1L));
 
         assertNotNull(ex,
-                      NOT_NULL_MESSAGE.formatted("CustomEntityNotFoundException"));
+                NOT_NULL_MESSAGE.formatted("CustomEntityNotFoundException"));
         assertEquals(ExceptionMessageEnum.PRODUCT_NOT_FOUND_BY_ID.getMessage()
-                                                                 .formatted(NUMBER_1),
-                     ex.getMessage());
+                        .formatted(NUMBER_1),
+                ex.getMessage());
 
         verify(repository,
-               times(1)).findById(NUMBER_1);
+                times(1)).findById(NUMBER_1);
         verify(repository,
-               times(0)).delete(any(ProductEntity.class));
+                times(0)).delete(any(ProductEntity.class));
     }
 }

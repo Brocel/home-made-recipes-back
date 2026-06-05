@@ -87,8 +87,6 @@ boundary.
 - Do not create report, plan, review, or completion markdown files in feature folders.
 - If a markdown artifact is needed, place it only under `.github/generated/`.
 - If the destination folder does not exist, ask before creating a new one.
-- Prefer answering in chat instead of creating a markdown file unless the user explicitly requests a file.
-- Do not create useless markdown reports, summarys or plans without user's confimation
 
 ## What to avoid
 

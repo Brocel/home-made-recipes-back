@@ -30,6 +30,14 @@ public interface RecipeMapper extends BaseMapper<Recipe, RecipeEntity> {
     @Mapping(source = "publicationDate", target = "publicationDate", qualifiedByName = "stringToLocalDate")
     RecipeEntity toEntity(Recipe model);
 
+    @Override
+    @Mapping(source = "publicationDate", target = "publicationDate", qualifiedByName = "stringToLocalDate")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "author", ignore = true)
+    void updateEntityFromModel(Recipe model,
+        @MappingTarget
+        RecipeEntity entity);
+
     List<Recipe> toModelList(List<RecipeEntity> entities);
 
     @AfterMapping

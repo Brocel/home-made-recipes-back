@@ -74,9 +74,18 @@ public class AuthenticationService {
     public AuthResponse register(RegisterRequest req) throws AuthException {
         LOG.info("Registering a new user: {}({})", req.username(), req.email());
 
+        // Controls
         if (this.userRepository.existsByEmail(req.email())) {
             throw new AuthException(
                     ExceptionMessageEnum.EMAIL_ALREADY_EXISTS,
+                    HttpStatus.UNPROCESSABLE_ENTITY,
+                    LogLevel.WARN, req.email()
+            );
+        }
+
+        if (this.userRepository.existsByUsername(req.username())) {
+            throw new AuthException(
+                    ExceptionMessageEnum.USERNAME_ALREADY_EXISTS,
                     HttpStatus.UNPROCESSABLE_ENTITY,
                     LogLevel.WARN, req.email()
             );

@@ -1,5 +1,6 @@
 package com.example.hmrback.api.controller.user;
 
+import com.example.hmrback.mapper.dto.UserDTOMapper;
 import com.example.hmrback.model.User;
 import com.example.hmrback.model.request.UpdateUserRequest;
 import com.example.hmrback.model.response.UserResponse;
@@ -31,7 +32,8 @@ public class UserController {
             @RequestBody
             UpdateUserRequest request
     ) {
-        User updatedUser = this.userService.updateUser(id, request);
+        User userInput = UserDTOMapper.toUser(request);
+        User updatedUser = this.userService.updateUser(id, userInput);
         return ResponseEntity.ok(userToResponse(updatedUser));
     }
 
@@ -55,7 +57,7 @@ public class UserController {
                 user.email(),
                 user.birthDate(),
                 user.inscriptionDate(),
-                user.avatarName(),
+                user.avatar(),
                 user.roles()
         );
     }

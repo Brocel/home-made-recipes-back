@@ -25,7 +25,7 @@ public record UserResponse(
         @JsonProperty(DtoContants.INSCRIPTION_DATE)
         String inscriptionDate,
 
-        @JsonProperty(DtoContants.AVATAR_NAME)
+        @JsonProperty(DtoContants.AVATAR)
         String avatarName,
 
         Set<Role> roles
