@@ -14,7 +14,6 @@ import com.example.hmrback.persistence.repository.UserRepository;
 import com.example.hmrback.utils.DateUtils;
 import com.example.hmrback.utils.JwtUtils;
 import com.example.hmrback.utils.UserUtils;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,23 +28,35 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-@RequiredArgsConstructor
 public class AuthenticationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationService.class);
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final String adminEmailsRaw;
+    private final String secretKey;
+    private final Long expirationMinutes;
 
-    @Value("${admin.emails}")
-    String adminEmailsRaw;
-    @Value("${jwt.secret-key}")
-    private String secretKey;
-    @Value("${jwt.expiration-minutes}")
-    private Long expirationMinutes;
+    public AuthenticationService(
+            UserRepository userRepository,
+            RoleRepository roleRepository,
+            PasswordEncoder passwordEncoder,
+            UserMapper userMapper,
+            @Value("${admin.emails}") String adminEmailsRaw,
+            @Value("${jwt.secret-key}") String secretKey,
+            @Value("${jwt.expiration-minutes}") Long expirationMinutes
+    ) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
+        this.adminEmailsRaw = adminEmailsRaw;
+        this.secretKey = secretKey;
+        this.expirationMinutes = expirationMinutes;
+    }
 
     /**
      * Check if the User with given username exists in DB

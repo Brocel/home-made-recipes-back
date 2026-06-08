@@ -152,10 +152,13 @@ class RecipeServiceTest extends BaseTU {
                 PageRequest.of(0,
                         10));
 
-        assertNotNull(result);
-        assertNotNull(result.getContent());
+        assertNotNull(result,
+                "Should return non-null Page<Recipe> when filters are null");
+        assertNotNull(result.getContent(),
+                "Should return non-null content");
         assertEquals(0,
-                result.getTotalElements());
+                result.getTotalElements(),
+                "Should return empty list when no recipes match");
 
         verify(repository,
                 times(1)).findAll(any(Predicate.class),
@@ -177,7 +180,8 @@ class RecipeServiceTest extends BaseTU {
         Recipe result = service.updateRecipe(NUMBER_1,
                 recipe);
 
-        assertNotNull(result);
+        assertNotNull(result,
+                "Should return non-null updated Recipe");
 
         verify(repository,
                 times(1)).findById(1L);
@@ -213,9 +217,11 @@ class RecipeServiceTest extends BaseTU {
         CustomEntityNotFoundException ex = assertThrows(CustomEntityNotFoundException.class,
                 () -> service.deleteRecipe(NUMBER_1));
 
-        assertNotNull(ex);
+        assertNotNull(ex,
+                "Should throw CustomEntityNotFoundException");
         assertEquals(ExceptionMessageEnum.RECIPE_NOT_FOUND_BY_ID.getMessage().formatted(NUMBER_1),
-                ex.getMessage());
+                ex.getMessage(),
+                "Should return correct error message");
 
         verify(repository,
                 times(1)).findById(NUMBER_1);
@@ -232,7 +238,8 @@ class RecipeServiceTest extends BaseTU {
 
         Recipe result = service.fetchDailyRecipe();
 
-        assertNotNull(result);
+        assertNotNull(result,
+                "Should return non-null daily Recipe");
 
         verify(repository,
                 times(1)).findAll(any(Predicate.class),
@@ -250,15 +257,48 @@ class RecipeServiceTest extends BaseTU {
         CustomEntityNotFoundException ex = assertThrows(CustomEntityNotFoundException.class,
                 () -> service.fetchDailyRecipe());
 
-        assertNotNull(ex);
+        assertNotNull(ex,
+                "Should throw CustomEntityNotFoundException");
         assertEquals(ExceptionMessageEnum.DAILY_RECIPE_NOT_FOUND.getMessage(),
-                ex.getMessage());
+                ex.getMessage(),
+                "Should return correct error message");
 
         verify(repository,
                 times(1)).findAll(any(Predicate.class),
                 any(Sort.class));
         verify(mapper,
                 times(0)).toModel(any(RecipeEntity.class));
+    }
+
+    @Test
+    @Order(9)
+    void updateRecipe_OnException_ShouldNotSave() {
+        // Setup
+        when(repository.findById(anyLong())).thenReturn(Optional.of(recipeEntity));
+        doThrow(new RuntimeException("Mapping failed"))
+                .when(mapper).updateEntityFromModel(any(), any());
+
+        // Action & Assert
+        assertThrows(RuntimeException.class,
+                () -> service.updateRecipe(NUMBER_1, recipe),
+                "Should throw exception when mapper fails");
+
+        // Verify no save occurred
+        verify(repository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    @Order(10)
+    void deleteRecipe_ShouldRemoveEntity() {
+        // Setup
+        when(repository.findById(anyLong())).thenReturn(Optional.of(recipeEntity));
+        doNothing().when(repository).delete(any(RecipeEntity.class));
+
+        // Action
+        service.deleteRecipe(NUMBER_1);
+
+        // Assert
+        verify(repository, times(1)).delete(recipeEntity);
     }
 
 }

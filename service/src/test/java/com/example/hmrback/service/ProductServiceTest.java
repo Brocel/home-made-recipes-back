@@ -33,8 +33,7 @@ import java.util.Optional;
 
 import static com.example.hmrback.utils.test.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -86,7 +85,8 @@ class ProductServiceTest extends BaseTU {
         Product result = service.createProduct(product,
                 "testuser");
 
-        assertNotNull(result);
+        assertNotNull(result,
+                "Should return non-null Product");
         assertEquals(product,
                 result,
                 "The created product should match the expected product.");
@@ -205,10 +205,13 @@ class ProductServiceTest extends BaseTU {
                 PageRequest.of(0,
                         10));
 
-        assertNotNull(result);
-        assertNotNull(result.getContent());
+        assertNotNull(result,
+                "Should return non-null Page<Product> when filters are null");
+        assertNotNull(result.getContent(),
+                "Should return non-null content");
         assertEquals(0,
-                result.getTotalElements());
+                result.getTotalElements(),
+                "Should return empty list when no products match");
 
         verify(repository,
                 times(1)).findAll(any(Predicate.class),
@@ -303,4 +306,36 @@ class ProductServiceTest extends BaseTU {
         verify(repository,
                 times(0)).delete(any(ProductEntity.class));
     }
+
+    @Test
+    @Order(10)
+    void updateProduct_OnException_ShouldNotSave() {
+        // Setup
+        when(repository.findById(anyLong())).thenReturn(Optional.of(productEntity));
+        doThrow(new RuntimeException("Mapping failed"))
+                .when(productMapper).updateEntityFromModel(any(), any());
+
+        // Action & Assert
+        assertThrows(RuntimeException.class,
+                () -> service.updateProduct(NUMBER_1, product),
+                "Should throw exception when mapper fails");
+
+        // Verify no save occurred
+        verify(repository, times(0)).saveAndFlush(any());
+    }
+
+    @Test
+    @Order(11)
+    void deleteProduct_ShouldRemoveEntity() {
+        // Setup
+        when(repository.findById(anyLong())).thenReturn(Optional.of(productEntity));
+        doNothing().when(repository).delete(any(ProductEntity.class));
+
+        // Action
+        service.deleteProduct(NUMBER_1);
+
+        // Assert
+        verify(repository, times(1)).delete(productEntity);
+    }
+
 }

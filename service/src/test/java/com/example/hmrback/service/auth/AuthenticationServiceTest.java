@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -34,6 +33,7 @@ import static com.example.hmrback.utils.test.CommonTestUtils.ADMIN_EMAIL;
 import static com.example.hmrback.utils.test.TestConstants.FAKE;
 import static com.example.hmrback.utils.test.TestConstants.NUMBER_1;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -67,15 +67,15 @@ class AuthenticationServiceTest extends BaseTU {
 
     @BeforeEach
     void valueSetup() {
-        ReflectionTestUtils.setField(service,
-                "adminEmailsRaw",
-                ADMIN_EMAIL);
-        ReflectionTestUtils.setField(service,
-                "secretKey",
-                "fake-secret-key-just-for-unit-tests-666_@!#");
-        ReflectionTestUtils.setField(service,
-                "expirationMinutes",
-                999L);
+        service = new AuthenticationService(
+                userRepository,
+                roleRepository,
+                passwordEncoder,
+                userMapper,
+                ADMIN_EMAIL,
+                "fake-secret-key-just-for-unit-tests-666_@!#",
+                999L
+        );
     }
 
     @BeforeAll
@@ -108,7 +108,8 @@ class AuthenticationServiceTest extends BaseTU {
         boolean result = service.existsByUsername(USERNAME);
 
         // Assertions
-        assertTrue(result);
+        assertTrue(result,
+                "Should return true when user exists");
 
         verify(userRepository,
                 times(1)).existsByUsername(USERNAME);
@@ -124,7 +125,8 @@ class AuthenticationServiceTest extends BaseTU {
         boolean result = service.existsByUsername(USERNAME);
 
         // Assertions
-        assertFalse(result);
+        assertFalse(result,
+                "Should return false when user does not exist");
 
         verify(userRepository,
                 times(1)).existsByUsername(USERNAME);
@@ -143,9 +145,12 @@ class AuthenticationServiceTest extends BaseTU {
         AuthResponse result = service.register(registerRequest);
 
         // Assertions
-        assertNotNull(result);
-        assertNull(result.token());
-        assertNotNull(result.user());
+        assertNotNull(result,
+                "Should return non-null AuthResponse");
+        assertNull(result.token(),
+                "Should not include token for classic user registration");
+        assertNotNull(result.user(),
+                "Should include user model in response");
 
         verify(userRepository,
                 times(1)).existsByEmail(anyString());
@@ -177,9 +182,12 @@ class AuthenticationServiceTest extends BaseTU {
         AuthResponse result = service.register(adminRegisterRequest);
 
         // Assertions
-        assertNotNull(result);
-        assertNull(result.token());
-        assertNotNull(result.user());
+        assertNotNull(result,
+                "Should return non-null AuthResponse");
+        assertNull(result.token(),
+                "Should not include token for admin user registration");
+        assertNotNull(result.user(),
+                "Should include user model in response");
 
         verify(userRepository,
                 times(1)).existsByEmail(anyString());
@@ -204,14 +212,19 @@ class AuthenticationServiceTest extends BaseTU {
                 () -> service.register(registerRequest));
 
         // Assertions
-        assertNotNull(ex);
-        assertNotNull(ex.getExceptionEnum());
-        assertNotNull(ex.getStatus());
+        assertNotNull(ex,
+                "Should throw AuthException for existing email");
+        assertNotNull(ex.getExceptionEnum(),
+                "Exception should have non-null exception enum");
+        assertNotNull(ex.getStatus(),
+                "Exception should have non-null HTTP status");
 
         assertEquals(ExceptionMessageEnum.EMAIL_ALREADY_EXISTS,
-                ex.getExceptionEnum());
+                ex.getExceptionEnum(),
+                "Should throw EMAIL_ALREADY_EXISTS exception");
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY,
-                ex.getStatus());
+                ex.getStatus(),
+                "Should return UNPROCESSABLE_ENTITY status");
 
         verify(userRepository,
                 times(1)).existsByEmail(anyString());
@@ -237,9 +250,12 @@ class AuthenticationServiceTest extends BaseTU {
         AuthResponse result = service.login(loginRequest);
 
         // Assertions
-        assertNotNull(result);
-        assertNotNull(result.token());
-        assertNotNull(result.user());
+        assertNotNull(result,
+                "Should return non-null AuthResponse");
+        assertNotNull(result.token(),
+                "Should include JWT token in response");
+        assertNotNull(result.user(),
+                "Should include user model in response");
 
         verify(userRepository,
                 times(1)).findByEmail(anyString());
@@ -261,14 +277,19 @@ class AuthenticationServiceTest extends BaseTU {
                 () -> service.login(loginRequest));
 
         // Assertions
-        assertNotNull(ex);
-        assertNotNull(ex.getExceptionEnum());
-        assertNotNull(ex.getStatus());
+        assertNotNull(ex,
+                "Should throw AuthException for wrong password");
+        assertNotNull(ex.getExceptionEnum(),
+                "Exception should have non-null exception enum");
+        assertNotNull(ex.getStatus(),
+                "Exception should have non-null HTTP status");
 
         assertEquals(ExceptionMessageEnum.INVALID_PASSWORD,
-                ex.getExceptionEnum());
+                ex.getExceptionEnum(),
+                "Should throw INVALID_PASSWORD exception");
         assertEquals(HttpStatus.UNAUTHORIZED,
-                ex.getStatus());
+                ex.getStatus(),
+                "Should return UNAUTHORIZED status");
 
         verify(userRepository,
                 times(1)).findByEmail(anyString());
@@ -289,14 +310,19 @@ class AuthenticationServiceTest extends BaseTU {
                 () -> service.login(loginRequest));
 
         // Assertions
-        assertNotNull(ex);
-        assertNotNull(ex.getExceptionEnum());
-        assertNotNull(ex.getStatus());
+        assertNotNull(ex,
+                "Should throw AuthException when email not found");
+        assertNotNull(ex.getExceptionEnum(),
+                "Exception should have non-null exception enum");
+        assertNotNull(ex.getStatus(),
+                "Exception should have non-null HTTP status");
 
         assertEquals(ExceptionMessageEnum.EMAIL_NOT_FOUND,
-                ex.getExceptionEnum());
+                ex.getExceptionEnum(),
+                "Should throw EMAIL_NOT_FOUND exception");
         assertEquals(HttpStatus.UNAUTHORIZED,
-                ex.getStatus());
+                ex.getStatus(),
+                "Should return UNAUTHORIZED status");
 
         verify(userRepository,
                 times(1)).findByEmail(anyString());
@@ -305,4 +331,5 @@ class AuthenticationServiceTest extends BaseTU {
         verify(userMapper,
                 times(0)).toModel(any(UserEntity.class));
     }
+
 }
